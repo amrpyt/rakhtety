@@ -79,11 +79,11 @@ Create a physical workspace directory containing copies of specified git repos (
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/new-workspace.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/ui-brand.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/new-workspace.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/ui-brand.md
 </execution_context>
 
 <process>
-Execute the new-workspace workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/new-workspace.md end-to-end.
+Execute the new-workspace workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/new-workspace.md end-to-end.
 Preserve all workflow gates (validation, approvals, commits, routing).
 </process>

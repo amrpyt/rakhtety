@@ -53,17 +53,17 @@ export default function EmployeesPage() {
   )
 
   const handleAddSubmit = useCallback(
-    async (data: CreateEmployeeDto) => {
-      await createEmployee(data)
+    async (data: CreateEmployeeDto | UpdateEmployeeDto) => {
+      await createEmployee(data as CreateEmployeeDto)
       setShowAddDialog(false)
     },
     [createEmployee]
   )
 
   const handleEditSubmit = useCallback(
-    async (data: UpdateEmployeeDto) => {
+    async (data: CreateEmployeeDto | UpdateEmployeeDto) => {
       if (selectedEmployee) {
-        await updateEmployee(selectedEmployee.id, data)
+        await updateEmployee(selectedEmployee.id, data as UpdateEmployeeDto)
         setShowEditDialog(false)
         setSelectedEmployee(null)
       }

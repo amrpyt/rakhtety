@@ -65,7 +65,7 @@ Maps the GSD-2 hierarchy (Milestone → Slice → Task) to the GSD v1 hierarchy 
 
 1. **Locate the .gsd/ directory** — check the current working directory (or `--path` argument):
    ```bash
-   node "/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/bin/gsd-tools.cjs" from-gsd2 --dry-run
+   node "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/bin/gsd-tools.cjs" from-gsd2 --dry-run
    ```
    If no `.gsd/` is found, report the error and stop.
 
@@ -73,7 +73,7 @@ Maps the GSD-2 hierarchy (Milestone → Slice → Task) to the GSD v1 hierarchy 
 
 3. **Run the migration** after confirmation:
    ```bash
-   node "/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/bin/gsd-tools.cjs" from-gsd2
+   node "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/bin/gsd-tools.cjs" from-gsd2
    ```
    Use `--force` if `.planning/` already exists and the user has confirmed overwrite.
 

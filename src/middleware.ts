@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
-import type { Database } from '@/types/database.types'
+import { updateSession } from '@/lib/supabase/proxy'
 
 const PUBLIC_ROUTES = ['/login', '/signup', '/api/auth']
 const PROTECTED_ROUTES = ['/dashboard', '/clients', '/workflows', '/employees', '/settings']
@@ -15,30 +14,26 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const supabase = createServerClient()
+  const { cookiesToSet, user } = await updateSession(request)
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const applyCookies = (response: NextResponse) => {
+    cookiesToSet.forEach(({ name, value, options }) => {
+      response.cookies.set(name, value, options)
+    })
+    return response
+  }
 
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !user) {
     const redirectUrl = new URL('/login', request.url)
     redirectUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(redirectUrl)
+    return applyCookies(NextResponse.redirect(redirectUrl))
   }
 
-  if (pathname.startsWith('/login') && session) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  if (pathname.startsWith('/login') && user) {
+    return applyCookies(NextResponse.redirect(new URL('/dashboard', request.url)))
   }
 
-  const response = NextResponse.next()
-
-  if (session) {
-    response.headers.set('x-user-id', session.user.id)
-    response.headers.set('x-user-role', (session.user.user_metadata as { role?: string }).role || 'employee')
-  }
-
-  return response
+  return applyCookies(NextResponse.next())
 }
 
 export const config = {

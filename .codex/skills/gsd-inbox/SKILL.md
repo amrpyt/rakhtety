@@ -63,7 +63,7 @@ and optionally applies labels or closes non-compliant submissions.
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/inbox.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/inbox.md
 </execution_context>
 
 <context>
@@ -76,6 +76,6 @@ and optionally applies labels or closes non-compliant submissions.
 </context>
 
 <process>
-Execute the inbox workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/inbox.md end-to-end.
+Execute the inbox workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/inbox.md end-to-end.
 Parse flags from arguments and pass to workflow.
 </process>

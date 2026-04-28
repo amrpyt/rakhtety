@@ -1,0 +1,7 @@
+﻿state.page = context.pages().find((p) => p.url().includes("127.0.0.1:3000") || p.url().includes("localhost:3000")) ?? (await context.newPage())
+await state.page.goto("http://127.0.0.1:3000/login", { waitUntil: "domcontentloaded" })
+await state.page.waitForLoadState("networkidle")
+console.log("URL:", state.page.url())
+console.log("TITLE:", await state.page.title())
+const snap1 = await snapshot({ page: state.page, showDiffSinceLastCall: false })
+console.log(snap1)

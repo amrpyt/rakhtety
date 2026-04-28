@@ -1,52 +1,58 @@
 import { useEffect, useState } from 'react'
+import type { Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
 import type { AuthSession } from '@/types/auth.types'
+import { toAuthUser } from '@/lib/auth/auth-user'
 
 export function useSession() {
   const [session, setSession] = useState<AuthSession | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setSession({
-          user: {
-            id: session.user.id,
-            email: session.user.email!,
-            role: (session.user.user_metadata?.role as 'admin' | 'employee' | 'manager') || 'employee',
-            full_name: session.user.user_metadata?.full_name || '',
-            phone: session.user.user_metadata?.phone,
-          },
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-          expires_at: session.expires_at || 0,
-        })
-      } else {
-        setSession(null)
+    let mounted = true
+
+    const syncSession = async (supabaseSession: Session | null) => {
+      if (!mounted) {
+        return
       }
+
+      if (!supabaseSession?.user) {
+        setSession(null)
+        setLoading(false)
+        return
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', supabaseSession.user.id)
+        .maybeSingle()
+
+      if (!mounted) {
+        return
+      }
+
+      setSession({
+        user: toAuthUser(supabaseSession.user, profile),
+        access_token: supabaseSession.access_token,
+        refresh_token: supabaseSession.refresh_token,
+        expires_at: supabaseSession.expires_at || 0,
+      })
       setLoading(false)
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      void syncSession(session)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setSession({
-          user: {
-            id: session.user.id,
-            email: session.user.email!,
-            role: (session.user.user_metadata?.role as 'admin' | 'employee' | 'manager') || 'employee',
-            full_name: session.user.user_metadata?.full_name || '',
-            phone: session.user.user_metadata?.phone,
-          },
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-          expires_at: session.expires_at || 0,
-        })
-      } else {
-        setSession(null)
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, supabaseSession) => {
+      void syncSession(supabaseSession)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   return { session, loading }

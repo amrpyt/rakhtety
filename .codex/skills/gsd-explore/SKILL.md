@@ -62,9 +62,9 @@ Accepts an optional topic argument: `$gsd-explore authentication strategy`
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/explore.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/explore.md
 </execution_context>
 
 <process>
-Execute the explore workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/explore.md end-to-end.
+Execute the explore workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/explore.md end-to-end.
 </process>

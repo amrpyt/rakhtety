@@ -21,7 +21,7 @@ No Pass/Fail buttons. No severity questions. Just: "Here's what should happen. D
 </philosophy>
 
 <template>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/UAT.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/UAT.md
 </template>
 
 <process>
@@ -444,7 +444,7 @@ If `SECURITY_CFG` is `false` OR (`SECURITY_FILE` exists AND `threats_open` is `0
 
 Execute the transition workflow inline (do NOT use Task — the orchestrator context already holds the UAT results and phase data needed for accurate transition):
 
-Read and follow `/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/transition.md`.
+Read and follow `D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/transition.md`.
 
 After transition completes, present next-step options to the user:
 
@@ -499,7 +499,7 @@ Spawning parallel debug agents to investigate each issue.
 ```
 
 - Load diagnose-issues workflow
-- Follow @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/diagnose-issues.md
+- Follow @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/diagnose-issues.md
 - Spawn parallel debug agents for each issue
 - Collect root causes
 - Update UAT.md with root causes

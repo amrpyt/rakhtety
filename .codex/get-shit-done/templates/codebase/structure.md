@@ -216,7 +216,7 @@ get-shit-done/
 
 **New Workflow:**
 - Implementation: `get-shit-done/workflows/{name}.md`
-- Usage: Reference from command with `@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/{name}.md`
+- Usage: Reference from command with `@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/{name}.md`
 
 **New Reference Document:**
 - Implementation: `get-shit-done/references/{name}.md`
@@ -229,12 +229,12 @@ get-shit-done/
 ## Special Directories
 
 **get-shit-done/**
-- Purpose: Resources installed to /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/
+- Purpose: Resources installed to D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/
 - Source: Copied by bin/install.js during installation
 - Committed: Yes (source of truth)
 
 **commands/**
-- Purpose: Slash commands installed to /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/commands/
+- Purpose: Slash commands installed to D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/commands/
 - Source: Copied by bin/install.js during installation
 - Committed: Yes (source of truth)
 

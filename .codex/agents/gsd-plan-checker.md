@@ -48,7 +48,7 @@ Issues without a severity classification are not valid output.
 </adversarial_stance>
 
 <required_reading>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/gates.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/gates.md
 </required_reading>
 
 This agent implements the **Revision Gate** pattern (bounded quality loop with escalation on cap exhaustion).
@@ -108,10 +108,10 @@ Same methodology (goal-backward), different timing, different subject matter.
 <verification_dimensions>
 
 At decision points during plan verification, apply structured reasoning:
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/thinking-models-planning.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/thinking-models-planning.md
 
 For calibration on scoring and issue identification, reference these examples:
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/few-shot-examples/plan-checker.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/few-shot-examples/plan-checker.md
 
 ## Dimension 1: Requirement Coverage
 

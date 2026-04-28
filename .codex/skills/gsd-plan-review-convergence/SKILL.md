@@ -65,10 +65,10 @@ Replaces gsd-plan-phase's internal gsd-plan-checker with external AI reviewers (
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/plan-review-convergence.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/revision-loop.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/gates.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/agent-contracts.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/plan-review-convergence.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/revision-loop.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/gates.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/agent-contracts.md
 </execution_context>
 
 <runtime_note>
@@ -94,6 +94,6 @@ Phase number: extracted from {{GSD_ARGS}} (required)
 </context>
 
 <process>
-Execute the plan-review-convergence workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/plan-review-convergence.md end-to-end.
+Execute the plan-review-convergence workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/plan-review-convergence.md end-to-end.
 Preserve all workflow gates (pre-flight, revision loop, stall detection, escalation).
 </process>

@@ -61,9 +61,9 @@ Lightweight alternative to `$gsd-map-codebase` — spawns one mapper agent inste
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/scan.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/scan.md
 </execution_context>
 
 <process>
-Execute the scan workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/scan.md end-to-end.
+Execute the scan workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/scan.md end-to-end.
 </process>

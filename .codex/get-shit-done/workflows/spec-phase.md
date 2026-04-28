@@ -56,7 +56,7 @@ Rotate through these perspectives — each naturally surfaces different blindspo
 ## Step 1: Initialize
 
 ```bash
-INIT=$(node "/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/bin/gsd-tools.cjs" init phase-op "${PHASE}")
+INIT=$(node "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/bin/gsd-tools.cjs" init phase-op "${PHASE}")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 ```
 
@@ -188,7 +188,7 @@ If gate passes (ambiguity ≤ 0.20 AND all minimums met):
 
 ## Step 6: Generate SPEC.md
 
-Use the SPEC.md template from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/spec.md.
+Use the SPEC.md template from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/spec.md.
 
 **Requirements for every requirement entry:**
 - One specific, testable statement

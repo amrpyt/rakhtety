@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react'
+import type { Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
 import type { AuthUser } from '@/types/auth.types'
-import type { UserRole } from '@/types/database.types'
+import { toAuthUser } from '@/lib/auth/auth-user'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -18,51 +19,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile }) => {
-            setUser({
-              id: session.user.id,
-              email: session.user.email!,
-              role: (profile?.role as UserRole) || 'employee',
-              full_name: profile?.full_name || session.user.user_metadata?.full_name || '',
-              phone: profile?.phone || undefined,
-            })
-            setLoading(false)
-          })
-      } else {
+    let mounted = true
+
+    const syncSession = async (session: Session | null) => {
+      if (!mounted) {
+        return
+      }
+
+      if (!session?.user) {
         setUser(null)
         setLoading(false)
+        return
       }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .maybeSingle()
+
+      if (!mounted) {
+        return
+      }
+
+      setUser(toAuthUser(session.user, profile))
+      setLoading(false)
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      void syncSession(session)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile }) => {
-            setUser({
-              id: session.user.id,
-              email: session.user.email!,
-              role: (profile?.role as UserRole) || 'employee',
-              full_name: profile?.full_name || session.user.user_metadata?.full_name || '',
-              phone: profile?.phone || undefined,
-            })
-          })
-      } else {
-        setUser(null)
-      }
+      void syncSession(session)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   return (

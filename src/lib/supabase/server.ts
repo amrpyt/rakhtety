@@ -1,26 +1,28 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
+import { createServerClient as createSupabaseServerClient } from '@supabase/ssr'
 import { databaseConfig } from '@/config/database.config'
 
-export function createServerClient(): SupabaseClient {
-  return createClient(
+export function createServerClient() {
+  const cookieStore = cookies()
+
+  return createSupabaseServerClient(
     databaseConfig.supabaseUrl,
-    databaseConfig.supabaseServiceRoleKey,
+    databaseConfig.supabaseAnonKey,
     {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              ;(cookieStore as any).set(name, value, options)
+            })
+          } catch {
+            // Server components cannot always write cookies.
+          }
+        },
       },
     }
   )
 }
-
-export function createServerClientWithSession(accessToken: string): SupabaseClient {
-  const client = createServerClient()
-  client.auth.setSession({
-    access_token: accessToken,
-    refresh_token: '',
-  })
-  return client
-}
-
-export { SupabaseClient }

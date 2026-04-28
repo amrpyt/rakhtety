@@ -62,7 +62,7 @@ planning via $gsd-plan-phase --reviews.
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/review.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/review.md
 </execution_context>
 
 <context>
@@ -79,5 +79,5 @@ Phase number: extracted from {{GSD_ARGS}} (required)
 </context>
 
 <process>
-Execute the review workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/review.md end-to-end.
+Execute the review workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/review.md end-to-end.
 </process>

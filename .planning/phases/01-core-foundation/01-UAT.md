@@ -155,3 +155,10 @@ blocked: 11
 | # | Gap | Severity | Fix Applied |
 |---|-----|----------|-------------|
 | 1 | LoginForm had browser native validation overriding Arabic React validation | High | Added `noValidate` to form element — browser was blocking submission before React validation ran |
+## 2026-04-28 Browser Auth Check
+
+Tested with browser-use against the live app after wiring Supabase SSR cookies and fixing the signup API.
+
+- `POST /api/auth/signup` with a fresh test user passed and created the `profiles` row.
+- `/dashboard` stayed on the protected route after injecting a valid Supabase session cookie.
+- The dashboard shell loaded, but the browser-use session did not show the client-side user name, so that part is still not fully proven in this tool.

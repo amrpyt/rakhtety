@@ -5,7 +5,7 @@ Use after $gsd-execute-phase to verify that the evaluation strategy from AI-SPEC
 </purpose>
 
 <required_reading>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/ai-evals.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/ai-evals.md
 </required_reading>
 
 <process>
@@ -78,7 +78,7 @@ Build file list for auditor:
 Build prompt:
 
 ```markdown
-Read /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/agents/gsd-eval-auditor.md for instructions.
+Read D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/agents/gsd-eval-auditor.md for instructions.
 
 <objective>
 Conduct evaluation coverage audit of Phase {phase_number}: {phase_name}

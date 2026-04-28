@@ -116,7 +116,11 @@ export default function ClientDetailPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--color-text-muted)]">تصريح الحفر</span>
-                <Badge variant={excavationPermit?.status === 'completed' ? 'completed' : excavationPermit ? 'in_progress' : 'pending'} disabled={!deviceLicenseCompleted}>
+                <Badge
+                  variant={excavationPermit?.status === 'completed' ? 'completed' : excavationPermit ? 'in_progress' : 'pending'}
+                  aria-disabled={!deviceLicenseCompleted}
+                  className={!deviceLicenseCompleted ? 'opacity-60' : ''}
+                >
                   {!deviceLicenseCompleted ? 'مقفل' : excavationPermit?.status === 'completed' ? 'مكتمل' : excavationPermit ? 'جاري' : 'لم يبدآ'}
                 </Badge>
               </div>

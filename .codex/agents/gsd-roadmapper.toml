@@ -365,11 +365,11 @@ This annotation is consumed by downstream workflows (`new-project`, `progress`) 
 | 2. Name | 0/2 | Not started | - |
 ```
 
-Reference full template: `/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/roadmap.md`
+Reference full template: `D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/roadmap.md`
 
 ## STATE.md Structure
 
-Use template from `/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/state.md`.
+Use template from `D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/state.md`.
 
 Key sections:
 - Project Reference (core value, current focus)

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/auth/useAuth'
 import { Button } from '@/components/ui/Button'
 import { FormGroup, Label, Input } from '@/components/ui/Form'
@@ -13,7 +13,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
-  const router = useRouter()
+  const searchParams = useSearchParams()
   const { login, loading, error, resetError } = useAuth()
   const [credentials, setCredentials] = useState<LoginCredentials>({ email: '', password: '' })
   const [validationErrors, setValidationErrors] = useState<Partial<LoginCredentials>>({})
@@ -44,7 +44,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     if (!validate()) return
 
     try {
-      await login(credentials)
+      const redirectTo = searchParams.get('redirect')
+      await login(credentials, redirectTo && redirectTo.startsWith('/') ? redirectTo : '/dashboard')
       onSuccess?.()
     } catch {
       // Error is handled by useAuth

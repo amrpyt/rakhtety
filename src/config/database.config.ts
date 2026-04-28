@@ -18,9 +18,9 @@ export const databaseConfig: DatabaseConfig = {
   },
 
   get supabaseAnonKey() {
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     if (!key) {
-      throw new Error('NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable is required')
+      throw new Error('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable is required')
     }
     return key
   },

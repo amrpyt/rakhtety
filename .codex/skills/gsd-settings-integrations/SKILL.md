@@ -70,12 +70,12 @@ not pipeline shape.
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/settings-integrations.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/settings-integrations.md
 </execution_context>
 
 <process>
 **Follow the settings-integrations workflow** from
-`@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/settings-integrations.md`.
+`@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/settings-integrations.md`.
 
 The workflow handles:
 1. Resolving `$GSD_CONFIG_PATH` (flat vs workstream)

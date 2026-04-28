@@ -8,6 +8,7 @@ export type StepStatus = 'pending' | 'in_progress' | 'completed' | 'blocked'
 
 export interface Profile {
   id: string
+  email: string | null
   role: UserRole
   full_name: string
   email: string | null
@@ -82,6 +83,7 @@ export interface ClientWithWorkflows extends Client {
 
 export interface ProfileFilter {
   id?: string
+  email?: string
   role?: UserRole
 }
 

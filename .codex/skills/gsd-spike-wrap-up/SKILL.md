@@ -60,8 +60,8 @@ project history. Output skill goes to `./.codex/skills/spike-findings-[project]/
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/spike-wrap-up.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/ui-brand.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/spike-wrap-up.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/ui-brand.md
 </execution_context>
 
 <runtime_note>
@@ -69,6 +69,6 @@ project history. Output skill goes to `./.codex/skills/spike-findings-[project]/
 </runtime_note>
 
 <process>
-Execute the spike-wrap-up workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/spike-wrap-up.md end-to-end.
+Execute the spike-wrap-up workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/spike-wrap-up.md end-to-end.
 Preserve all workflow gates (auto-include, feature-area grouping, skill synthesis, AGENTS.md routing line, intelligent next-step routing).
 </process>

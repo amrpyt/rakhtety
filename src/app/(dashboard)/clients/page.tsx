@@ -54,7 +54,7 @@ export default function ClientsPage() {
         <SearchBar
           placeholder="بحث عن عميل..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onSearch={setSearchQuery}
           onDebouncedSearch={(q) => setSearchQuery(q)}
           className="flex-1 max-w-md"
         />

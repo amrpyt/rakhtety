@@ -12,6 +12,7 @@ export interface IProfileRepository {
 
 export interface CreateProfileData {
   id: string
+  email: string
   full_name: string
   role: UserRole
   email?: string
@@ -19,6 +20,7 @@ export interface CreateProfileData {
 }
 
 export interface UpdateProfileData {
+  email?: string
   full_name?: string
   role?: UserRole
   email?: string
@@ -90,6 +92,10 @@ export class ProfileRepository implements IProfileRepository {
 
   async findAll(filter?: ProfileFilter): Promise<Profile[]> {
     let query = supabase.from(this.table).select('*')
+
+    if (filter?.email) {
+      query = query.eq('email', filter.email)
+    }
 
     if (filter?.role) {
       query = query.eq('role', filter.role)
