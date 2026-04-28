@@ -28,6 +28,9 @@ export interface Client {
   created_by: string | null
   created_at: string
   updated_at: string
+  area?: string | null
+  plot_number?: string | null
+  notes?: string | null
 }
 
 export interface Workflow {

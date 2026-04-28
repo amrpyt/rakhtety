@@ -30,15 +30,15 @@ export function ClientTable({ clients, onRowClick }: ClientTableProps) {
               <div className="font-medium">{client.name}</div>
             </TableCell>
             <TableCell>
-              <span dir="ltr">{client.phone || '-'}</span>
+              <span dir="ltr">{client.phone || '—'}</span>
             </TableCell>
-            <TableCell>{client.city || '-'}</TableCell>
-            <TableCell>{client.neighborhood || '-'}</TableCell>
+            <TableCell>{client.city || client.area || '—'}</TableCell>
+            <TableCell>{client.neighborhood || '—'}</TableCell>
             <TableCell>
-              {client.parcel_number ? (
-                <Badge variant="default">{client.parcel_number}</Badge>
+              {client.parcel_number || client.plot_number ? (
+                <Badge variant="default">{client.parcel_number || client.plot_number}</Badge>
               ) : (
-                '-'
+                '—'
               )}
             </TableCell>
             <TableCell>
