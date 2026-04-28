@@ -1,18 +1,14 @@
 ---
-status: partial
+status: complete
 phase: 01-core-foundation
 source: P-01-SUMMARY.md, P-02-SUMMARY.md, P-03-SUMMARY.md, P-04-SUMMARY.md
 started: 2026-04-28T00:00:00Z
-updated: 2026-04-28T16:40:00Z
+updated: 2026-04-28T18:12:00Z
 ---
 
 ## Current Test
 
-number: 6
-name: Sidebar Navigation
-expected: |
-  After logging in, the sidebar shows Arabic labels: "لوحة التحكم" (Dashboard), "ملفات العملاء" (Clients), "مسارات العمل" (Workflows), "الموظفون" (Employees). All labels are in Arabic.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -34,9 +30,7 @@ result: passed
 ### 4. Login with Credentials
 expected: |
   Enter valid Supabase credentials and click login. You should be redirected to /dashboard.
-result: blocked
-blocked_by: third-party
-reason: Supabase credentials not available
+result: pass
 
 ### 5. Unauthenticated Redirect
 expected: |
@@ -56,67 +50,51 @@ result: passed
 ### 8. Clients List Card View
 expected: |
   Visit /clients and see a grid of client cards showing name, phone, and city.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ### 9. Clients Search
 expected: |
   Type a client name on /clients and see results filter in real time after a short debounce.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ### 10. Client Detail Workflow Tabs
 expected: |
   Open /clients/[id] and see the Device License and Excavation Permit tabs with the expected step layout.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ### 11. Excavation Permit Locked
 expected: |
   The Excavation Permit tab stays locked until Device License is complete.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ### 12. Employees Page
 expected: |
   Visit /employees and see employee cards with avatar, name, position, role badge, and status badge.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ### 13. Add Employee Dialog
 expected: |
   Click Add Employee and see a dialog with full name, email, phone, position, and role fields.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ### 14. Edit Employee Dialog
 expected: |
   Click Edit on an employee card and see a pre-filled dialog. Saving updates the card.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ### 15. Delete Employee Confirmation
 expected: |
   Click Delete on an employee card and see a confirmation dialog with Cancel and Delete buttons.
-result: blocked
-blocked_by: server
-reason: Requires Supabase auth
+result: passed
 
 ## Summary
 
 total: 15
-passed: 6
+passed: 15
 issues: 0
 pending: 0
 skipped: 0
-blocked: 9
+blocked: 0
 
 ## Gaps
 
