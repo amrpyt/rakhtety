@@ -83,3 +83,73 @@ body {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+.auth-page {
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.auth-shell {
+  display: grid;
+  min-height: 100vh;
+}
+
+.auth-overview {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  padding: 2.5rem;
+}
+
+.auth-main {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+.auth-card-shell {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-mobile-brand {
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.auth-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-2);
+  padding: 1.5rem;
+  box-shadow: 0 20px 60px rgba(40, 37, 29, 0.1);
+}
+
+@media (min-width: 768px) {
+  .auth-shell {
+    grid-template-columns: minmax(0, 0.92fr) minmax(420px, 0.58fr);
+  }
+
+  .auth-overview {
+    display: flex;
+  }
+
+  .auth-mobile-brand {
+    display: none;
+  }
+
+  .auth-main {
+    padding: 2rem;
+  }
+
+  .auth-card {
+    padding: 2rem;
+  }
+}

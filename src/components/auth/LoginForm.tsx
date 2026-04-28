@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import React, { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/auth/useAuth'
@@ -48,7 +49,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       await login(credentials, redirectTo && redirectTo.startsWith('/') ? redirectTo : '/dashboard')
       onSuccess?.()
     } catch {
-      // Error is handled by useAuth
+      // useAuth owns the visible error message.
     }
   }
 
@@ -62,46 +63,75 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+      <div>
+        <div className="mb-3 inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-light)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
+          دخول الموظفين
+        </div>
+        <h2 className="text-2xl font-bold leading-tight text-[var(--color-text)]">مرحباً بك من جديد</h2>
+        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          سجل الدخول لإدارة العملاء، المسارات، والمهام اليومية من مكان واحد.
+        </p>
+      </div>
+
       {error && (
         <Alert variant="error" title="خطأ في تسجيل الدخول">
           {error}
         </Alert>
       )}
 
-      <FormGroup>
-        <Label htmlFor="email">البريد الإلكتروني</Label>
-        <Input
-          id="email"
-          type="email"
-          value={credentials.email}
-          onChange={handleChange('email')}
-          placeholder="example@domain.com"
-          error={validationErrors.email}
-          required
-          dir="ltr"
-          autoComplete="email"
-        />
-      </FormGroup>
+      <div className="space-y-4">
+        <FormGroup>
+          <Label htmlFor="email" className="text-[var(--color-text)]">
+            البريد الإلكتروني
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            value={credentials.email}
+            onChange={handleChange('email')}
+            placeholder="example@domain.com"
+            error={validationErrors.email}
+            required
+            dir="ltr"
+            autoComplete="email"
+            className="h-12 bg-white text-left"
+          />
+        </FormGroup>
 
-      <FormGroup>
-        <Label htmlFor="password">كلمة المرور</Label>
-        <Input
-          id="password"
-          type="password"
-          value={credentials.password}
-          onChange={handleChange('password')}
-          placeholder="••••••••"
-          error={validationErrors.password}
-          required
-          dir="ltr"
-          autoComplete="current-password"
-        />
-      </FormGroup>
+        <FormGroup>
+          <div className="flex items-center justify-between gap-3">
+            <Label htmlFor="password" className="text-[var(--color-text)]">
+              كلمة المرور
+            </Label>
+            <span className="text-xs font-medium text-[var(--color-text-muted)]">6 أحرف على الأقل</span>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            value={credentials.password}
+            onChange={handleChange('password')}
+            placeholder="••••••••"
+            error={validationErrors.password}
+            required
+            dir="ltr"
+            autoComplete="current-password"
+            className="h-12 bg-white text-left"
+          />
+        </FormGroup>
+      </div>
 
-      <Button type="submit" className="w-full justify-center" disabled={loading}>
-        {loading ? 'جارٍ التحميل...' : 'دخول'}
+      <Button type="submit" className="h-12 w-full justify-center text-base" disabled={loading} loading={loading}>
+        {loading ? 'جاري الدخول...' : 'دخول إلى النظام'}
       </Button>
+
+      <div className="flex flex-col gap-3 border-t border-[var(--color-border)] pt-5 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-[var(--color-text-muted)]">ليس لديك حساب؟</span>
+        <Link href="/signup" className="font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]">
+          إنشاء حساب جديد
+        </Link>
+      </div>
     </form>
   )
 }
