@@ -61,7 +61,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
       {error && (
         <Alert variant="error" title="خطأ في تسجيل الدخول">
           {error}
