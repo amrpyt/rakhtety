@@ -93,7 +93,7 @@ export default function EmployeeDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-[var(--color-text-muted)] mb-1">البريد الإلكتروني</p>
-                <p dir="ltr">{employee.profile.phone || '-'}</p>
+                <p dir="ltr">{employee.profile.email || '-'}</p>
               </div>
               <div>
                 <p className="text-xs text-[var(--color-text-muted)] mb-1">الهاتف</p>

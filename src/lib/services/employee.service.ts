@@ -67,6 +67,7 @@ export class EmployeeService {
     const { error: profileError } = await supabase.from('profiles').insert({
       id: authData.user.id,
       full_name: data.full_name,
+      email: data.email,
       phone: data.phone,
       role: data.role,
     })

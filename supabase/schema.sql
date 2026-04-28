@@ -6,6 +6,7 @@ CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   role TEXT NOT NULL CHECK (role IN ('admin', 'employee', 'manager')) DEFAULT 'employee',
   full_name TEXT NOT NULL,
+  email TEXT UNIQUE,
   phone TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
