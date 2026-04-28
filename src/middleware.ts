@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@lib/supabase/server'
+import { createServerClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database.types'
 
 const PUBLIC_ROUTES = ['/login', '/signup', '/api/auth']

@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
 import type { Profile, ProfileFilter, UserRole } from '@/types/database.types'
-import { NotFoundError } from '@/lib/errors/app-error.class'
 
 export interface IProfileRepository {
   findById(id: string): Promise<Profile | null>
@@ -15,12 +14,14 @@ export interface CreateProfileData {
   id: string
   full_name: string
   role: UserRole
+  email?: string
   phone?: string
 }
 
 export interface UpdateProfileData {
   full_name?: string
   role?: UserRole
+  email?: string
   phone?: string
 }
 
