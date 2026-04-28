@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رخصتي — نظام إدارة تراخيص المكاتب الهندسية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300..900&family=Cairo+Play:wght@300..700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS — Nexus + Arabic-friendly
+═══════════════════════════════════════════ */
+:root, [data-theme="light"] {
+  --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+  --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+  --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+  --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+  --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+
+  --space-1:0.25rem;--space-2:0.5rem;--space-3:0.75rem;--space-4:1rem;
+  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
+  --space-12:3rem;--space-16:4rem;
+
+  --color-bg:             #f7f6f2;
+  --color-surface:        #f9f8f5;
+  --color-surface-2:      #fbfbf9;
+  --color-surface-offset: #f0ede8;
+  --color-divider:        #dcd9d5;
+  --color-border:         #d4d1ca;
+  --color-text:           #28251d;
+  --color-text-muted:     #6b6860;
+  --color-text-faint:     #b0aea9;
+  --color-primary:        #01696f;
+  --color-primary-hover:  #0c4e54;
+  --color-primary-light:  #e8f4f4;
+  --color-success:        #437a22;
+  --color-success-light:  #eaf3e3;
+  --color-warning:        #964219;
+  --color-warning-light:  #fdf0e8;
+  --color-error:          #b91c1c;
+  --color-error-light:    #fef2f2;
+  --color-gold:           #b45309;
+  --color-gold-light:     #fffbeb;
+  --color-blue:           #1d4ed8;
+  --color-blue-light:     #eff6ff;
+  --color-purple:         #7c3aed;
+  --color-purple-light:   #f5f3ff;
+
+  --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;
+  --radius-xl:1rem;--radius-2xl:1.25rem;--radius-full:9999px;
+  --shadow-sm:0 1px 3px oklch(0.2 0.01 80/0.08);
+  --shadow-md:0 4px 12px oklch(0.2 0.01 80/0.10);
+  --shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.14);
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
+
+  --sidebar-w: 260px;
+  --font-body: 'Cairo', 'Segoe UI', sans-serif;
+}
+[data-theme="dark"] {
+  --color-bg:#131211;--color-surface:#1a1917;--color-surface-2:#1f1e1c;
+  --color-surface-offset:#232220;--color-divider:#2c2b29;--color-border:#3a3937;
+  --color-text:#d0cec9;--color-text-muted:#7a7874;--color-text-faint:#4e4d4b;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-light:#1e3133;
+  --color-success:#6daa45;--color-success-light:#1e2d18;
+  --color-warning:#bb653b;--color-warning-light:#2e1e12;
+  --color-error:#f87171;--color-error-light:#2d1414;
+  --color-gold:#fcd34d;--color-gold-light:#2a2010;
+  --color-blue:#60a5fa;--color-blue-light:#0f1f3a;
+  --color-purple:#a78bfa;--color-purple-light:#1e1433;
+  --shadow-sm:0 1px 3px oklch(0/0.25);--shadow-md:0 4px 12px oklch(0/0.35);
+  --shadow-lg:0 12px 32px oklch(0/0.45);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){
+  --color-bg:#131211;--color-surface:#1a1917;--color-surface-2:#1f1e1c;
+  --color-surface-offset:#232220;--color-divider:#2c2b29;--color-border:#3a3937;
+  --color-text:#d0cec9;--color-text-muted:#7a7874;--color-text-faint:#4e4d4b;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-light:#1e3133;
+  --color-success:#6daa45;--color-success-light:#1e2d18;
+  --color-warning:#bb653b;--color-warning-light:#2e1e12;
+  --color-error:#f87171;--color-error-light:#2d1414;
+  --color-gold:#fcd34d;--color-gold-light:#2a2010;
+  --color-blue:#60a5fa;--color-blue-light:#0f1f3a;
+  --color-purple:#a78bfa;--color-purple-light:#1e1433;
+}}
+
+/* ═══════════════════════════════════════════
+   BASE RESET
+═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth;}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-bg);line-height:1.6;overflow-x:hidden;}
+img{display:block;max-width:100%;height:auto;}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+input,select,textarea{font:inherit;color:inherit;}
+a{color:inherit;text-decoration:none;}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm);}
+
+/* ═══════════════════════════════════════════
+   LAYOUT: SIDEBAR + MAIN
+═══════════════════════════════════════════ */
+.app-shell{display:flex;min-height:100dvh;}
+
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--color-surface);
+  border-left:1px solid var(--color-divider);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100dvh;overflow-y:auto;
+  transition:width var(--transition);
+  z-index:100;
+}
+.sidebar-logo{
+  padding:var(--space-5) var(--space-5) var(--space-4);
+  display:flex;align-items:center;gap:var(--space-3);
+  border-bottom:1px solid var(--color-divider);
+}
+.logo-icon{
+  width:36px;height:36px;border-radius:var(--radius-md);
+  background:var(--color-primary);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.logo-icon svg{color:#fff;width:18px;height:18px;}
+.logo-text{font-size:var(--text-base);font-weight:800;letter-spacing:-0.01em;color:var(--color-text);}
+.logo-sub{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:400;}
+
+.sidebar-nav{flex:1;padding:var(--space-4) var(--space-3);}
+.nav-section-label{
+  font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;
+  color:var(--color-text-faint);padding:var(--space-4) var(--space-3) var(--space-2);
+}
+.nav-item{
+  display:flex;align-items:center;gap:var(--space-3);
+  padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);
+  font-size:var(--text-sm);font-weight:500;color:var(--color-text-muted);
+  transition:all var(--transition);cursor:pointer;
+  position:relative;
+}
+.nav-item:hover{background:var(--color-surface-offset);color:var(--color-text);}
+.nav-item.active{background:var(--color-primary-light);color:var(--color-primary);font-weight:600;}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;}
+.nav-badge{
+  margin-right:auto;font-size:10px;font-weight:700;
+  background:var(--color-error);color:#fff;
+  border-radius:var(--radius-full);padding:1px 6px;min-width:18px;text-align:center;
+}
+
+.sidebar-footer{
+  padding:var(--space-4) var(--space-3);
+  border-top:1px solid var(--color-divider);
+  display:flex;align-items:center;gap:var(--space-3);
+}
+.avatar{
+  width:34px;height:34px;border-radius:var(--radius-full);
+  background:var(--color-primary);display:flex;align-items:center;justify-content:center;
+  font-size:var(--text-xs);font-weight:700;color:#fff;flex-shrink:0;
+}
+.user-info{flex:1;}
+.user-name{font-size:var(--text-xs);font-weight:600;}
+.user-role{font-size:10px;color:var(--color-text-muted);}
+
+/* MAIN AREA */
+.main-content{flex:1;display:flex;flex-direction:column;min-width:0;}
+.top-bar{
+  height:56px;background:var(--color-surface);
+  border-bottom:1px solid var(--color-divider);
+  display:flex;align-items:center;padding:0 var(--space-6);
+  gap:var(--space-4);position:sticky;top:0;z-index:50;
+}
+.top-bar-title{font-size:var(--text-base);font-weight:700;flex:1;}
+.top-bar-actions{display:flex;align-items:center;gap:var(--space-2);}
+
+.page-content{flex:1;padding:var(--space-6);max-width:1300px;width:100%;}
+
+/* ═══════════════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════════════ */
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:var(--space-2);
+  padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);
+  font-size:var(--text-sm);font-weight:600;transition:all var(--transition);
+  white-space:nowrap;
+}
+.btn-primary{background:var(--color-primary);color:#fff;}
+.btn-primary:hover{background:var(--color-primary-hover);}
+.btn-secondary{background:var(--color-surface-offset);color:var(--color-text);border:1px solid var(--color-border);}
+.btn-secondary:hover{background:var(--color-divider);}
+.btn-ghost{color:var(--color-text-muted);}
+.btn-ghost:hover{background:var(--color-surface-offset);color:var(--color-text);}
+.btn-danger{background:var(--color-error-light);color:var(--color-error);}
+.btn-danger:hover{background:var(--color-error);color:#fff;}
+.btn-sm{padding:var(--space-1) var(--space-3);font-size:var(--text-xs);}
+.btn svg{width:14px;height:14px;}
+.btn-icon{width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);}
+
+/* CARDS */
+.card{
+  background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-xl);padding:var(--space-5);
+  box-shadow:var(--shadow-sm);
+}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);}
+.card-title{font-size:var(--text-base);font-weight:700;}
+.card-subtitle{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-4);margin-bottom:var(--space-6);}
+.kpi-card{
+  background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-xl);padding:var(--space-4) var(--space-5);
+  box-shadow:var(--shadow-sm);
+}
+.kpi-icon{
+  width:38px;height:38px;border-radius:var(--radius-lg);
+  display:flex;align-items:center;justify-content:center;margin-bottom:var(--space-3);
+}
+.kpi-icon svg{width:18px;height:18px;}
+.kpi-value{font-size:clamp(1.5rem,2.5vw,2rem);font-weight:800;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;}
+.kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
+.kpi-delta{font-size:var(--text-xs);font-weight:600;display:inline-flex;align-items:center;gap:2px;margin-top:var(--space-1);}
+.kpi-delta.up{color:var(--color-success);}
+.kpi-delta.down{color:var(--color-error);}
+
+/* BADGES / CHIPS */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px var(--space-2);border-radius:var(--radius-full);
+  font-size:10px;font-weight:700;white-space:nowrap;
+}
+.badge-success{background:var(--color-success-light);color:var(--color-success);}
+.badge-warning{background:var(--color-warning-light);color:var(--color-warning);}
+.badge-error{background:var(--color-error-light);color:var(--color-error);}
+.badge-primary{background:var(--color-primary-light);color:var(--color-primary);}
+.badge-blue{background:var(--color-blue-light);color:var(--color-blue);}
+.badge-gold{background:var(--color-gold-light);color:var(--color-gold);}
+.badge-purple{background:var(--color-purple-light);color:var(--color-purple);}
+.badge-default{background:var(--color-surface-offset);color:var(--color-text-muted);}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* TABLES */
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--color-border);}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--color-surface-offset);}
+th{
+  padding:var(--space-3) var(--space-4);text-align:right;
+  font-size:var(--text-xs);font-weight:700;color:var(--color-text-muted);
+  text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;
+  border-bottom:1px solid var(--color-divider);
+}
+td{
+  padding:var(--space-3) var(--space-4);font-size:var(--text-sm);
+  border-bottom:1px solid var(--color-divider);vertical-align:middle;
+}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--color-surface-offset);}
+.td-actions{display:flex;align-items:center;gap:var(--space-1);}
+
+/* SEARCH BAR */
+.search-bar{
+  display:flex;align-items:center;gap:var(--space-2);
+  background:var(--color-surface-offset);border:1px solid var(--color-border);
+  border-radius:var(--radius-md);padding:var(--space-2) var(--space-3);
+  min-width:260px;
+}
+.search-bar svg{width:14px;height:14px;color:var(--color-text-faint);flex-shrink:0;}
+.search-bar input{border:none;background:transparent;outline:none;flex:1;font-size:var(--text-sm);}
+.search-bar input::placeholder{color:var(--color-text-faint);}
+
+/* FORM ELEMENTS */
+.form-group{display:flex;flex-direction:column;gap:var(--space-1);}
+.form-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);}
+.form-label .required{color:var(--color-error);margin-right:2px;}
+.form-input{
+  padding:var(--space-2) var(--space-3);
+  border:1.5px solid var(--color-border);border-radius:var(--radius-md);
+  background:var(--color-surface);font-size:var(--text-sm);
+  transition:border-color var(--transition),box-shadow var(--transition);outline:none;
+}
+.form-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px oklch(from var(--color-primary) l c h/0.12);}
+.form-select{
+  padding:var(--space-2) var(--space-3);
+  border:1.5px solid var(--color-border);border-radius:var(--radius-md);
+  background:var(--color-surface);font-size:var(--text-sm);outline:none;
+  cursor:pointer;
+}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-4);}
+
+/* UPLOAD ZONE */
+.upload-list{display:flex;flex-direction:column;gap:var(--space-2);}
+.upload-item{
+  display:flex;align-items:center;gap:var(--space-3);
+  padding:var(--space-3) var(--space-4);
+  border:1.5px dashed var(--color-border);border-radius:var(--radius-lg);
+  background:var(--color-surface-offset);cursor:pointer;
+  transition:all var(--transition);
+}
+.upload-item:hover{border-color:var(--color-primary);background:var(--color-primary-light);}
+.upload-item.uploaded{border-style:solid;border-color:var(--color-success);background:var(--color-success-light);}
+.upload-item.required-missing{border-color:var(--color-error);background:var(--color-error-light);}
+.upload-icon{width:32px;height:32px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.upload-icon svg{width:16px;height:16px;}
+.upload-info{flex:1;}
+.upload-name{font-size:var(--text-xs);font-weight:600;}
+.upload-hint{font-size:10px;color:var(--color-text-muted);}
+.upload-check{color:var(--color-success);}
+.upload-check svg{width:16px;height:16px;}
+
+/* WORKFLOW STEPPER */
+.workflow-track{display:flex;flex-direction:column;gap:0;}
+.workflow-step{
+  display:flex;gap:var(--space-4);align-items:flex-start;
+  padding:var(--space-3) 0;position:relative;
+}
+.workflow-step:not(:last-child)::after{
+  content:'';position:absolute;right:calc(var(--space-4) + 11px);top:calc(var(--space-3) + 24px);
+  width:2px;height:calc(100% - var(--space-3));
+  background:var(--color-divider);
+}
+.workflow-step.done::after{background:var(--color-success);}
+.step-circle{
+  width:24px;height:24px;border-radius:50%;border:2px solid var(--color-border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:var(--color-surface);z-index:1;margin-top:2px;
+}
+.step-circle svg{width:12px;height:12px;}
+.workflow-step.done .step-circle{background:var(--color-success);border-color:var(--color-success);color:#fff;}
+.workflow-step.active .step-circle{background:var(--color-primary);border-color:var(--color-primary);color:#fff;}
+.workflow-step.pending .step-circle{background:var(--color-surface-offset);border-color:var(--color-border);}
+.step-body{flex:1;}
+.step-title{font-size:var(--text-sm);font-weight:600;}
+.step-meta{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
+.step-financials{
+  display:flex;gap:var(--space-3);margin-top:var(--space-2);
+  padding:var(--space-2) var(--space-3);
+  background:var(--color-surface-offset);border-radius:var(--radius-md);
+}
+.step-fin-item{font-size:10px;}
+.step-fin-label{color:var(--color-text-muted);font-weight:600;}
+.step-fin-value{font-weight:700;font-variant-numeric:tabular-nums;}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:oklch(0 0 0/0.5);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;padding:var(--space-4);
+  opacity:0;pointer-events:none;transition:opacity var(--transition);
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--color-surface);border-radius:var(--radius-2xl);
+  box-shadow:var(--shadow-lg);width:100%;max-width:640px;
+  max-height:90dvh;overflow-y:auto;
+  transform:translateY(20px);transition:transform var(--transition);
+}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{
+  padding:var(--space-5) var(--space-6);
+  border-bottom:1px solid var(--color-divider);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--color-surface);z-index:1;
+}
+.modal-title{font-size:var(--text-lg);font-weight:800;}
+.modal-body{padding:var(--space-5) var(--space-6);}
+.modal-footer{
+  padding:var(--space-4) var(--space-6);
+  border-top:1px solid var(--color-divider);
+  display:flex;justify-content:flex-end;gap:var(--space-3);
+}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--color-divider);margin-bottom:var(--space-5);}
+.tab{
+  padding:var(--space-3) var(--space-4);font-size:var(--text-sm);font-weight:500;
+  color:var(--color-text-muted);border-bottom:2px solid transparent;
+  transition:all var(--transition);cursor:pointer;margin-bottom:-1px;
+}
+.tab.active{color:var(--color-primary);border-bottom-color:var(--color-primary);font-weight:600;}
+.tab:hover:not(.active){color:var(--color-text);border-bottom-color:var(--color-divider);}
+
+/* PROGRESS BAR */
+.progress-bar{height:6px;background:var(--color-surface-offset);border-radius:var(--radius-full);overflow:hidden;}
+.progress-fill{height:100%;background:var(--color-primary);border-radius:var(--radius-full);transition:width 0.5s ease;}
+
+/* ALERT */
+.alert{display:flex;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);}
+.alert-error{background:var(--color-error-light);color:var(--color-error);}
+.alert-warning{background:var(--color-warning-light);color:var(--color-warning);}
+.alert-success{background:var(--color-success-light);color:var(--color-success);}
+.alert svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;}
+.alert-text{font-size:var(--text-xs);font-weight:500;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--color-divider);margin:var(--space-4) 0;}
+
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--space-16) var(--space-8);}
+.empty-icon{width:52px;height:52px;color:var(--color-text-faint);margin-bottom:var(--space-4);}
+.empty-icon svg{width:52px;height:52px;}
+.empty-title{font-size:var(--text-base);font-weight:700;margin-bottom:var(--space-2);}
+.empty-desc{font-size:var(--text-sm);color:var(--color-text-muted);max-width:32ch;margin-bottom:var(--space-5);}
+
+/* REPORT PRINT PREVIEW */
+.report-card{
+  background:#fff;color:#1a1a1a;border:1px solid #e0e0e0;
+  border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-md);
+}
+.report-header-band{background:#01696f;color:#fff;padding:var(--space-5) var(--space-6);}
+.report-header-band h2{font-size:var(--text-lg);font-weight:800;}
+.report-header-band p{font-size:var(--text-xs);opacity:0.8;margin-top:2px;}
+.report-body{padding:var(--space-5) var(--space-6);}
+.report-step-list{display:flex;flex-direction:column;gap:var(--space-2);}
+.report-step{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) 0;border-bottom:1px dashed #e0e0e0;}
+.report-step:last-child{border-bottom:none;}
+.report-step .check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;}
+.report-step .check.done{background:#dcfce7;color:#166534;}
+.report-step .check.pending{background:#f3f4f6;color:#9ca3af;}
+.report-step-name{flex:1;font-size:12px;font-weight:500;}
+.report-step-status{font-size:10px;font-weight:700;}
+.report-totals{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:var(--space-4);padding:var(--space-4);background:#f7f7f5;border-radius:var(--radius-md);}
+.report-total-item .label{font-size:10px;color:#666;font-weight:600;text-transform:uppercase;}
+.report-total-item .value{font-size:var(--text-lg);font-weight:800;font-variant-numeric:tabular-nums;}
+.report-total-item.highlight .value{color:#01696f;}
+
+/* THEME TOGGLE */
+.theme-toggle{
+  width:32px;height:32px;border-radius:var(--radius-md);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--color-text-muted);transition:all var(--transition);
+}
+.theme-toggle:hover{background:var(--color-surface-offset);color:var(--color-text);}
+.theme-toggle svg{width:16px;height:16px;}
+
+/* NOTIFICATION DOT */
+.notif-btn{position:relative;}
+.notif-dot{
+  position:absolute;top:4px;right:4px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--color-error);border:2px solid var(--color-surface);
+}
+
+/* SECTION TITLE */
+.section-title{font-size:var(--text-lg);font-weight:800;margin-bottom:var(--space-4);}
+.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);}
+
+/* GRID LAYOUTS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5);}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4);}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}.three-col{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.three-col{grid-template-columns:1fr;}.sidebar{display:none;}.kpi-grid{grid-template-columns:1fr 1fr;}}
+
+/* PAGE VIEWS */
+.page-view{display:none;}
+.page-view.active{display:block;}
+
+/* FILTER ROW */
+.filter-row{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-4);}
+
+/* TAG */
+.tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);
+  font-size:10px;font-weight:600;background:var(--color-surface-offset);
+  color:var(--color-text-muted);border:1px solid var(--color-border);
+}
+
+/* TOOLTIP */
+[data-tip]{position:relative;}
+[data-tip]:hover::after{
+  content:attr(data-tip);
+  position:absolute;bottom:calc(100% + 6px);right:50%;transform:translateX(50%);
+  background:var(--color-text);color:var(--color-bg);
+  font-size:10px;white-space:nowrap;padding:4px 8px;border-radius:var(--radius-sm);
+  pointer-events:none;z-index:999;
+}
+
+/* SKELETON */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton{
+  background:linear-gradient(90deg,var(--color-surface-offset) 25%,var(--color-divider) 50%,var(--color-surface-offset) 75%);
+  background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius-sm);
+}
+
+/* MINI CHART BAR */
+.mini-bars{display:flex;align-items:flex-end;gap:3px;height:32px;}
+.mini-bar{flex:1;background:var(--color-primary-light);border-radius:2px 2px 0 0;min-width:6px;transition:background var(--transition);}
+.mini-bar:hover{background:var(--color-primary);}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">رخصتي</div>
+      <div class="logo-sub">نظام إدارة التراخيص</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">الرئيسية</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <i data-lucide="layout-dashboard"></i> لوحة التحكم
+    </div>
+    <div class="nav-item" onclick="showPage('clients',this)">
+      <i data-lucide="users"></i> ملفات العملاء
+      <span class="nav-badge">12</span>
+    </div>
+    <div class="nav-item" onclick="showPage('workflow',this)">
+      <i data-lucide="git-branch"></i> مسارات العمل
+    </div>
+    <div class="nav-section-label">المالية</div>
+    <div class="nav-item" onclick="showPage('finance',this)">
+      <i data-lucide="banknote"></i> الإدارة المالية
+    </div>
+    <div class="nav-item" onclick="showPage('reports',this)">
+      <i data-lucide="file-text"></i> تقارير العملاء
+    </div>
+    <div class="nav-section-label">الإدارة</div>
+    <div class="nav-item" onclick="showPage('employees',this)">
+      <i data-lucide="user-check"></i> الموظفون
+    </div>
+    <div class="nav-item" onclick="showPage('settings',this)">
+      <i data-lucide="settings"></i> الإعدادات
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="avatar">أح</div>
+    <div class="user-info">
+      <div class="user-name">أحمد المهندس</div>
+      <div class="user-role">مدير المكتب</div>
+    </div>
+    <button class="theme-toggle" data-theme-toggle aria-label="تغيير المظهر">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<div class="main-content">
+
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <div class="top-bar-title" id="page-title">لوحة التحكم</div>
+    <div class="top-bar-actions">
+      <div class="search-bar" style="min-width:200px">
+        <i data-lucide="search"></i>
+        <input type="text" placeholder="بحث سريع..." id="global-search">
+      </div>
+      <button class="btn-icon btn-ghost notif-btn" data-tip="الإشعارات">
+        <i data-lucide="bell"></i>
+        <span class="notif-dot"></span>
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('add-client-modal')">
+        <i data-lucide="plus"></i> ملف جديد
+      </button>
+    </div>
+  </header>
+
+  <div style="padding:var(--space-6)">
+
+  <!-- ════════ PAGE: DASHBOARD ════════ -->
+  <div class="page-view active" id="page-dashboard">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-primary-light)">
+          <svg style="color:var(--color-primary)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="kpi-value">47</div>
+        <div class="kpi-label">إجمالي الملفات النشطة</div>
+        <div class="kpi-delta up">▲ +5 هذا الشهر</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-success-light)">
+          <svg style="color:var(--color-success)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div class="kpi-value">23</div>
+        <div class="kpi-label">تراخيص مكتملة (هذا الشهر)</div>
+        <div class="kpi-delta up">▲ +8 عن الشهر السابق</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-gold-light)">
+          <svg style="color:var(--color-gold)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="kpi-value">184K</div>
+        <div class="kpi-label">إجمالي الأتعاب المحصلة (ج.م)</div>
+        <div class="kpi-delta up">▲ +22% عن الشهر السابق</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-warning-light)">
+          <svg style="color:var(--color-warning)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="kpi-value">9</div>
+        <div class="kpi-label">ملفات متوقفة (Bottlenecks)</div>
+        <div class="kpi-delta down">▼ تحتاج تدخل فوري</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-error-light)">
+          <svg style="color:var(--color-error)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="kpi-value">67K</div>
+        <div class="kpi-label">إجمالي المديونية المتبقية (ج.م)</div>
+        <div class="kpi-delta down">▼ تحتاج تحصيل</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-blue-light)">
+          <svg style="color:var(--color-blue)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="kpi-value">5</div>
+        <div class="kpi-label">موظفون نشطون</div>
+        <div class="kpi-delta up">كفاءة عالية</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Bottlenecks -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">⚠️ الملفات المتوقفة (Bottlenecks)</div>
+            <div class="card-subtitle">ملفات تجاوزت 7 أيام في نفس الخطوة</div>
+          </div>
+          <button class="btn btn-secondary btn-sm">عرض الكل</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>العميل</th><th>الخطوة المتوقفة</th><th>المسؤول</th><th>منذ</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>محمد السيد</strong><div style="font-size:10px;color:var(--color-text-muted)">حي الزيتون — قطعة 47</div></td>
+                <td><span class="badge badge-warning">التأمينات</span></td>
+                <td><span class="tag">يوسف</span></td>
+                <td style="color:var(--color-error);font-weight:600">12 يوم</td>
+                <td><button class="btn btn-sm btn-danger" onclick="alert('تم إرسال تنبيه لـ يوسف!')">تنبيه</button></td>
+              </tr>
+              <tr>
+                <td><strong>أحمد رمضان</strong><div style="font-size:10px;color:var(--color-text-muted)">مدينة نصر — قطعة 12</div></td>
+                <td><span class="badge badge-error">بيان الصلاحية</span></td>
+                <td><span class="tag">سارة</span></td>
+                <td style="color:var(--color-error);font-weight:600">9 يوم</td>
+                <td><button class="btn btn-sm btn-danger" onclick="alert('تم إرسال تنبيه لـ سارة!')">تنبيه</button></td>
+              </tr>
+              <tr>
+                <td><strong>حسين عوض</strong><div style="font-size:10px;color:var(--color-text-muted)">العباسية — قطعة 88</div></td>
+                <td><span class="badge badge-gold">تصريح الحفر</span></td>
+                <td><span class="tag">خالد</span></td>
+                <td style="color:var(--color-warning);font-weight:600">7 يوم</td>
+                <td><button class="btn btn-sm btn-danger" onclick="alert('تم إرسال تنبيه لـ خالد!')">تنبيه</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📋 آخر النشاطات</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-success);margin-top:6px;flex-shrink:0"></div>
+            <div>
+              <div style="font-size:var(--text-xs);font-weight:600">استلام رخصة جهاز — كريم مصطفى</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">منذ 23 دقيقة · خالد</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-primary);margin-top:6px;flex-shrink:0"></div>
+            <div>
+              <div style="font-size:var(--text-xs);font-weight:600">تقديم ملف جديد — نادية علي</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">منذ ساعة · سارة</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-gold);margin-top:6px;flex-shrink:0"></div>
+            <div>
+              <div style="font-size:var(--text-xs);font-weight:600">دفع رسوم 3,500 ج.م — عمرو جاد</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">منذ 3 ساعات · يوسف</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-warning);margin-top:6px;flex-shrink:0"></div>
+            <div>
+              <div style="font-size:var(--text-xs);font-weight:600">ملف معلق — مستند ناقص — فريد حسن</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">منذ 5 ساعات · النظام</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--color-success);margin-top:6px;flex-shrink:0"></div>
+            <div>
+              <div style="font-size:var(--text-xs);font-weight:600">استلام تصريح الحفر — منى إبراهيم</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">أمس · خالد</div>
+            </div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div style="text-align:center">
+          <button class="btn btn-ghost btn-sm" style="width:100%">عرض كل النشاطات →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workflow Distribution -->
+    <div class="card" style="margin-top:var(--space-5)">
+      <div class="card-header">
+        <div class="card-title">📊 توزيع الملفات على مراحل العمل</div>
+        <span class="badge badge-primary">الشهر الحالي</span>
+      </div>
+      <div style="display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:flex-end;">
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2);font-weight:600">مسار رخصة الجهاز</div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">بيان الصلاحية</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:85%;background:var(--color-success)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">17</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">تقديم المجمعة</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:65%;background:var(--color-primary)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">13</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">دفع إذن الرخصة</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:40%;background:var(--color-warning)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">8</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">استلام الرخصة</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:45%;background:var(--color-gold)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">9</span>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2);font-weight:600">مسار تصريح الحفر</div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">شهادة الإشراف</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:75%;background:var(--color-success)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">15</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">التأمينات</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:30%;background:var(--color-error)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">6</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">العداد الإنشائي</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:50%;background:var(--color-primary)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">10</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-3)">
+              <span style="font-size:10px;width:120px;text-align:right;color:var(--color-text-muted)">تصريح التعدين</span>
+              <div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:35%;background:var(--color-purple)"></div></div>
+              <span style="font-size:10px;font-weight:700;width:24px">7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE: CLIENTS ════════ -->
+  <div class="page-view" id="page-clients">
+    <div class="section-row">
+      <div class="section-title">ملفات العملاء</div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('add-client-modal')">
+        <i data-lucide="plus"></i> إضافة ملف جديد
+      </button>
+    </div>
+    <div class="filter-row">
+      <div class="search-bar" style="flex:1;min-width:180px">
+        <i data-lucide="search"></i>
+        <input type="text" placeholder="بحث بالاسم أو رقم القطعة..." oninput="filterClients(this.value)">
+      </div>
+      <select class="form-select" style="min-width:120px">
+        <option>كل الحالات</option>
+        <option>نشط</option>
+        <option>مكتمل</option>
+        <option>متوقف</option>
+      </select>
+      <select class="form-select" style="min-width:120px">
+        <option>كل المراحل</option>
+        <option>رخصة الجهاز</option>
+        <option>تصريح الحفر</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table id="clients-table">
+        <thead>
+          <tr>
+            <th>العميل</th><th>الموقع</th><th>المرحلة الحالية</th>
+            <th>التقدم</th><th>المسؤول</th><th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <strong>محمد السيد أحمد</strong>
+              <div style="font-size:10px;color:var(--color-text-muted)">01012345678</div>
+            </td>
+            <td>
+              <div>الزيتون — مجاورة 3</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">قطعة 47</div>
+            </td>
+            <td>
+              <span class="badge badge-warning">التأمينات 🔴</span>
+              <div style="font-size:10px;color:var(--color-text-muted);margin-top:2px">تصريح الحفر</div>
+            </td>
+            <td style="min-width:100px">
+              <div class="progress-bar"><div class="progress-fill" style="width:62%"></div></div>
+              <div style="font-size:10px;color:var(--color-text-muted);margin-top:2px">62%</div>
+            </td>
+            <td><span class="tag">يوسف</span></td>
+            <td class="td-actions">
+              <button class="btn btn-sm btn-primary" onclick="showPage('workflow',document.querySelector('[onclick*=workflow]'))">عرض</button>
+              <button class="btn btn-sm btn-secondary" onclick="openModal('report-modal')">تقرير</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>نادية علي حسن</strong>
+              <div style="font-size:10px;color:var(--color-text-muted)">01098765432</div>
+            </td>
+            <td>
+              <div>مدينة نصر — مجاورة 7</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">قطعة 12</div>
+            </td>
+            <td>
+              <span class="badge badge-primary">تقديم المجمعة</span>
+              <div style="font-size:10px;color:var(--color-text-muted);margin-top:2px">رخصة الجهاز</div>
+            </td>
+            <td style="min-width:100px">
+              <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+              <div style="font-size:10px;color:var(--color-text-muted);margin-top:2px">30%</div>
+            </td>
+            <td><span class="tag">سارة</span></td>
+            <td class="td-actions">
+              <button class="btn btn-sm btn-primary" onclick="showPage('workflow',document.querySelector('[onclick*=workflow]'))">عرض</button>
+              <button class="btn btn-sm btn-secondary" onclick="openModal('report-modal')">تقرير</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>كريم مصطفى إبراهيم</strong>
+              <div style="font-size:10px;color:var(--color-text-muted)">01155667788</div>
+            </td>
+            <td>
+              <div>العباسية — مجاورة 1</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">قطعة 88</div>
+            </td>
+            <td>
+              <span class="badge badge-success">مكتمل ✓</span>
+              <div style="font-size:10px;color:var(--color-text-muted);margin-top:2px">رخصة الجهاز</div>
+            </td>
+            <td style="min-width:100px">
+              <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--color-success)"></div></div>
+              <div style="font-size:10px;color:var(--color-text-muted);margin-top:2px">100%</div>
+            </td>
+            <td><span class="tag">خالد</span></td>
+            <td class="td-actions">
+              <button class="btn btn-sm btn-primary" onclick="showPage('workflow',document.querySelector('[onclick*=workflow]'))">عرض</button>
+              <button class="btn btn-sm btn-secondary" onclick="openModal('report-modal')">تقرير</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>فريد حسن محمود</strong>
+              <div style="font-size:10px;color:var(--color-text-muted)">01222334455</div>
+            </td>
+            <td>
+              <div>شبرا — مجاورة 5</div>
+              <div style="font-size:10px;color:var(--color-text-muted)">قطعة 23</div>
+            </td>
+            <td>
+              <span class="badge badge-error">معلق — مستند ناقص</span>
+            </td>
+            <td style="min-width:100px">
+              <div class="progress-bar"><div class="progress-fill" style="width:0%;background:var(--color-error)"></div></div>
+              <div style="font-size:10px;color:var(--color-error);margin-top:2px;font-weight:600">ينتظر مستندات</div>
+            </td>
+            <td><span class="tag">—</span></td>
+            <td class="td-actions">
+              <button class="btn btn-sm btn-danger" onclick="openModal('add-client-modal')">إكمال</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE: WORKFLOW ════════ -->
+  <div class="page-view" id="page-workflow">
+    <div class="section-row">
+      <div class="section-title">مسار عمل الملف</div>
+      <div style="display:flex;gap:var(--space-2)">
+        <span class="badge badge-primary">محمد السيد أحمد</span>
+        <span class="badge badge-default">قطعة 47 — الزيتون</span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'tab-device')">🏗️ مسار رخصة الجهاز</div>
+      <div class="tab" onclick="switchTab(this,'tab-excavation')">⛏️ مسار تصريح الحفر</div>
+    </div>
+
+    <div id="tab-device" style="display:grid;grid-template-columns:1fr 340px;gap:var(--space-5)">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">خطوات رخصة الجهاز</div>
+            <div class="card-subtitle">المسار الأول · 5 خطوات رئيسية</div>
+          </div>
+          <div class="progress-bar" style="width:120px">
+            <div class="progress-fill" style="width:60%"></div>
+          </div>
+        </div>
+        <div class="workflow-track">
+          <div class="workflow-step done">
+            <div class="step-circle"><i data-lucide="check" style="width:10px;height:10px"></i></div>
+            <div class="step-body">
+              <div class="step-title">بيان الصلاحية</div>
+              <div class="step-meta">اكتمل في 12 يناير 2025 · سارة</div>
+              <div class="step-financials">
+                <div class="step-fin-item"><div class="step-fin-label">رسوم</div><div class="step-fin-value" style="color:var(--color-warning)">500 ج.م</div></div>
+                <div class="step-fin-item"><div class="step-fin-label">أتعاب</div><div class="step-fin-value" style="color:var(--color-success)">200 ج.م</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="workflow-step done">
+            <div class="step-circle"><i data-lucide="check" style="width:10px;height:10px"></i></div>
+            <div class="step-body">
+              <div class="step-title">تقديم المجمعة العشرية للإسكان المميز</div>
+              <div class="step-meta">اكتمل في 18 يناير 2025 · خالد</div>
+              <div class="step-financials">
+                <div class="step-fin-item"><div class="step-fin-label">رسوم</div><div class="step-fin-value" style="color:var(--color-warning)">1,200 ج.م</div></div>
+                <div class="step-fin-item"><div class="step-fin-label">أتعاب</div><div class="step-fin-value" style="color:var(--color-success)">500 ج.م</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="workflow-step done">
+            <div class="step-circle"><i data-lucide="check" style="width:10px;height:10px"></i></div>
+            <div class="step-body">
+              <div class="step-title">تقديم الملف</div>
+              <div class="step-meta">اكتمل في 22 يناير 2025 · سارة</div>
+              <div class="step-financials">
+                <div class="step-fin-item"><div class="step-fin-label">رسوم</div><div class="step-fin-value" style="color:var(--color-warning)">300 ج.م</div></div>
+                <div class="step-fin-item"><div class="step-fin-label">أتعاب</div><div class="step-fin-value" style="color:var(--color-success)">150 ج.م</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="workflow-step active">
+            <div class="step-circle"><i data-lucide="loader" style="width:10px;height:10px"></i></div>
+            <div class="step-body">
+              <div class="step-title">دفع إذن الرخصة وشراء عقد مخلفات</div>
+              <div class="step-meta">🔴 جارٍ — منذ 5 أيام · يوسف</div>
+              <div class="alert alert-warning" style="margin-top:var(--space-2)">
+                <i data-lucide="alert-triangle"></i>
+                <span class="alert-text">ينتظر موافقة المالك على الدفع</span>
+              </div>
+              <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3)">
+                <button class="btn btn-primary btn-sm" onclick="alert('تم تسجيل اكتمال الخطوة!')">تأكيد الإنجاز</button>
+                <button class="btn btn-secondary btn-sm">إضافة ملاحظة</button>
+              </div>
+            </div>
+          </div>
+          <div class="workflow-step pending">
+            <div class="step-circle"></div>
+            <div class="step-body">
+              <div class="step-title" style="color:var(--color-text-muted)">استلام رخصة الجهاز</div>
+              <div class="step-meta">في الانتظار — تتطلب إنجاز الخطوة السابقة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side panel -->
+      <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:var(--space-3)">💰 الملخص المالي</div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-xs)">
+              <span style="color:var(--color-text-muted)">إجمالي الرسوم الحكومية</span>
+              <span style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-warning)">2,000 ج.م</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-xs)">
+              <span style="color:var(--color-text-muted)">إجمالي أتعاب المكتب</span>
+              <span style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-success)">850 ج.م</span>
+            </div>
+            <div class="divider"></div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-xs)">
+              <span style="color:var(--color-text-muted)">المدفوع من العميل</span>
+              <span style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-primary)">2,100 ج.م</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--text-xs)">
+              <span style="color:var(--color-text-muted)">المتبقي على العميل</span>
+              <span style="font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-error)">750 ج.م</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" style="width:100%;margin-top:var(--space-3)" onclick="alert('فتح نافذة تسجيل الدفع...')">
+            <i data-lucide="plus"></i> تسجيل دفعة
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom:var(--space-3)">📎 المستندات المرفوعة</div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs)">
+              <span style="color:var(--color-success)">✓</span> محضر الاستلام
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs)">
+              <span style="color:var(--color-success)">✓</span> صورة البطاقة
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs)">
+              <span style="color:var(--color-success)">✓</span> توكيل رسمي
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs)">
+              <span style="color:var(--color-success)">✓</span> شهادة هندسية
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs)">
+              <span style="color:var(--color-success)">✓</span> كشف القياس
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="margin-bottom:var(--space-3)">⚠️ تنبيه التبعية</div>
+          <div class="alert alert-warning">
+            <i data-lucide="lock"></i>
+            <span class="alert-text">لا يمكن بدء مسار <strong>تصريح الحفر</strong> قبل اكتمال <strong>رخصة الجهاز</strong> بالكامل</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-excavation" style="display:none">
+      <div class="alert alert-error" style="margin-bottom:var(--space-4)">
+        <i data-lucide="lock"></i>
+        <span class="alert-text">🔒 هذا المسار مقفل حتى اكتمال رخصة الجهاز بالكامل. تبقى خطوة واحدة في المسار الأول.</span>
+      </div>
+      <div class="card" style="opacity:0.5;pointer-events:none">
+        <div class="card-header">
+          <div class="card-title">خطوات تصريح الحفر</div>
+          <div class="card-subtitle">المسار الثاني · 6 خطوات · مقفل حالياً</div>
+        </div>
+        <div class="workflow-track">
+          <div class="workflow-step pending"><div class="step-circle"></div><div class="step-body"><div class="step-title" style="color:var(--color-text-muted)">تقديم واستلام شهادة الإشراف</div></div></div>
+          <div class="workflow-step pending"><div class="step-circle"></div><div class="step-body"><div class="step-title" style="color:var(--color-text-muted)">تقديم واستلام التأمينات</div></div></div>
+          <div class="workflow-step pending"><div class="step-circle"></div><div class="step-body"><div class="step-title" style="color:var(--color-text-muted)">التقديم على العداد الإنشائي</div></div></div>
+          <div class="workflow-step pending"><div class="step-circle"></div><div class="step-body"><div class="step-title" style="color:var(--color-text-muted)">تقديم ودفع واستلام تصريح الحفر</div></div></div>
+          <div class="workflow-step pending"><div class="step-circle"></div><div class="step-body"><div class="step-title" style="color:var(--color-text-muted)">تصريح التعدين — الدفع والاستلام</div></div></div>
+          <div class="workflow-step pending"><div class="step-circle"></div><div class="step-body"><div class="step-title" style="color:var(--color-text-muted)">متابعة معاينة الجيش</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE: FINANCE ════════ -->
+  <div class="page-view" id="page-finance">
+    <div class="section-title">الإدارة المالية</div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-success-light)"><svg style="color:var(--color-success)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+        <div class="kpi-value">184,500</div>
+        <div class="kpi-label">إجمالي الأتعاب المحصلة (ج.م)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-warning-light)"><svg style="color:var(--color-warning)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+        <div class="kpi-value">320,000</div>
+        <div class="kpi-label">إجمالي الرسوم الحكومية المدفوعة (ج.م)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:var(--color-error-light)"><svg style="color:var(--color-error)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="kpi-value">67,200</div>
+        <div class="kpi-label">إجمالي المديونية المتبقية (ج.م)</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">سجل المعاملات المالية</div>
+        <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i> تصدير Excel</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>التاريخ</th><th>العميل</th><th>الخطوة</th><th>النوع</th><th>المبلغ</th><th>الحالة</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-size:10px;color:var(--color-text-muted)">15 يناير 2025</td>
+              <td><strong>محمد السيد</strong></td>
+              <td style="font-size:var(--text-xs)">بيان الصلاحية</td>
+              <td><span class="badge badge-warning">رسوم حكومية</span></td>
+              <td style="font-weight:700;font-variant-numeric:tabular-nums">500 ج.م</td>
+              <td><span class="badge badge-success">مدفوع</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:10px;color:var(--color-text-muted)">15 يناير 2025</td>
+              <td><strong>محمد السيد</strong></td>
+              <td style="font-size:var(--text-xs)">بيان الصلاحية</td>
+              <td><span class="badge badge-success">أتعاب مكتب</span></td>
+              <td style="font-weight:700;font-variant-numeric:tabular-nums">200 ج.م</td>
+              <td><span class="badge badge-success">مدفوع</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:10px;color:var(--color-text-muted)">20 يناير 2025</td>
+              <td><strong>نادية علي</strong></td>
+              <td style="font-size:var(--text-xs)">تقديم المجمعة</td>
+              <td><span class="badge badge-warning">رسوم حكومية</span></td>
+              <td style="font-weight:700;font-variant-numeric:tabular-nums">1,200 ج.م</td>
+              <td><span class="badge badge-error">متبقي</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:10px;color:var(--color-text-muted)">22 يناير 2025</td>
+              <td><strong>كريم مصطفى</strong></td>
+              <td style="font-size:var(--text-xs)">استلام الرخصة</td>
+              <td><span class="badge badge-success">أتعاب مكتب</span></td>
+              <td style="font-weight:700;font-variant-numeric:tabular-nums">3,500 ج.م</td>
+              <td><span class="badge badge-success">مدفوع</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE: REPORTS ════════ -->
+  <div class="page-view" id="page-reports">
+    <div class="section-row">
+      <div class="section-title">تقارير العملاء</div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('report-modal')">
+        <i data-lucide="printer"></i> طباعة تقرير
+      </button>
+    </div>
+    <div class="alert alert-success" style="margin-bottom:var(--space-4)">
+      <i data-lucide="star"></i>
+      <span class="alert-text"><strong>ميزة تنافسية:</strong> أرسل هذا التقرير للعميل لإظهار الشفافية الكاملة في سير عمله ومصاريفه</span>
+    </div>
+    <div class="report-card">
+      <div class="report-header-band">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <h2>تقرير سير الإجراءات</h2>
+            <p>مكتب المهندس أحمد للاستشارات الهندسية</p>
+          </div>
+          <div style="text-align:left">
+            <div style="font-size:12px;opacity:0.9">محمد السيد أحمد</div>
+            <div style="font-size:10px;opacity:0.7">تاريخ التقرير: 27 أبريل 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="report-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5)">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#444;margin-bottom:var(--space-3);text-transform:uppercase;letter-spacing:0.05em">مسار رخصة الجهاز</div>
+            <div class="report-step-list">
+              <div class="report-step">
+                <div class="check done">✓</div>
+                <div class="report-step-name">بيان الصلاحية</div>
+                <div class="report-step-status" style="color:#166534">مكتمل</div>
+              </div>
+              <div class="report-step">
+                <div class="check done">✓</div>
+                <div class="report-step-name">تقديم المجمعة</div>
+                <div class="report-step-status" style="color:#166534">مكتمل</div>
+              </div>
+              <div class="report-step">
+                <div class="check done">✓</div>
+                <div class="report-step-name">تقديم الملف</div>
+                <div class="report-step-status" style="color:#166534">مكتمل</div>
+              </div>
+              <div class="report-step">
+                <div class="check pending">—</div>
+                <div class="report-step-name">دفع إذن الرخصة</div>
+                <div class="report-step-status" style="color:#d97706">جارٍ</div>
+              </div>
+              <div class="report-step">
+                <div class="check pending">—</div>
+                <div class="report-step-name">استلام الرخصة</div>
+                <div class="report-step-status" style="color:#9ca3af">قادم</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#444;margin-bottom:var(--space-3);text-transform:uppercase;letter-spacing:0.05em">مسار تصريح الحفر</div>
+            <div class="report-step-list">
+              <div class="report-step">
+                <div class="check pending">🔒</div>
+                <div class="report-step-name">شهادة الإشراف</div>
+                <div class="report-step-status" style="color:#9ca3af">مقفل</div>
+              </div>
+              <div class="report-step">
+                <div class="check pending">🔒</div>
+                <div class="report-step-name">التأمينات</div>
+                <div class="report-step-status" style="color:#9ca3af">مقفل</div>
+              </div>
+              <div class="report-step">
+                <div class="check pending">🔒</div>
+                <div class="report-step-name">العداد الإنشائي</div>
+                <div class="report-step-status" style="color:#9ca3af">مقفل</div>
+              </div>
+              <div class="report-step">
+                <div class="check pending">🔒</div>
+                <div class="report-step-name">تصريح الحفر</div>
+                <div class="report-step-status" style="color:#9ca3af">مقفل</div>
+              </div>
+              <div class="report-step">
+                <div class="check pending">🔒</div>
+                <div class="report-step-name">معاينة الجيش</div>
+                <div class="report-step-status" style="color:#9ca3af">مقفل</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="report-totals">
+          <div class="report-total-item">
+            <div class="label">إجمالي الرسوم الحكومية</div>
+            <div class="value">2,000 ج.م</div>
+          </div>
+          <div class="report-total-item">
+            <div class="label">إجمالي أتعاب المكتب</div>
+            <div class="value">850 ج.م</div>
+          </div>
+          <div class="report-total-item highlight">
+            <div class="label">المدفوع حتى الآن</div>
+            <div class="value">2,100 ج.م</div>
+          </div>
+          <div class="report-total-item">
+            <div class="label" style="color:#b91c1c">المديونية المتبقية</div>
+            <div class="value" style="color:#b91c1c">750 ج.م</div>
+          </div>
+        </div>
+        <div style="margin-top:var(--space-4);padding-top:var(--space-3);border-top:1px dashed #e0e0e0;font-size:10px;color:#888;text-align:center">
+          تم إنشاء هذا التقرير بواسطة نظام رخصتي · مكتب المهندس أحمد
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE: EMPLOYEES ════════ -->
+  <div class="page-view" id="page-employees">
+    <div class="section-title">إدارة الموظفين</div>
+    <div class="three-col" style="margin-bottom:var(--space-5)">
+      <div class="card" style="text-align:center">
+        <div class="avatar" style="width:48px;height:48px;font-size:var(--text-base);margin:0 auto var(--space-3)">يو</div>
+        <div style="font-weight:700">يوسف كمال</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">مسؤول التأمينات</div>
+        <div style="display:flex;justify-content:center;gap:var(--space-2);flex-wrap:wrap">
+          <span class="badge badge-warning">3 ملفات متأخرة</span>
+          <span class="badge badge-primary">12 نشط</span>
+        </div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="avatar" style="width:48px;height:48px;font-size:var(--text-base);margin:0 auto var(--space-3);background:var(--color-purple)">سا</div>
+        <div style="font-weight:700">سارة محمد</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">مسؤولة تقديم الملفات</div>
+        <div style="display:flex;justify-content:center;gap:var(--space-2);flex-wrap:wrap">
+          <span class="badge badge-success">أداء ممتاز</span>
+          <span class="badge badge-primary">15 نشط</span>
+        </div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="avatar" style="width:48px;height:48px;font-size:var(--text-base);margin:0 auto var(--space-3);background:var(--color-gold)">خا</div>
+        <div style="font-weight:700">خالد عبدالله</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">مسؤول الاستلامات</div>
+        <div style="display:flex;justify-content:center;gap:var(--space-2);flex-wrap:wrap">
+          <span class="badge badge-success">أداء جيد</span>
+          <span class="badge badge-primary">10 نشط</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ PAGE: SETTINGS ════════ -->
+  <div class="page-view" id="page-settings">
+    <div class="section-title">إعدادات النظام</div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:var(--space-4)">بيانات المكتب</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+          <div class="form-group"><label class="form-label">اسم المكتب</label><input class="form-input" value="مكتب المهندس أحمد للاستشارات"></div>
+          <div class="form-group"><label class="form-label">رقم التليفون</label><input class="form-input" value="01012345678"></div>
+          <div class="form-group"><label class="form-label">العنوان</label><input class="form-input" value="القاهرة، مصر الجديدة"></div>
+          <button class="btn btn-primary btn-sm" style="align-self:flex-start" onclick="alert('تم حفظ الإعدادات!')">حفظ التغييرات</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:var(--space-4)">الخطة (SaaS)</div>
+        <div class="alert alert-success" style="margin-bottom:var(--space-4)">
+          <i data-lucide="check-circle"></i>
+          <span class="alert-text">الخطة الاحترافية · 5 مستخدمين · ملفات غير محدودة</span>
+        </div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted)">تجديد الاشتراك: 27 مايو 2025</div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:var(--space-3)" onclick="alert('إدارة الاشتراك...')">إدارة الاشتراك</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end padding wrapper -->
+</div><!-- end main-content -->
+</div><!-- end app-shell -->
+
+<!-- ═══════════════════════════════════════════
+     MODAL: ADD NEW CLIENT
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="add-client-modal" onclick="if(event.target===this)closeModal('add-client-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ إضافة ملف عميل جديد</div>
+      <button class="btn-icon btn-ghost" onclick="closeModal('add-client-modal')"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-error" id="docs-warning" style="margin-bottom:var(--space-4);display:none">
+        <i data-lucide="alert-circle"></i>
+        <span class="alert-text">يجب رفع جميع المستندات الإلزامية الخمسة قبل حفظ الملف. النظام لن يقبل الحفظ بدونها.</span>
+      </div>
+
+      <div style="margin-bottom:var(--space-5)">
+        <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-text-muted);margin-bottom:var(--space-3)">بيانات العميل</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label"><span class="required">*</span>اسم العميل</label><input class="form-input" placeholder="الاسم بالكامل" id="f-name"></div>
+          <div class="form-group"><label class="form-label"><span class="required">*</span>رقم التليفون</label><input class="form-input" placeholder="01xxxxxxxxx" id="f-phone" dir="ltr"></div>
+          <div class="form-group"><label class="form-label"><span class="required">*</span>المدينة</label><input class="form-input" placeholder="القاهرة" id="f-city"></div>
+          <div class="form-group"><label class="form-label"><span class="required">*</span>الحي / المنطقة</label><input class="form-input" placeholder="مدينة نصر" id="f-district"></div>
+          <div class="form-group"><label class="form-label">رقم المجاورة</label><input class="form-input" placeholder="مجاورة 5" id="f-neighbor"></div>
+          <div class="form-group"><label class="form-label"><span class="required">*</span>رقم القطعة</label><input class="form-input" placeholder="47" id="f-plot" dir="ltr"></div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-text-muted);margin-bottom:var(--space-3)">
+          المستندات الإلزامية <span class="badge badge-error" style="margin-right:var(--space-2)">5 مطلوبة</span>
+        </div>
+        <div class="upload-list" id="upload-list">
+          <div class="upload-item" onclick="toggleUpload(this,0)" data-uploaded="false">
+            <div class="upload-icon" style="background:var(--color-error-light)"><i data-lucide="file-text" style="color:var(--color-error)"></i></div>
+            <div class="upload-info"><div class="upload-name">📄 محضر الاستلام</div><div class="upload-hint">اضغط لرفع الملف</div></div>
+            <div class="upload-check" style="display:none"><i data-lucide="check-circle"></i></div>
+          </div>
+          <div class="upload-item" onclick="toggleUpload(this,1)" data-uploaded="false">
+            <div class="upload-icon" style="background:var(--color-error-light)"><i data-lucide="credit-card" style="color:var(--color-error)"></i></div>
+            <div class="upload-info"><div class="upload-name">🪪 صورة البطاقة الشخصية</div><div class="upload-hint">اضغط لرفع الملف</div></div>
+            <div class="upload-check" style="display:none"><i data-lucide="check-circle"></i></div>
+          </div>
+          <div class="upload-item" onclick="toggleUpload(this,2)" data-uploaded="false">
+            <div class="upload-icon" style="background:var(--color-error-light)"><i data-lucide="scroll" style="color:var(--color-error)"></i></div>
+            <div class="upload-info"><div class="upload-name">📜 توكيل رسمي</div><div class="upload-hint">اضغط لرفع الملف</div></div>
+            <div class="upload-check" style="display:none"><i data-lucide="check-circle"></i></div>
+          </div>
+          <div class="upload-item" onclick="toggleUpload(this,3)" data-uploaded="false">
+            <div class="upload-icon" style="background:var(--color-error-light)"><i data-lucide="award" style="color:var(--color-error)"></i></div>
+            <div class="upload-info"><div class="upload-name">🎓 شهادة هندسية</div><div class="upload-hint">اضغط لرفع الملف</div></div>
+            <div class="upload-check" style="display:none"><i data-lucide="check-circle"></i></div>
+          </div>
+          <div class="upload-item" onclick="toggleUpload(this,4)" data-uploaded="false">
+            <div class="upload-icon" style="background:var(--color-error-light)"><i data-lucide="ruler" style="color:var(--color-error)"></i></div>
+            <div class="upload-info"><div class="upload-name">📐 كشف القياس</div><div class="upload-hint">اضغط لرفع الملف</div></div>
+            <div class="upload-check" style="display:none"><i data-lucide="check-circle"></i></div>
+          </div>
+          <div class="upload-item" style="border-style:dashed;opacity:0.7" onclick="toggleUpload(this,5)" data-uploaded="false">
+            <div class="upload-icon" style="background:var(--color-surface-offset)"><i data-lucide="receipt" style="color:var(--color-text-muted)"></i></div>
+            <div class="upload-info"><div class="upload-name">🧾 إيصال (اختياري — للتعلية)</div><div class="upload-hint">غير مطلوب</div></div>
+            <div class="upload-check" style="display:none"><i data-lucide="check-circle"></i></div>
+          </div>
+        </div>
+        <div id="docs-progress" style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted);text-align:center">
+          0 / 5 مستندات مرفوعة
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('add-client-modal')">إلغاء</button>
+      <button class="btn btn-primary" id="save-btn" onclick="validateAndSave()">
+        <i data-lucide="save"></i> حفظ الملف
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: REPORT -->
+<div class="modal-overlay" id="report-modal" onclick="if(event.target===this)closeModal('report-modal')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title">🖨️ طباعة تقرير العميل</div>
+      <button class="btn-icon btn-ghost" onclick="closeModal('report-modal')"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-success" style="margin-bottom:var(--space-4)">
+        <i data-lucide="info"></i>
+        <span class="alert-text">هذا التقرير يُظهر للعميل الشفافية الكاملة ويُعزز ثقته بالمكتب</span>
+      </div>
+      <div class="form-group" style="margin-bottom:var(--space-3)">
+        <label class="form-label">اختر العميل</label>
+        <select class="form-select" style="width:100%">
+          <option>محمد السيد أحمد</option>
+          <option>نادية علي حسن</option>
+          <option>كريم مصطفى إبراهيم</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('report-modal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="alert('جاري فتح التقرير للطباعة...');closeModal('report-modal');showPage('reports',document.querySelector('[onclick*=reports]'))">
+        <i data-lucide="printer"></i> عرض وطباعة
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════ THEME ═══════════════════
+(function(){
+  const t=document.querySelector('[data-theme-toggle]');
+  const r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  if(t)t.addEventListener('click',()=>{
+    d=d==='dark'?'light':'dark';
+    r.setAttribute('data-theme',d);
+    t.innerHTML=d==='dark'?
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  });
+})();
+
+// ═══════════════════ NAVIGATION ═══════════════════
+const pageTitles={dashboard:'لوحة التحكم',clients:'ملفات العملاء',workflow:'مسار العمل',finance:'الإدارة المالية',reports:'تقارير العملاء',employees:'الموظفون',settings:'الإعدادات'};
+
+function showPage(id,el){
+  document.querySelectorAll('.page-view').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const page=document.getElementById('page-'+id);
+  if(page)page.classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('page-title').textContent=pageTitles[id]||id;
+}
+
+function switchTab(el,tabId){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const tabs=['tab-device','tab-excavation'];
+  tabs.forEach(t=>{
+    const el2=document.getElementById(t);
+    if(el2)el2.style.display=t===tabId?'grid':'none';
+  });
+  if(tabId==='tab-excavation'){
+    document.getElementById('tab-excavation').style.display='block';
+  }
+}
+
+// ═══════════════════ MODALS ═══════════════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ═══════════════════ UPLOAD SIMULATION ═══════════════════
+let uploadedDocs=new Set();
+
+function toggleUpload(el,idx){
+  if(el.dataset.uploaded==='true'){return;}
+  el.dataset.uploaded='true';
+  el.classList.add('uploaded');
+  el.querySelector('.upload-check').style.display='flex';
+  el.querySelector('.upload-hint').textContent='تم الرفع ✓';
+  el.querySelector('.upload-icon').style.background='var(--color-success-light)';
+  el.querySelector('.upload-icon svg').style.color='var(--color-success)';
+  if(idx<5){uploadedDocs.add(idx);}
+  const count=uploadedDocs.size;
+  const prog=document.getElementById('docs-progress');
+  if(prog)prog.textContent=count+' / 5 مستندات مرفوعة '+(count===5?'✅ جاهز للحفظ':'');
+  if(count===5){
+    document.getElementById('docs-warning').style.display='none';
+  }
+  lucide.createIcons();
+}
+
+function validateAndSave(){
+  const name=document.getElementById('f-name').value;
+  const phone=document.getElementById('f-phone').value;
+  if(!name||!phone){
+    alert('⚠️ يرجى ملء جميع الحقول الإلزامية');
+    return;
+  }
+  if(uploadedDocs.size<5){
+    document.getElementById('docs-warning').style.display='flex';
+    document.querySelectorAll('.upload-item').forEach((el,i)=>{
+      if(i<5&&el.dataset.uploaded!=='true'){
+        el.classList.add('required-missing');
+      }
+    });
+    return;
+  }
+  closeModal('add-client-modal');
+  setTimeout(()=>alert('✅ تم حفظ الملف بنجاح! المستندات: 5/5 مرفوعة'),200);
+}
+
+// ═══════════════════ SEARCH ═══════════════════
+function filterClients(q){
+  const rows=document.querySelectorAll('#clients-table tbody tr');
+  rows.forEach(r=>{
+    r.style.display=r.textContent.includes(q)?'':'none';
+  });
+}
+
+// ═══════════════════ INIT ═══════════════════
+document.addEventListener('DOMContentLoaded',()=>{lucide.createIcons();});
+window.addEventListener('load',()=>{lucide.createIcons();});
+</script>
+</body>
+</html>

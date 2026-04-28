@@ -212,6 +212,104 @@ Phase 1 does not implement validation/metrics (deferred to later phases), but th
 
 ---
 
+## Web Research Findings (2026-04-28)
+
+### Supabase Auth & RLS Best Practices
+
+**Four-part anatomy of a working RLS policy:**
+1. **Operation** — `SELECT`, `INSERT`, `UPDATE`, or `DELETE`
+2. **Role** — usually `authenticated`
+3. **USING clause** — filters which existing rows are visible
+4. **WITH CHECK clause** — validates new or modified rows
+
+**Three core policy patterns cover ~90% of SaaS:**
+- User ownership (users edit only their own rows)
+- Multi-tenant isolation (tenants cannot see each other's data)
+- Admin roles (privileged read access)
+
+**Performance trap warning:** RLS queries can degrade from **0.1ms to 11 seconds** under load with large tables (1M+ rows) if not properly indexed.
+
+**Security best practice:** Separate policies for OAuth clients vs regular users:
+
+```sql
+-- User access
+CREATE POLICY "Users access their own data"
+ON user_data FOR ALL
+USING (
+  auth.uid() = user_id AND
+  (auth.jwt() ->> 'client_id') IS NULL
+);
+
+-- OAuth client access (separate policy)
+CREATE POLICY "OAuth clients limited access"
+ON user_data FOR SELECT
+USING (
+  auth.uid() = user_id AND
+  (auth.jwt() ->> 'client_id') IN ('client-1', 'client-2')
+);
+```
+
+**Always use `TO authenticated` clause** to prevent anonymous access:
+```sql
+CREATE POLICY "Users can access their own records" on rls_test
+TO authenticated
+USING ( (select auth.uid()) = user_id );
+```
+
+### Next.js 16 (v16.2.2)
+
+**New in Next.js 16:**
+- `cacheComponents` approach replaces experimental PPR from Next.js 15
+- If using PPR in Next.js 15, stay on canary until ready to migrate
+- App Router continues to be the recommended approach
+- Backward compatible with Pages Router
+
+**Project Structure (App Router):**
+```
+src/
+├── app/
+│   ├── (auth)/
+│   │   └── login/page.tsx
+│   ├── (dashboard)/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── clients/
+│   │   ├── workflows/
+│   │   ├── employees/
+│   │   └── settings/
+│   └── api/
+├── components/
+│   ├── ui/
+│   ├── forms/
+│   └── layout/
+├── lib/
+│   ├── supabase/
+│   └── utils/
+└── types/
+```
+
+**Tech Stack:** Next.js 16, React 19, Tailwind CSS, TypeScript, ESLint, Clerk Auth, DrizzleORM
+
+### HTML to React Migration
+
+**JSX differs from HTML in 5 categories:**
+
+| Category | HTML | JSX |
+|----------|------|-----|
+| Reserved keywords | `class`, `for` | `className`, `htmlFor` |
+| Event handlers | `onclick="fn()"` | `onClick={fn}` |
+| Boolean/camelCase attrs | `tabindex`, `readonly` | `tabIndex`, `readOnly` |
+| Inline styles | `style="color:red"` | `style={{ color: 'red' }}` |
+| Void elements | `<br>`, `<img>` | `<br />`, `<img />` |
+
+**Additional differences:**
+- Comments: `<!-- ... -->` becomes `{/* ... */}`
+- All attribute names use camelCase (e.g., `maxLength`, `colSpan`, `rowSpan`, `contentEditable`, `crossOrigin`)
+
+**Migration strategy:** Incremental migration with clear boundaries. Keep legacy HTML working during transition, migrate page-by-page. Use automated converters to avoid manual mistakes.
+
+---
+
 ## Validation Architecture
 
 *Note: Full validation/metrics implementation is Phase 5 scope. Phase 1 establishes the data model.*

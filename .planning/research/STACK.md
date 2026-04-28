@@ -34,16 +34,23 @@
 
 ---
 
-### Frontend Framework: React 19 + shadcn/ui
+### Frontend Framework: Next.js 16 + React 19 + shadcn/ui
 
 | Property | Value | Rationale |
 |----------|-------|-----------|
-| **Framework** | React 19 | Latest with concurrent features |
+| **Framework** | Next.js 16 (App Router) | Full-stack React with Rust-based tooling |
+| **React** | React 19 | Latest with concurrent features |
 | **UI Library** | shadcn/ui | Copy-paste component model, Tailwind-based |
 | **RTL Support** | First-class (Jan 2026) | Arabic layout automatically adapts |
 | **Styling** | Tailwind CSS 4 | Utility-first, excellent RTL logical properties |
 | **State** | React Query (TanStack Query) | Server state management, caching |
 | **Forms** | React Hook Form + Zod | Performance + validation |
+
+**Why Next.js 16:**
+- **App Router** — Server Components by default, better performance
+- **Rust-based tooling** — Fastest builds in the industry
+- **Built-in SSR/SSG** — Better SEO for public pages, better UX for authenticated pages
+- **Middleware** — First-class auth protection at the edge
 
 **Why this combination:**
 - **shadcn/ui RTL** — As of January 2026, shadcn/ui has first-class RTL support. Components automatically adapt for Arabic without manual direction switching.
@@ -51,16 +58,32 @@
 - **Copy-paste model** — No npm dependency for components; you own the code, easier to customize for Arabic typography.
 
 **RTL Implementation:**
-```html
-<!-- Direction set at root -->
-<html dir="rtl" lang="ar">
-<!-- Components automatically adapt -->
-<div class="flex items-center gap-4">
-  <div class="text-end">اسم الترخيص</div>
-</div>
+```tsx
+// Direction set at root layout
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  // ...
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html dir="rtl" lang="ar">
+      <body className="font-cairo">
+        {children}
+      </body>
+    </html>
+  )
+}
 ```
 
+**Next.js 16 notes:**
+- `cacheComponents` replaces experimental PPR from Next.js 15
+- If upgrading from Next.js 15 with PPR, stay on canary until ready to migrate
+- App Router is the recommended approach, backward compatible with Pages Router
+
 **Sources:**
+- [Next.js 16 Docs](https://nextjs.org/docs) (Official)
 - [shadcn/ui RTL Support Changelog](https://ui.shadcn.com/docs/changelog/2026-01-rtl) (Jan 2026)
 - [Tailwind CSS RTL Documentation](https://tailwindcss.com/docs/rtl) (Official)
 - [shadcn/ui Handbook 2026](https://shadcnspace.com/blog/shadcn-ui-handbook) (Mar 2026)
@@ -172,11 +195,12 @@ CREATE TYPE workflow_event AS ENUM (
 ## Complete Installation
 
 ```bash
+# Create Next.js 16 project with App Router
+npx create-next-app@latest rakhtety --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
+
 # Core dependencies
-npm create vite@latest . -- --template react-ts
 npm install @supabase/supabase-js @tanstack/react-query
 npm install react-hook-form zod @hookform/resolvers
-npm install tailwindcss @tailwindcss/vite
 npm install lucide-react clsx tailwind-merge
 
 # shadcn/ui
@@ -191,12 +215,11 @@ npm install jspdf html2canvas
 npm install date-fns @date-io/date-fns
 ```
 
----
-
 ## Architecture Decision Summary
 
 | Decision | Choice | Reason |
 |----------|--------|--------|
+| Full-stack Framework | **Next.js 16** | App Router, SSR, Edge middleware |
 | BaaS Platform | **Supabase** | SQL + RLS + predictable pricing |
 | Frontend | **React 19 + shadcn/ui** | RTL-first, component ownership |
 | Styling | **Tailwind CSS 4** | Logical properties for RTL |
