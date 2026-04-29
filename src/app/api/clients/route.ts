@@ -8,6 +8,13 @@ import { clientCreateSchema } from '@/lib/validation/schemas'
 
 const BUCKET = 'workflow-documents'
 
+interface IntakeFilePayload {
+  type: string
+  file_name: string
+  mime_type: string
+  content_base64: string
+}
+
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof Error) {
     return error.message
@@ -63,32 +70,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'يجب تسجيل الدخول أولاً' }, { status: 401 })
     }
 
-    const contentType = request.headers.get('content-type') || ''
-    const isMultipart = contentType.includes('multipart/form-data')
-    const formData = isMultipart ? await request.formData() : null
     const intakeFiles = new Map<string, File>()
+    const body = await request.json()
+    const rawIntakeFiles = Array.isArray(body.intake_files)
+      ? (body.intake_files as IntakeFilePayload[])
+      : []
 
-    if (formData) {
-      for (const document of CLIENT_INTAKE_DOCUMENTS) {
-        const file = formData.get(`intake_file_${document.type}`)
-        if (file instanceof File && file.size > 0) {
-          validateDocumentFile(file)
-          intakeFiles.set(document.type, file)
-        }
+    for (const payload of rawIntakeFiles) {
+      const fileBytes = Uint8Array.from(atob(payload.content_base64), (character) => character.charCodeAt(0))
+      const file = new File([fileBytes], payload.file_name, { type: payload.mime_type })
+
+      if (file.size > 0) {
+        validateDocumentFile(file)
+        intakeFiles.set(payload.type, file)
       }
     }
 
-    const input = formData
-      ? {
-          name: String(formData.get('name') || ''),
-          phone: String(formData.get('phone') || ''),
-          city: String(formData.get('city') || ''),
-          district: String(formData.get('district') || ''),
-          neighborhood: String(formData.get('neighborhood') || ''),
-          parcel_number: String(formData.get('parcel_number') || ''),
-          intake_documents: Array.from(intakeFiles.keys()),
-        }
-      : await request.json()
+    const input = {
+      name: body.name,
+      phone: body.phone,
+      city: body.city,
+      district: body.district,
+      neighborhood: body.neighborhood,
+      parcel_number: body.parcel_number,
+      intake_documents: Array.from(intakeFiles.keys()),
+    }
 
     const parsed = clientCreateSchema.safeParse(input)
 
@@ -101,7 +107,7 @@ export async function POST(request: NextRequest) {
 
     const client = await createClient(supabase, parsed.data, user.id)
 
-    if (formData && intakeFiles.size > 0) {
+    if (intakeFiles.size > 0) {
       const admin = createAdminClient()
       const uploadedPaths: string[] = []
 

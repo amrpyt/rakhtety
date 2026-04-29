@@ -1,6 +1,18 @@
 import type { Client, EmployeeWithProfile } from '@/types/database.types'
 import type { CreateClientDto } from '@/lib/services/client.service'
 
+async function fileToBase64(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+  let binary = ''
+
+  for (let index = 0; index < bytes.length; index += 1) {
+    binary += String.fromCharCode(bytes[index])
+  }
+
+  return btoa(binary)
+}
+
 async function readJson<T>(response: Response, fallbackMessage: string): Promise<T> {
   const payload = await response.json()
 
@@ -30,28 +42,26 @@ export const directoryClient = {
 
   async createClient(data: CreateClientDto, intakeFiles?: Record<string, File>): Promise<Client> {
     const files = intakeFiles ? Object.entries(intakeFiles).filter(([, file]) => file) : []
-    const body =
-      files.length > 0
-        ? (() => {
-            const formData = new FormData()
-            formData.append('name', data.name)
-            formData.append('phone', data.phone || '')
-            formData.append('city', data.city || '')
-            formData.append('district', data.district || '')
-            formData.append('neighborhood', data.neighborhood || '')
-            formData.append('parcel_number', data.parcel_number || '')
-            for (const [type, file] of files) {
-              formData.append(`intake_file_${type}`, file)
-            }
-            return formData
-          })()
-        : JSON.stringify(data)
+    const intake_documents = files.length > 0
+      ? await Promise.all(
+          files.map(async ([type, file]) => ({
+            type,
+            file_name: file.name,
+            mime_type: file.type,
+            content_base64: await fileToBase64(file),
+          }))
+        )
+      : undefined
 
     const payload = await readJson<{ client: Client }>(
       await fetch('/api/clients', {
         method: 'POST',
-        ...(files.length > 0 ? {} : { headers: { 'Content-Type': 'application/json' } }),
-        body,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          intake_documents: files.length > 0 ? files.map(([type]) => type) : data.intake_documents,
+          intake_files: intake_documents,
+        }),
       }),
       'Failed to create client'
     )
