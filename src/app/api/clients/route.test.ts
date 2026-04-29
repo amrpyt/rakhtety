@@ -7,6 +7,24 @@ function createPdfFile(name: string) {
 }
 
 describe('clients API request parsing', () => {
+  it('keeps JSON intake document types when files upload separately', async () => {
+    const request = new Request('http://localhost/api/clients', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'E2E Upload Client',
+        intake_documents: CLIENT_INTAKE_DOCUMENTS.filter((item) => item.required).map((item) => item.type),
+      }),
+    })
+
+    const parsed = await parseClientCreateRequest(request)
+
+    expect(parsed.body.intake_documents).toEqual(
+      CLIENT_INTAKE_DOCUMENTS.filter((item) => item.required).map((item) => item.type)
+    )
+    expect(parsed.intakeFiles.size).toBe(0)
+  })
+
   it('parses multipart client fields and intake files together', async () => {
     const formData = new FormData()
     formData.append('name', 'E2E Upload Client')

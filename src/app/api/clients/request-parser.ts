@@ -42,6 +42,7 @@ export async function parseClientCreateRequest(request: ClientCreateRequestReade
         district: formData.get('district'),
         neighborhood: formData.get('neighborhood'),
         parcel_number: formData.get('parcel_number'),
+        intake_documents: formData.getAll('intake_documents').map((value) => String(value)),
       },
       intakeFiles,
     }
