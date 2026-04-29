@@ -1,8 +1,11 @@
-# AGENTS.md - رخصتي (Rakhtety) ERP
+## How to Talk To me (Read This First!)
 
-## How I Talk To You (Read This First!)
+## Workflow Rule
 
-I will ALWAYS follow these rules when talking to you:
+- **Commit every time I finish one edit round.**
+- **Run the requested checks after each edit round before committing.**
+- **Commit only when tests are green, otherwise note what failed and fix next.**
+
 
 ### 1. Simple Words, No Jargon
 ❌ "We'll implement a PostgreSQL state machine with RLS policies"
@@ -84,21 +87,6 @@ Supabase has a security feature that says "users only see their own data".
 - Every database rule MUST have `TO authenticated` in it
 - If I forget this, remind me!
 
----
-
-## Development Commands (Just Copy-Paste)
-
-```bash
-# Create new project
-npx create-next-app@latest rakhtety --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
-
-# Install stuff
-npm install @supabase/supabase-js @tanstack/react-query react-hook-form zod lucide-react clsx tailwind-merge
-
-# Add shadcn components (like Lego pieces)
-npx shadcn@latest init
-npx shadcn@latest add button card form input select table badge tabs
-```
 
 ---
 
@@ -176,8 +164,6 @@ You can say things like:
 
 ---
 
-*Last updated: 2026-04-28*
-*Remember: There's no such thing as a stupid question! If you're confused, I'm doing it wrong.*
 
 ## Agent skills
 
@@ -192,3 +178,10 @@ Use the default GitHub label names for the five triage roles. See `docs/agents/t
 ### Domain docs
 
 Single-context repo. Read `.planning/STATE.md` first, then the relevant `docs/adr/` files when they exist. See `docs/agents/domain.md`.
+
+for any testing, use Broswer use.
+
+ALAWYES SPEAK ENGLISH.
+
+*Last updated: 2026-04-28*
+*Remember: There's no such thing as a stupid question! If you're confused, I'm doing it wrong.*

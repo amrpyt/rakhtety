@@ -1,0 +1,77 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient, listClients } from '@/lib/server-data/directory-query'
+import { createServerClient } from '@/lib/supabase/server'
+import { clientCreateSchema } from '@/lib/validation/schemas'
+
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  if (typeof error === 'string' && error.trim().length > 0) {
+    return error
+  }
+
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = (error as { message?: unknown }).message
+    if (typeof message === 'string' && message.trim().length > 0) {
+      return message
+    }
+  }
+
+  return fallback
+}
+
+const getErrorStatus = (error: unknown): number | null => {
+  if (error && typeof error === 'object' && 'code' in error) {
+    const code = (error as { code?: string }).code
+    if (code === '42501') {
+      return 403
+    }
+  }
+
+  return null
+}
+
+export async function GET(request: NextRequest) {
+  const supabase = await createServerClient()
+  const search = request.nextUrl.searchParams.get('q')?.trim()
+
+  try {
+    return NextResponse.json({ clients: await listClients(supabase, search) })
+  } catch (error) {
+    const message = getErrorMessage(error, 'Failed to fetch clients')
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const supabase = await createServerClient()
+
+  try {
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'يجب تسجيل الدخول أولاً' }, { status: 401 })
+    }
+
+    const parsed = clientCreateSchema.safeParse(await request.json())
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message || 'بيانات العميل غير صالحة' },
+        { status: 400 }
+      )
+    }
+
+    const client = await createClient(supabase, parsed.data, user.id)
+    return NextResponse.json({ client }, { status: 201 })
+  } catch (error) {
+    const message = getErrorMessage(error, 'Failed to create client')
+    const status = getErrorStatus(error) ?? 500
+    return NextResponse.json({ error: message }, { status })
+  }
+}
