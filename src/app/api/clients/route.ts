@@ -71,18 +71,36 @@ export async function POST(request: NextRequest) {
     }
 
     const intakeFiles = new Map<string, File>()
-    const body = await request.json()
-    const rawIntakeFiles = Array.isArray(body.intake_files)
-      ? (body.intake_files as IntakeFilePayload[])
-      : []
+    const contentType = request.headers.get('content-type') || ''
 
-    for (const payload of rawIntakeFiles) {
-      const fileBytes = Uint8Array.from(atob(payload.content_base64), (character) => character.charCodeAt(0))
-      const file = new File([fileBytes], payload.file_name, { type: payload.mime_type })
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData()
+      const fileTypes = formData.getAll('intake_file_types').map((value) => String(value))
+      const files = formData
+        .getAll('intake_files')
+        .filter((value): value is File => value instanceof File)
 
-      if (file.size > 0) {
+      files.forEach((file, index) => {
+        const type = fileTypes[index]
+        if (!type) return
+
         validateDocumentFile(file)
-        intakeFiles.set(payload.type, file)
+        intakeFiles.set(type, file)
+      })
+    } else {
+      const body = await request.json()
+      const rawIntakeFiles = Array.isArray(body.intake_files)
+        ? (body.intake_files as IntakeFilePayload[])
+        : []
+
+      for (const payload of rawIntakeFiles) {
+        const fileBytes = Uint8Array.from(atob(payload.content_base64), (character) => character.charCodeAt(0))
+        const file = new File([fileBytes], payload.file_name, { type: payload.mime_type })
+
+        if (file.size > 0) {
+          validateDocumentFile(file)
+          intakeFiles.set(payload.type, file)
+        }
       }
     }
 

@@ -1,18 +1,6 @@
 import type { Client, EmployeeWithProfile } from '@/types/database.types'
 import type { CreateClientDto } from '@/lib/services/client.service'
 
-async function fileToBase64(file: File): Promise<string> {
-  const buffer = await file.arrayBuffer()
-  const bytes = new Uint8Array(buffer)
-  let binary = ''
-
-  for (let index = 0; index < bytes.length; index += 1) {
-    binary += String.fromCharCode(bytes[index])
-  }
-
-  return btoa(binary)
-}
-
 async function readJson<T>(response: Response, fallbackMessage: string): Promise<T> {
   const payload = await response.json()
 
@@ -21,6 +9,12 @@ async function readJson<T>(response: Response, fallbackMessage: string): Promise
   }
 
   return payload as T
+}
+
+function appendOptionalField(formData: FormData, key: string, value: string | undefined) {
+  if (value && value.trim().length > 0) {
+    formData.append(key, value)
+  }
 }
 
 export const directoryClient = {
@@ -42,26 +36,29 @@ export const directoryClient = {
 
   async createClient(data: CreateClientDto, intakeFiles?: Record<string, File>): Promise<Client> {
     const files = intakeFiles ? Object.entries(intakeFiles).filter(([, file]) => file) : []
-    const intake_documents = files.length > 0
-      ? await Promise.all(
-          files.map(async ([type, file]) => ({
-            type,
-            file_name: file.name,
-            mime_type: file.type,
-            content_base64: await fileToBase64(file),
-          }))
-        )
-      : undefined
+
+    const formData = new FormData()
+    formData.append('name', data.name)
+    appendOptionalField(formData, 'phone', data.phone)
+    appendOptionalField(formData, 'city', data.city)
+    appendOptionalField(formData, 'district', data.district)
+    appendOptionalField(formData, 'neighborhood', data.neighborhood)
+    appendOptionalField(formData, 'parcel_number', data.parcel_number)
+
+    const documentTypes = files.length > 0 ? files.map(([type]) => type) : data.intake_documents ?? []
+    for (const documentType of documentTypes) {
+      formData.append('intake_documents', documentType)
+    }
+
+    for (const [type, file] of files) {
+      formData.append('intake_file_types', type)
+      formData.append('intake_files', file)
+    }
 
     const payload = await readJson<{ client: Client }>(
       await fetch('/api/clients', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          intake_documents: files.length > 0 ? files.map(([type]) => type) : data.intake_documents,
-          intake_files: intake_documents,
-        }),
+        body: formData,
       }),
       'Failed to create client'
     )
