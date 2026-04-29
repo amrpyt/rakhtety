@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient, listClients } from '@/lib/server-data/directory-query'
-import { buildClientIntakeStoragePath, validateDocumentFile } from '@/lib/services/document-helpers'
+import { buildClientIntakeStoragePath } from '@/lib/services/document-helpers'
 import { createServerClient } from '@/lib/supabase/server'
 import { CLIENT_INTAKE_DOCUMENTS } from '@/lib/domain/workflow-templates'
 import { clientCreateSchema } from '@/lib/validation/schemas'
+import { parseClientCreateRequest } from './request-parser'
 
 const BUCKET = 'workflow-documents'
-
-interface IntakeFilePayload {
-  type: string
-  file_name: string
-  mime_type: string
-  content_base64: string
-}
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof Error) {
@@ -70,39 +64,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'يجب تسجيل الدخول أولاً' }, { status: 401 })
     }
 
-    const intakeFiles = new Map<string, File>()
-    const contentType = request.headers.get('content-type') || ''
-
-    if (contentType.includes('multipart/form-data')) {
-      const formData = await request.formData()
-      const fileTypes = formData.getAll('intake_file_types').map((value) => String(value))
-      const files = formData
-        .getAll('intake_files')
-        .filter((value): value is File => value instanceof File)
-
-      files.forEach((file, index) => {
-        const type = fileTypes[index]
-        if (!type) return
-
-        validateDocumentFile(file)
-        intakeFiles.set(type, file)
-      })
-    } else {
-      const body = await request.json()
-      const rawIntakeFiles = Array.isArray(body.intake_files)
-        ? (body.intake_files as IntakeFilePayload[])
-        : []
-
-      for (const payload of rawIntakeFiles) {
-        const fileBytes = Uint8Array.from(atob(payload.content_base64), (character) => character.charCodeAt(0))
-        const file = new File([fileBytes], payload.file_name, { type: payload.mime_type })
-
-        if (file.size > 0) {
-          validateDocumentFile(file)
-          intakeFiles.set(payload.type, file)
-        }
-      }
-    }
+    const { body, intakeFiles } = await parseClientCreateRequest(request)
 
     const input = {
       name: body.name,
