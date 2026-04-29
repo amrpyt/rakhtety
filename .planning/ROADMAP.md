@@ -9,7 +9,7 @@
 ## Overview
 
 | # | Phase | Goal | Requirements | Success Criteria |
-|---|-------|------|--------------|------------------|
+|---|-------|------|--------------|-----------------|
 | 1 | Core Foundation | Supabase setup, Auth, CRM, basic Workflow UI | 16 | 4 |
 | 2 | Workflow Engine | Full state machine, dependency enforcement, step completion | 7 | 4 |
 | 3 | Financial Layer | Fees, payments, debt tracking, profit calculation | 5 | 4 |
@@ -61,10 +61,12 @@
 4. Each step shows government fees and office profit
 
 ### Plans
-1. **Database Schema for Workflows** — Tables for workflows, steps, transitions
-2. **State Machine Implementation** — PostgreSQL state machine with triggers
-3. **Workflow Dependency Gate** — Excavation Permit blocked until Device License complete
-4. **Step Financial Configuration** — Fees and profit per workflow step
+1. **Database Schema for Workflows** (02-01) — State transition trigger + workflow_step_configs table
+2. **State Machine Implementation** (02-02) — App-level validation + error handling + tests
+3. **Workflow Dependency Gate** (02-03) — Excavation Permit blocked until Device License complete
+4. **Step Completion with Financial Config** (02-04) — Mark Complete button + fees/profit display
+
+### Status: Planning complete - 4 plans created
 
 ---
 
@@ -87,6 +89,8 @@
 3. **Debt Calculation** — Compute outstanding balance from events
 4. **Financial Dashboard Widgets** — KPI cards for financial metrics
 
+### Status: Complete - verified 2026-04-29
+
 ---
 
 ## Phase 4: Document Management
@@ -107,6 +111,8 @@
 2. **File Upload UI** — Drag-and-drop upload zone per step
 3. **Document Validation** — Block step completion if required docs missing
 4. **Document List View** — View all uploaded documents per workflow
+
+### Status: Complete - verified 2026-04-29
 
 ---
 
@@ -130,6 +136,8 @@
 3. **Bottleneck UI** — List view with employee assignment and alert button
 4. **Alert System** — Send notification to employee (in-app notification center)
 
+### Status: Complete - verified 2026-04-29
+
 ---
 
 ## Phase 6: Client Reporting & Polish
@@ -141,7 +149,7 @@
 
 ### Success Criteria
 1. User can generate PDF report for any client
-2. Report shows completed steps with checkmark (✓)
+2. Report shows completed steps with checkmark
 3. Report shows pending steps
 4. Report shows financial summary with Arabic formatting
 
@@ -164,6 +172,17 @@
 | 5 | KPIs displayed, bottlenecks detected, alerts sent |
 | 6 | Arabic PDF generated, app deployed to Cloudflare Pages |
 
+### Phase 7: Upgrade Next.js stack and regression test the app
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 7 to break down)
+
 ---
 
 *Roadmap created: 2026-04-27*
+*Last updated: 2026-04-29 - Phase 5 verified complete*

@@ -1,20 +1,25 @@
 import { useState, useCallback, useEffect } from 'react'
 import { workflowService } from '@/lib/services/workflow.service'
-import type { WorkflowWithSteps } from '@/types/database.types'
+import type { StepStatus, WorkflowWithSteps } from '@/types/database.types'
 
 interface UseWorkflowsReturn {
   deviceLicense: WorkflowWithSteps | null
   excavationPermit: WorkflowWithSteps | null
   deviceLicenseCompleted: boolean
+  excavationPermitBlocked: boolean
+  excavationPermitBlockedReason?: string
   loading: boolean
   error: string | null
   fetchWorkflows: (clientId: string) => Promise<void>
+  updateStepStatus: (stepId: string, status: Extract<StepStatus, 'in_progress' | 'completed'>) => Promise<void>
 }
 
 export function useWorkflows(clientId?: string): UseWorkflowsReturn {
   const [deviceLicense, setDeviceLicense] = useState<WorkflowWithSteps | null>(null)
   const [excavationPermit, setExcavationPermit] = useState<WorkflowWithSteps | null>(null)
   const [deviceLicenseCompleted, setDeviceLicenseCompleted] = useState(false)
+  const [excavationPermitBlocked, setExcavationPermitBlocked] = useState(false)
+  const [excavationPermitBlockedReason, setExcavationPermitBlockedReason] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,11 +34,15 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
       if (device) {
         const deviceWithSteps = await workflowService.getWithSteps(device.id)
         setDeviceLicense(deviceWithSteps)
-        setDeviceLicenseCompleted(device.status === 'completed')
+        setDeviceLicenseCompleted(deviceWithSteps.status === 'completed')
       } else {
         setDeviceLicense(null)
         setDeviceLicenseCompleted(false)
       }
+
+      const dependencyStatus = await workflowService.checkDependency(id)
+      setExcavationPermitBlocked(dependencyStatus.isBlocked)
+      setExcavationPermitBlockedReason(dependencyStatus.reason)
 
       if (excavation) {
         const excavationWithSteps = await workflowService.getWithSteps(excavation.id)
@@ -48,6 +57,25 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
     }
   }, [])
 
+  const updateStepStatus = useCallback(
+    async (stepId: string, status: Extract<StepStatus, 'in_progress' | 'completed'>) => {
+      try {
+        setLoading(true)
+        setError(null)
+        await workflowService.updateStepStatus(stepId, status)
+        if (clientId) {
+          await fetchWorkflows(clientId)
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to update step'
+        setError(message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [clientId, fetchWorkflows]
+  )
+
   useEffect(() => {
     if (clientId) {
       fetchWorkflows(clientId)
@@ -58,8 +86,11 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
     deviceLicense,
     excavationPermit,
     deviceLicenseCompleted,
+    excavationPermitBlocked,
+    excavationPermitBlockedReason,
     loading,
     error,
     fetchWorkflows,
+    updateStepStatus,
   }
 }

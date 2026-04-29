@@ -6,3 +6,14 @@ node_modules/
 .env.production.local
 *.log
 *.tsbuildinfo
+
+# OpenNext
+.open-next
+.wrangler
+.dev.vars
+cloudflare-env.d.ts
+
+.vercel
+.codex/
+.claude/
+.planning/test-upload.*

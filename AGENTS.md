@@ -166,6 +166,14 @@ You can say things like:
 - UI Reference: `rakhtety-erp-demo.html` (this is your design to copy)
 - Requirements: `.planning/REQUIREMENTS.md`
 
+## Notes From Recent Work
+
+- `agent-browser` is installed and ready here. Use it for browser E2E checks instead of ad hoc Playwright workarounds.
+- The app’s Supabase login can return a magic-link session, but the browser may still redirect back to `/login` if the auth state is not picked up.
+- The Supabase magic-link `redirect_to` matters. In this repo, `localhost:3000` worked better than `3001` for auth handoff.
+- If a dashboard route keeps bouncing to login, check both the browser storage/cookie state and the app’s session parsing before assuming the link failed.
+- Software admin test account email: `amremaad11@gmail.com`, pass: '1qaz1qaz'.
+
 ---
 
 *Last updated: 2026-04-28*

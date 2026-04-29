@@ -37,26 +37,26 @@
 
 ### FIN-01: Financial Tracking
 
-- [ ] **FIN-01**: Each workflow step is linked to government fees (رسوم) and office profit (أتعاب)
-- [ ] **FIN-02**: System calculates total cost per workflow (sum of all fees + profit)
-- [ ] **FIN-03**: System tracks payments received against each workflow
-- [ ] **FIN-04**: System calculates outstanding debt per client
-- [ ] **FIN-05**: Dashboard shows: total fees collected, total profit, total debt outstanding
+- [x] **FIN-01**: Each workflow step is linked to government fees (رسوم) and office profit (أتعاب)
+- [x] **FIN-02**: System calculates total cost per workflow (sum of all fees + profit)
+- [x] **FIN-03**: System tracks payments received against each workflow
+- [x] **FIN-04**: System calculates outstanding debt per client
+- [x] **FIN-05**: Dashboard shows: total fees collected, total profit, total debt outstanding
 
 ### DOC-01: Document Management
 
-- [ ] **DOC-01**: User can upload attachments per workflow step
-- [ ] **DOC-02**: System stores documents with: type, upload date, uploaded by
-- [ ] **DOC-03**: Required documents must be uploaded before step can be marked complete
-- [ ] **DOC-04**: Optional documents (e.g., receipt for التعلية) can be uploaded but don't block progress
+- [x] **DOC-01**: User can upload attachments per workflow step
+- [x] **DOC-02**: System stores documents with: type, upload date, uploaded by
+- [x] **DOC-03**: Required documents must be uploaded before step can be marked complete
+- [x] **DOC-04**: Optional documents (e.g., receipt for التعلية) can be uploaded but don't block progress
 
 ### DASH-01: Dashboard & Tracking
 
-- [ ] **DASH-01**: Dashboard shows KPIs: active files, completed this month, pending debt, bottlenecks
-- [ ] **DASH-02**: System identifies bottlenecks: files stuck > 7 days at same step
-- [ ] **DASH-03**: Bottleneck view shows: client name, stuck step, assigned employee, days stuck
-- [ ] **DASH-04**: Manager can see which employee is responsible for bottleneck
-- [ ] **DASH-05**: Manager can send alert notification to employee about bottleneck
+- [x] **DASH-01**: Dashboard shows KPIs: active files, completed this month, pending debt, bottlenecks
+- [x] **DASH-02**: System identifies bottlenecks: files stuck > 7 days at same step
+- [x] **DASH-03**: Bottleneck view shows: client name, stuck step, assigned employee, days stuck
+- [x] **DASH-04**: Manager can see which employee is responsible for bottleneck
+- [x] **DASH-05**: Manager can send alert notification to employee about bottleneck
 
 ### RPT-01: Client Reporting
 
@@ -77,7 +77,7 @@
 
 - [ ] **EMP-01**: Admin can add/edit/delete employee profiles
 - [ ] **EMP-02**: Each workflow step is assigned to a specific employee
-- [ ] **EMP-03**: System tracks employee workload (cases assigned, cases completed)
+- [x] **EMP-03**: System tracks employee workload (cases assigned, cases completed)
 
 ## v2 Requirements
 
@@ -140,20 +140,20 @@
 | WF-03 | Phase 2 | Pending |
 | WF-04 | Phase 1 | Pending |
 | WF-05 | Phase 1 | Pending |
-| FIN-01 | Phase 2 | Pending |
-| FIN-02 | Phase 2 | Pending |
-| FIN-03 | Phase 2 | Pending |
-| FIN-04 | Phase 2 | Pending |
-| FIN-05 | Phase 1 | Pending |
-| DOC-01 | Phase 1 | Pending |
-| DOC-02 | Phase 1 | Pending |
-| DOC-03 | Phase 1 | Pending |
-| DOC-04 | Phase 1 | Pending |
-| DASH-01 | Phase 1 | Pending |
-| DASH-02 | Phase 1 | Pending |
-| DASH-03 | Phase 1 | Pending |
-| DASH-04 | Phase 2 | Pending |
-| DASH-05 | Phase 2 | Pending |
+| FIN-01 | Phase 3 | Complete |
+| FIN-02 | Phase 3 | Complete |
+| FIN-03 | Phase 3 | Complete |
+| FIN-04 | Phase 3 | Complete |
+| FIN-05 | Phase 3 | Complete |
+| DOC-01 | Phase 4 | Complete |
+| DOC-02 | Phase 4 | Complete |
+| DOC-03 | Phase 4 | Complete |
+| DOC-04 | Phase 4 | Complete |
+| DASH-01 | Phase 5 | Complete |
+| DASH-02 | Phase 5 | Complete |
+| DASH-03 | Phase 5 | Complete |
+| DASH-04 | Phase 5 | Complete |
+| DASH-05 | Phase 5 | Complete |
 | RPT-01 | Phase 2 | Pending |
 | RPT-02 | Phase 2 | Pending |
 | RPT-03 | Phase 2 | Pending |
@@ -165,7 +165,7 @@
 | AUTH-04 | Phase 1 | Pending |
 | EMP-01 | Phase 1 | Pending |
 | EMP-02 | Phase 1 | Pending |
-| EMP-03 | Phase 2 | Pending |
+| EMP-03 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 31 total

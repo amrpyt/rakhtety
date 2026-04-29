@@ -15,7 +15,6 @@ export interface CreateProfileData {
   email: string
   full_name: string
   role: UserRole
-  email?: string
   phone?: string
 }
 
@@ -23,7 +22,6 @@ export interface UpdateProfileData {
   email?: string
   full_name?: string
   role?: UserRole
-  email?: string
   phone?: string
 }
 

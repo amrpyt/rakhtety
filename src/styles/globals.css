@@ -79,6 +79,34 @@ body {
   line-height: 1.6;
 }
 
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  body {
+    background: white;
+  }
+
+  .report-toolbar,
+  aside,
+  nav {
+    display: none !important;
+  }
+
+  .report-page {
+    padding: 0 !important;
+  }
+
+  .report-page article {
+    max-width: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
+
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;

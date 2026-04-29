@@ -76,6 +76,9 @@
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Dashboard bottlenecks use a 7-day active-step rule | Managers need a simple operational signal without extra settings UI | Validated in Phase 05 |
+| Required document gate | Steps cannot be completed until required uploaded documents exist | Validated in Phase 04 |
+| Append-only financial ledger | Payments, refunds, and adjustments stay auditable as receipt-like events | Validated in Phase 03 |
 | Serverless-first | يفي بشرط "خادم بدون خادم" مع تكاليف بدء منخفضة | — Pending |
 | Firestore كـ database | Generous free tier, real-time sync, Arabic-friendly | — Pending |
 | Single-page app للـ demo | rakhtety-erp-demo.html يوضح الـ UI بالكامل | — Pending |
@@ -83,4 +86,4 @@
 
 ---
 
-*Last updated: 2026-04-27 after initialization*
+*Last updated: 2026-04-29 after Phase 05*

@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/Badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { WorkflowTabs } from '@/components/workflow/WorkflowTabs'
+import { FinancialSummaryCard } from '@/components/financial/FinancialSummaryCard'
+import { PaymentForm } from '@/components/financial/PaymentForm'
+import { useFinancials } from '@/hooks/useFinancials'
 import { useWorkflows } from '@/hooks/useWorkflows'
 import { clientService } from '@/lib/services/client.service'
 import type { Client } from '@/types/database.types'
@@ -25,8 +28,20 @@ export default function ClientDetailPage() {
     deviceLicense,
     excavationPermit,
     deviceLicenseCompleted,
+    excavationPermitBlocked,
+    excavationPermitBlockedReason,
     loading: workflowsLoading,
+    error: workflowError,
+    updateStepStatus,
   } = useWorkflows(clientId)
+
+  const activeWorkflow = deviceLicense || excavationPermit
+  const {
+    summary: financialSummary,
+    loading: financialLoading,
+    error: financialError,
+    recordPayment,
+  } = useFinancials(activeWorkflow?.id)
 
   useEffect(() => {
     clientService
@@ -68,6 +83,9 @@ export default function ClientDetailPage() {
             <path d="M9 18l6-6-6-6" />
           </svg>
           العودة
+        </Button>
+        <Button variant="secondary" onClick={() => router.push(`/clients/${clientId}/report`)}>
+          تقرير PDF
         </Button>
       </div>
 
@@ -133,7 +151,32 @@ export default function ClientDetailPage() {
         deviceLicenseWorkflow={deviceLicense}
         excavationPermitWorkflow={excavationPermit}
         deviceLicenseCompleted={deviceLicenseCompleted}
+        excavationPermitBlocked={excavationPermitBlocked}
+        excavationPermitBlockedReason={excavationPermitBlockedReason}
+        onMarkComplete={(stepId) => updateStepStatus(stepId, 'completed')}
+        onStart={(stepId) => updateStepStatus(stepId, 'in_progress')}
       />
+      {workflowError && (
+        <p className="mt-3 rounded-[var(--radius-md)] bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">
+          {workflowError}
+        </p>
+      )}
+
+      {activeWorkflow && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <FinancialSummaryCard summary={financialSummary} loading={financialLoading} />
+          <div>
+            <PaymentForm
+              steps={activeWorkflow.steps}
+              loading={financialLoading}
+              onSubmit={recordPayment}
+            />
+            {financialError && (
+              <p className="text-sm text-[var(--color-error)] mt-2">{financialError}</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
