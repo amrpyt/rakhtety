@@ -182,6 +182,16 @@
 Plans:
 - [ ] TBD (run /gsd-plan-phase 7 to break down)
 
+### Phase 8: Rebuild Rakhtety on Frappe ERPNext
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 7
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 8 to break down)
+
 ---
 
 *Roadmap created: 2026-04-27*

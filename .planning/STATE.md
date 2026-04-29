@@ -5,7 +5,7 @@ milestone_name: milestone
 status: Ready to plan
 last_updated: "2026-04-30T00:00:00+03:00"
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 5
   total_plans: 26
   completed_plans: 21
@@ -46,6 +46,7 @@ See: .planning/PROJECT.md
 
 ### Roadmap Evolution
 
+- Phase 8 added: Rebuild Rakhtety on Frappe ERPNext
 - Phase 7 added: Upgrade Next.js stack and regression test the app
 - Phase 6 report generation completed; Cloudflare deployment blocked by unsupported Next.js 14 for current OpenNext Cloudflare adapter.
 
