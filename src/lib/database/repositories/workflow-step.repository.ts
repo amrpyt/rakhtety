@@ -8,7 +8,7 @@ export interface IWorkflowStepRepository {
   findByWorkflowId(workflowId: string): Promise<WorkflowStepWithEmployee[]>
   create(data: CreateWorkflowStepData): Promise<WorkflowStep>
   update(id: string, data: UpdateWorkflowStepData): Promise<WorkflowStep>
-  updateStatus(id: string, status: StepStatus, completedAt?: string): Promise<WorkflowStep>
+  updateStatus(id: string, status: StepStatus, completedAt?: string | null): Promise<WorkflowStep>
   findConfig(workflowType: WorkflowType, stepName: string): Promise<WorkflowStepConfig | null>
   validateTransition(currentStatus: StepStatus, newStatus: StepStatus): boolean
   delete(id: string): Promise<void>
@@ -32,9 +32,9 @@ export interface UpdateWorkflowStepData {
 
 const VALID_TRANSITIONS: Record<StepStatus, StepStatus[]> = {
   pending: ['in_progress'],
-  in_progress: ['completed', 'blocked'],
+  in_progress: ['pending', 'completed', 'blocked'],
   blocked: ['in_progress'],
-  completed: [],
+  completed: ['in_progress'],
 }
 
 export class WorkflowStepRepository implements IWorkflowStepRepository {
@@ -97,7 +97,7 @@ export class WorkflowStepRepository implements IWorkflowStepRepository {
     return result
   }
 
-  async updateStatus(id: string, status: StepStatus, completedAt?: string): Promise<WorkflowStep> {
+  async updateStatus(id: string, status: StepStatus, completedAt?: string | null): Promise<WorkflowStep> {
     const currentStep = await this.findById(id)
     if (!currentStep) {
       throw new AppError({
@@ -122,7 +122,7 @@ export class WorkflowStepRepository implements IWorkflowStepRepository {
     }
 
     const updateData: Partial<WorkflowStep> = { status }
-    if (completedAt) {
+    if (completedAt !== undefined) {
       updateData.completed_at = completedAt
     }
 

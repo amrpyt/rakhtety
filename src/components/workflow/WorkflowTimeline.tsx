@@ -8,6 +8,8 @@ interface WorkflowTimelineProps {
   lockedReason?: string
   onMarkComplete?: (stepId: string) => Promise<void>
   onStart?: (stepId: string) => Promise<void>
+  onEmergencyComplete?: (stepId: string, reason: string) => Promise<void>
+  onMoveBack?: (stepId: string, reason: string) => Promise<void>
 }
 
 export function WorkflowTimeline({
@@ -16,6 +18,8 @@ export function WorkflowTimeline({
   lockedReason,
   onMarkComplete,
   onStart,
+  onEmergencyComplete,
+  onMoveBack,
 }: WorkflowTimelineProps) {
   if (steps.length === 0) {
     return (
@@ -44,6 +48,8 @@ export function WorkflowTimeline({
           canAct={!step.id.startsWith('placeholder-')}
           onMarkComplete={onMarkComplete}
           onStart={onStart}
+          onEmergencyComplete={onEmergencyComplete}
+          onMoveBack={onMoveBack}
         />
       ))}
     </div>

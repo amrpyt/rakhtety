@@ -25,6 +25,10 @@ describe('WorkflowStepRepository.validateTransition', () => {
     expect(repository.validateTransition('blocked', 'in_progress')).toBe(true)
   })
 
+  it('allows in_progress to move back to pending', () => {
+    expect(repository.validateTransition('in_progress', 'pending')).toBe(true)
+  })
+
   it('allows no-op updates', () => {
     expect(repository.validateTransition('pending', 'pending')).toBe(true)
     expect(repository.validateTransition('completed', 'completed')).toBe(true)
@@ -34,9 +38,12 @@ describe('WorkflowStepRepository.validateTransition', () => {
     expect(repository.validateTransition('pending', 'completed')).toBe(false)
   })
 
-  it('blocks completed from reopening', () => {
+  it('allows completed to move back to in_progress', () => {
+    expect(repository.validateTransition('completed', 'in_progress')).toBe(true)
+  })
+
+  it('blocks completed from moving directly to pending or blocked', () => {
     expect(repository.validateTransition('completed', 'pending')).toBe(false)
-    expect(repository.validateTransition('completed', 'in_progress')).toBe(false)
     expect(repository.validateTransition('completed', 'blocked')).toBe(false)
   })
 

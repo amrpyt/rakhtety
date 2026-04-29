@@ -10,6 +10,8 @@ export type FinancialEventType = 'payment' | 'refund' | 'adjustment'
 
 export type DashboardAlertStatus = 'unread' | 'read'
 
+export type WorkflowActionType = 'emergency_complete' | 'move_back'
+
 export interface Profile {
   id: string
   email: string | null
@@ -155,6 +157,16 @@ export interface DashboardAlert {
   status: DashboardAlertStatus
   created_at: string
   read_at: string | null
+}
+
+export interface WorkflowActionLog {
+  id: string
+  workflow_id: string
+  workflow_step_id: string
+  action: WorkflowActionType
+  reason: string
+  actor_id: string | null
+  created_at: string
 }
 
 export interface WorkflowDocumentRequirement {

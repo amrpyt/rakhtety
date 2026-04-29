@@ -1,6 +1,7 @@
 import { workflowRepository } from '@/lib/database/repositories/workflow.repository'
 import { workflowStepRepository } from '@/lib/database/repositories/workflow-step.repository'
 import { clientRepository } from '@/lib/database/repositories/client.repository'
+import { workflowActionLogRepository } from '@/lib/database/repositories/workflow-action-log.repository'
 import { documentService } from '@/lib/services/document.service'
 import type {
   StepStatus,
@@ -34,6 +35,16 @@ export interface WorkflowDependencyStatus {
   reason?: string
   blockingWorkflow?: WorkflowType
   blockingWorkflowStatus?: Workflow['status']
+}
+
+export interface EmergencyStepActionInput {
+  reason: string
+  actorId?: string | null
+}
+
+interface SupabaseErrorLike {
+  code?: string
+  message?: string
 }
 
 export class WorkflowService {
@@ -118,6 +129,103 @@ export class WorkflowService {
 
     const completedAt = status === 'completed' ? new Date().toISOString() : undefined
     const updatedStep = await workflowStepRepository.updateStatus(stepId, status, completedAt)
+    await this.syncWorkflowStatusAfterStepUpdate(updatedStep.workflow_id)
+
+    const workflowSteps = await workflowStepRepository.findByWorkflowId(updatedStep.workflow_id)
+    return workflowSteps.find((workflowStep) => workflowStep.id === updatedStep.id) || updatedStep
+  }
+
+  async emergencyCompleteStep(
+    stepId: string,
+    input: EmergencyStepActionInput
+  ): Promise<WorkflowStepWithEmployee> {
+    if (!input.reason.trim()) {
+      throw new AppError({
+        code: ErrorCodes.VALIDATION_FAILED,
+        message: 'سبب التجاوز الطارئ مطلوب',
+        statusCode: 400,
+        context: { stepId, actorId: input.actorId || null },
+      })
+    }
+
+    const step = await workflowStepRepository.findById(stepId)
+    if (!step) {
+      throw new NotFoundError('Ø§Ù„Ø®Ø·ÙˆØ©', stepId)
+    }
+
+    if (step.status !== 'in_progress') {
+      throw new AppError({
+        code: ErrorCodes.WORKFLOW_STEP_INVALID_TRANSITION,
+        message: 'ÙŠØ¬Ø¨ Ø¨Ø¯Ø¡ Ø§Ù„Ø®Ø·ÙˆØ© Ø£ÙˆÙ„Ø§Ù‹ Ù‚Ø¨Ù„ Ø§Ù„ØªØ¬Ø§ÙˆØ² Ø§Ù„Ø·Ø§Ø±Ø¦',
+        statusCode: 400,
+        context: { stepId, currentStatus: step.status },
+      })
+    }
+
+    try {
+      await documentService.assertStepCanComplete(stepId)
+    } catch (error) {
+      if (!(error instanceof AppError) || error.code !== ErrorCodes.WORKFLOW_DOCUMENTS_MISSING) {
+        throw error
+      }
+    }
+
+    const completedAt = new Date().toISOString()
+    const updatedStep = await workflowStepRepository.updateStatus(stepId, 'completed', completedAt)
+    await this.createActionLogBestEffort({
+      workflow_id: updatedStep.workflow_id,
+      workflow_step_id: updatedStep.id,
+      action: 'emergency_complete',
+      reason: input.reason.trim(),
+      actor_id: input.actorId || null,
+    })
+    await this.syncWorkflowStatusAfterStepUpdate(updatedStep.workflow_id)
+
+    const workflowSteps = await workflowStepRepository.findByWorkflowId(updatedStep.workflow_id)
+    return workflowSteps.find((workflowStep) => workflowStep.id === updatedStep.id) || updatedStep
+  }
+
+  async moveStepBack(
+    stepId: string,
+    input: EmergencyStepActionInput
+  ): Promise<WorkflowStepWithEmployee> {
+    if (!input.reason.trim()) {
+      throw new AppError({
+        code: ErrorCodes.VALIDATION_FAILED,
+        message: 'سبب الرجوع مطلوب',
+        statusCode: 400,
+        context: { stepId, actorId: input.actorId || null },
+      })
+    }
+
+    const step = await workflowStepRepository.findById(stepId)
+    if (!step) {
+      throw new NotFoundError('Ø§Ù„Ø®Ø·ÙˆØ©', stepId)
+    }
+
+    const previousStatus: Partial<Record<StepStatus, StepStatus>> = {
+      completed: 'in_progress',
+      in_progress: 'pending',
+    }
+    const nextStatus = previousStatus[step.status]
+
+    if (!nextStatus) {
+      throw new AppError({
+        code: ErrorCodes.WORKFLOW_STEP_INVALID_TRANSITION,
+        message: 'لا يمكن الرجوع من حالة هذه الخطوة',
+        statusCode: 400,
+        context: { stepId, currentStatus: step.status },
+      })
+    }
+
+    const updatedStep = await workflowStepRepository.updateStatus(stepId, nextStatus, null)
+    await this.createActionLogBestEffort({
+      workflow_id: updatedStep.workflow_id,
+      workflow_step_id: updatedStep.id,
+      action: 'move_back',
+      reason: input.reason.trim(),
+      actor_id: input.actorId || null,
+    })
     await this.syncWorkflowStatusAfterStepUpdate(updatedStep.workflow_id)
 
     const workflowSteps = await workflowStepRepository.findByWorkflowId(updatedStep.workflow_id)
@@ -215,6 +323,22 @@ export class WorkflowService {
 
     if (nextStatus !== workflow.status) {
       await workflowRepository.updateStatus(workflowId, nextStatus)
+    }
+  }
+
+  private async createActionLogBestEffort(
+    data: Parameters<typeof workflowActionLogRepository.create>[0]
+  ): Promise<void> {
+    try {
+      await workflowActionLogRepository.create(data)
+    } catch (error) {
+      const supabaseError = error as SupabaseErrorLike
+      if (supabaseError.code === 'PGRST205') {
+        console.warn('workflow_action_logs table is missing; skipping audit log until migration 009 is applied')
+        return
+      }
+
+      throw error
     }
   }
 }

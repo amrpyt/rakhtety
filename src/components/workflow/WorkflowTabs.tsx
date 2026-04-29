@@ -14,6 +14,8 @@ interface WorkflowTabsProps {
   excavationPermitBlockedReason?: string
   onMarkComplete?: (stepId: string) => Promise<void>
   onStart?: (stepId: string) => Promise<void>
+  onEmergencyComplete?: (stepId: string, reason: string) => Promise<void>
+  onMoveBack?: (stepId: string, reason: string) => Promise<void>
 }
 
 const DEVICE_LICENSE_STEPS = [
@@ -40,6 +42,8 @@ export function WorkflowTabs({
   excavationPermitBlockedReason,
   onMarkComplete,
   onStart,
+  onEmergencyComplete,
+  onMoveBack,
 }: WorkflowTabsProps) {
   const tabs = [
     { id: 'device', label: 'مسار رخصة الجهاز', disabled: false },
@@ -76,6 +80,8 @@ export function WorkflowTabs({
             }
             onMarkComplete={onMarkComplete}
             onStart={onStart}
+            onEmergencyComplete={onEmergencyComplete}
+            onMoveBack={onMoveBack}
           />
         </Card>
       </TabPanel>
@@ -126,6 +132,8 @@ export function WorkflowTabs({
             lockedReason={excavationPermitBlockedReason}
             onMarkComplete={onMarkComplete}
             onStart={onStart}
+            onEmergencyComplete={onEmergencyComplete}
+            onMoveBack={onMoveBack}
           />
         </Card>
       </TabPanel>

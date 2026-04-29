@@ -178,3 +178,17 @@ You can say things like:
 
 *Last updated: 2026-04-28*
 *Remember: There's no such thing as a stupid question! If you're confused, I'm doing it wrong.*
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for this repo. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the default GitHub label names for the five triage roles. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context repo. Read `.planning/STATE.md` first, then the relevant `docs/adr/` files when they exist. See `docs/agents/domain.md`.

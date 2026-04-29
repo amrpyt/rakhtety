@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DocumentUploadPanel } from '@/components/documents/DocumentUploadPanel'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -19,6 +19,8 @@ interface WorkflowStepProps {
   canAct?: boolean
   onMarkComplete?: (stepId: string) => Promise<void>
   onStart?: (stepId: string) => Promise<void>
+  onEmergencyComplete?: (stepId: string, reason: string) => Promise<void>
+  onMoveBack?: (stepId: string, reason: string) => Promise<void>
 }
 
 const statusConfig: Record<StepStatus, { label: string; variant: 'pending' | 'in_progress' | 'completed' | 'blocked' }> = {
@@ -43,10 +45,39 @@ export function WorkflowStep({
   canAct = true,
   onMarkComplete,
   onStart,
+  onEmergencyComplete,
+  onMoveBack,
 }: WorkflowStepProps) {
+  const [pendingAction, setPendingAction] = useState<'emergency' | 'back' | null>(null)
+  const [reason, setReason] = useState('')
   const config = statusConfig[status]
   const showStart = canAct && !isLocked && status === 'pending' && onStart
   const showComplete = canAct && !isLocked && status === 'in_progress' && onMarkComplete
+  const showEmergencyComplete = canAct && !isLocked && status === 'in_progress' && onEmergencyComplete
+  const showMoveBack = canAct && !isLocked && (status === 'in_progress' || status === 'completed') && onMoveBack
+
+  const openReasonBox = (action: 'emergency' | 'back') => {
+    setPendingAction(action)
+    setReason('')
+  }
+
+  const closeReasonBox = () => {
+    setPendingAction(null)
+    setReason('')
+  }
+
+  const submitReason = async () => {
+    const trimmedReason = reason.trim()
+    if (!pendingAction || !trimmedReason) return
+
+    if (pendingAction === 'emergency') {
+      await onEmergencyComplete?.(id, trimmedReason)
+    } else {
+      await onMoveBack?.(id, trimmedReason)
+    }
+
+    closeReasonBox()
+  }
 
   return (
     <div
@@ -122,8 +153,13 @@ export function WorkflowStep({
           </div>
         )}
 
-        {(showStart || showComplete) && (
+        {(showStart || showComplete || showEmergencyComplete || showMoveBack) && (
           <div className="flex justify-end gap-2 mt-4">
+            {showMoveBack && (
+              <Button size="sm" variant="ghost" onClick={() => openReasonBox('back')}>
+                رجوع
+              </Button>
+            )}
             {showStart && (
               <Button size="sm" onClick={() => onStart(id)}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
@@ -140,6 +176,38 @@ export function WorkflowStep({
                 إكمال
               </Button>
             )}
+            {showEmergencyComplete && (
+              <Button size="sm" variant="secondary" onClick={() => openReasonBox('emergency')}>
+                تجاوز طارئ
+              </Button>
+            )}
+          </div>
+        )}
+
+        {pendingAction && (
+          <div className="mt-3 rounded-[var(--radius-lg)] border border-[var(--color-warning)]/30 bg-[var(--color-warning-light)] p-3">
+            <p className="mb-2 text-sm font-semibold text-[var(--color-text)]">
+              {pendingAction === 'emergency' ? 'تأكيد التجاوز الطارئ' : 'تأكيد الرجوع'}
+            </p>
+            <p className="mb-3 text-xs text-[var(--color-text-muted)]">
+              {pendingAction === 'emergency'
+                ? 'سيتم إكمال الخطوة حتى لو توجد مستندات ناقصة. اكتب السبب ليظهر في سجل المدير.'
+                : 'سيتم إرجاع حالة الخطوة للخلف. اكتب السبب ليظهر في سجل المدير.'}
+            </p>
+            <textarea
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              className="min-h-20 w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm outline-none focus:border-[var(--color-primary)]"
+              placeholder="اكتب السبب..."
+            />
+            <div className="mt-3 flex justify-end gap-2">
+              <Button size="sm" variant="ghost" onClick={closeReasonBox}>
+                إلغاء
+              </Button>
+              <Button size="sm" disabled={!reason.trim()} onClick={submitReason}>
+                تأكيد
+              </Button>
+            </div>
           </div>
         )}
 

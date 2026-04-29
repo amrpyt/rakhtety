@@ -33,6 +33,8 @@ export default function ClientDetailPage() {
     loading: workflowsLoading,
     error: workflowError,
     updateStepStatus,
+    emergencyCompleteStep,
+    moveStepBack,
   } = useWorkflows(clientId)
 
   const activeWorkflow = deviceLicense || excavationPermit
@@ -155,6 +157,8 @@ export default function ClientDetailPage() {
         excavationPermitBlockedReason={excavationPermitBlockedReason}
         onMarkComplete={(stepId) => updateStepStatus(stepId, 'completed')}
         onStart={(stepId) => updateStepStatus(stepId, 'in_progress')}
+        onEmergencyComplete={emergencyCompleteStep}
+        onMoveBack={moveStepBack}
       />
       {workflowError && (
         <p className="mt-3 rounded-[var(--radius-md)] bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">

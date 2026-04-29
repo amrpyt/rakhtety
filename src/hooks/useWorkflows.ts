@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { useAuth } from '@/hooks/auth/useAuth'
 import { workflowService } from '@/lib/services/workflow.service'
 import type { StepStatus, WorkflowWithSteps } from '@/types/database.types'
 
@@ -12,9 +13,12 @@ interface UseWorkflowsReturn {
   error: string | null
   fetchWorkflows: (clientId: string) => Promise<void>
   updateStepStatus: (stepId: string, status: Extract<StepStatus, 'in_progress' | 'completed'>) => Promise<void>
+  emergencyCompleteStep: (stepId: string, reason: string) => Promise<void>
+  moveStepBack: (stepId: string, reason: string) => Promise<void>
 }
 
 export function useWorkflows(clientId?: string): UseWorkflowsReturn {
+  const { user } = useAuth()
   const [deviceLicense, setDeviceLicense] = useState<WorkflowWithSteps | null>(null)
   const [excavationPermit, setExcavationPermit] = useState<WorkflowWithSteps | null>(null)
   const [deviceLicenseCompleted, setDeviceLicenseCompleted] = useState(false)
@@ -76,6 +80,44 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
     [clientId, fetchWorkflows]
   )
 
+  const emergencyCompleteStep = useCallback(
+    async (stepId: string, reason: string) => {
+      try {
+        setLoading(true)
+        setError(null)
+        await workflowService.emergencyCompleteStep(stepId, { reason, actorId: user?.id || null })
+        if (clientId) {
+          await fetchWorkflows(clientId)
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to emergency complete step'
+        setError(message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [clientId, fetchWorkflows, user?.id]
+  )
+
+  const moveStepBack = useCallback(
+    async (stepId: string, reason: string) => {
+      try {
+        setLoading(true)
+        setError(null)
+        await workflowService.moveStepBack(stepId, { reason, actorId: user?.id || null })
+        if (clientId) {
+          await fetchWorkflows(clientId)
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to move step back'
+        setError(message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [clientId, fetchWorkflows, user?.id]
+  )
+
   useEffect(() => {
     if (clientId) {
       fetchWorkflows(clientId)
@@ -92,5 +134,7 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
     error,
     fetchWorkflows,
     updateStepStatus,
+    emergencyCompleteStep,
+    moveStepBack,
   }
 }
