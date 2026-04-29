@@ -40,3 +40,8 @@ export function buildDocumentStoragePath(workflowId: string, workflowStepId: str
   const extension = getFileExtension(fileName) || 'file'
   return `${workflowId}/${workflowStepId}/${crypto.randomUUID()}.${extension}`
 }
+
+export function buildClientIntakeStoragePath(clientId: string, documentType: string, fileName: string) {
+  const extension = getFileExtension(fileName) || 'file'
+  return `client-intake/${clientId}/${documentType}/${crypto.randomUUID()}.${extension}`
+}

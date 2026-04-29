@@ -1,5 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
-import { clientService, CreateClientDto, UpdateClientDto } from '@/lib/services/client.service'
+import { clientService } from '@/lib/services/client.service'
+import type { CreateClientDto, UpdateClientDto } from '@/lib/services/client.service'
+import { directoryClient } from '@/lib/client-data/directory-client'
 import type { Client } from '@/types/database.types'
 
 interface UseClientsReturn {
@@ -11,7 +13,7 @@ interface UseClientsReturn {
   searchResults: Client[]
   isSearching: boolean
   fetchClients: () => Promise<void>
-  createClient: (data: CreateClientDto) => Promise<Client>
+  createClient: (data: CreateClientDto, intakeFiles?: Record<string, File>) => Promise<Client>
   updateClient: (id: string, data: UpdateClientDto) => Promise<Client>
   deleteClient: (id: string) => Promise<void>
 }
@@ -28,8 +30,7 @@ export function useClients(): UseClientsReturn {
     setLoading(true)
     setError(null)
     try {
-      const data = await clientService.findAll()
-      setClients(data)
+      setClients(await directoryClient.listClients())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch clients')
     } finally {
@@ -44,8 +45,7 @@ export function useClients(): UseClientsReturn {
     }
     setIsSearching(true)
     try {
-      const results = await clientService.search(query)
-      setSearchResults(results)
+      setSearchResults(await directoryClient.searchClients(query))
     } finally {
       setIsSearching(false)
     }
@@ -65,8 +65,8 @@ export function useClients(): UseClientsReturn {
   }, [searchQuery, search])
 
   const createClient = useCallback(
-    async (data: CreateClientDto) => {
-      const newClient = await clientService.create(data, 'current-user-id')
+    async (data: CreateClientDto, intakeFiles?: Record<string, File>) => {
+      const newClient = await directoryClient.createClient(data, intakeFiles)
       setClients((prev) => [newClient, ...prev])
       return newClient
     },
