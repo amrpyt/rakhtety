@@ -12,13 +12,18 @@ import { FinancialSummaryCard } from '@/components/financial/FinancialSummaryCar
 import { PaymentForm } from '@/components/financial/PaymentForm'
 import { useFinancials } from '@/hooks/useFinancials'
 import { useWorkflows } from '@/hooks/useWorkflows'
-import type { Client } from '@/types/database.types'
+import type { Client, ClientIntakeDocument } from '@/types/database.types'
+
+type ClientDetail = Client & {
+  intake_documents?: ClientIntakeDocument[]
+}
 
 function ClientWorkGuide() {
   const steps = [
+    'مستندات إضافة العميل محفوظة بالفعل في ملف العميل. لا ترفعها مرة ثانية إلا لو الملف ناقص أو غير واضح.',
     'ابدأ من مسار رخصة الجهاز. هذا هو المسار الأساسي لهذا العميل.',
     'اضغط "بدء التنفيذ" على أول خطوة عندما يبدأ الموظف شغلها فعلاً.',
-    'ارفع مستندات الخطوة من داخل نفس الخطوة لو كانت مطلوبة.',
+    'ارفع داخل الخطوة فقط المستند الجديد الخاص بهذه الخطوة، مثل إيصال تقديم أو موافقة أو رخصة مستلمة.',
     'بعد انتهاء الشغل والمستندات، اضغط "إكمال" لنقل الخطوة للحالة المكتملة.',
     'لا تبدأ تصريح الحفر إلا بعد اكتمال رخصة الجهاز بالكامل. النظام سيقفل الحفر تلقائياً قبل ذلك.',
   ]
@@ -46,8 +51,8 @@ function ClientWorkGuide() {
           <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm">
             <p className="font-bold">قاعدة مهمة</p>
             <p className="mt-2 text-[var(--color-text-muted)]">
-              هذا البرنامج معمول كدفتر متابعة للموظفين. كل عميل له مسارين: رخصة الجهاز أولاً، ثم تصريح الحفر.
-              كل مسار مقسم لخطوات. الموظف يفتح الخطوة، ينفذها، يرفع مستنداتها، ثم يكملها.
+              هذا البرنامج معمول كدفتر متابعة للموظفين. مستندات إضافة العميل هي ملف البداية. مستندات الخطوات
+              هي أوراق جديدة تظهر أثناء الشغل. الموظف لا يكرر الرفع؛ هو يرفع فقط الورق الناقص أو الناتج من الخطوة.
             </p>
             <div className="mt-4 grid gap-2 text-xs">
               <div className="rounded-[var(--radius-md)] bg-[var(--color-surface-offset)] p-2">
@@ -67,12 +72,46 @@ function ClientWorkGuide() {
   )
 }
 
+function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocument[] }) {
+  return (
+    <Card className="mb-6 border-[var(--color-success)]/20 bg-[var(--color-success-light)]/30">
+      <CardHeader>
+        <div>
+          <CardTitle>مستندات العميل الأساسية</CardTitle>
+          <CardSubtitle>
+            هذه هي الملفات التي تم رفعها وقت إضافة العميل. اعتبرها ملف البداية، ولا ترفعها مرة أخرى داخل الخطوات.
+          </CardSubtitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {documents.length > 0 ? (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {documents.map((document) => (
+              <div
+                key={document.id}
+                className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm"
+              >
+                <p className="font-semibold">{document.label}</p>
+                <p className="mt-1 truncate text-xs text-[var(--color-text-muted)]">{document.file_name}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[var(--radius-md)] bg-[var(--color-surface)] p-3 text-sm text-[var(--color-text-muted)]">
+            لا توجد مستندات أساسية محفوظة لهذا العميل حتى الآن. لو العميل سلّم الورق، ارفعه من شاشة إضافة العميل أو من تحديث الملف لاحقاً.
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function ClientDetailPage() {
   const params = useParams()
   const router = useRouter()
   const clientId = params.id as string
 
-  const [client, setClient] = useState<Client | null>(null)
+  const [client, setClient] = useState<ClientDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -111,7 +150,7 @@ export default function ClientDetailPage() {
           throw new Error(payload.error || 'Failed to load client')
         }
 
-        setClient(payload.client as Client)
+        setClient(payload.client as ClientDetail)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load client')
       } finally {
@@ -219,6 +258,8 @@ export default function ClientDetailPage() {
       </div>
 
       <ClientWorkGuide />
+
+      <ClientIntakeDocumentsCard documents={client.intake_documents || []} />
 
       <WorkflowTabs
         deviceLicenseWorkflow={deviceLicense}

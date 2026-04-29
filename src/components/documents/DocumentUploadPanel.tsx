@@ -1,9 +1,13 @@
 'use client'
 
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/Button'
 import { FormGroup, Label, Select } from '@/components/ui/Form'
 import { useDocuments } from '@/hooks/useDocuments'
+import { documentService } from '@/lib/services/document.service'
+import { documentUploadSchema, type DocumentUploadFormData } from '@/lib/validation/schemas'
 import type { WorkflowDocument } from '@/types/database.types'
 
 interface DocumentUploadPanelProps {
@@ -14,8 +18,6 @@ interface DocumentUploadPanelProps {
 
 export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: DocumentUploadPanelProps) {
   const { status, loading, error, uploadDocument, getDocumentDownloadUrl } = useDocuments(workflowId, stepId)
-  const [selectedType, setSelectedType] = useState('')
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [openingDocumentId, setOpeningDocumentId] = useState<string | null>(null)
   const [previewDocument, setPreviewDocument] = useState<{
     url: string
@@ -29,28 +31,33 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
       label: `${requirement.label}${requirement.is_required ? ' *' : ''}`,
     })) || []
 
-  const options =
-    requirementOptions.length > 0
-      ? requirementOptions
-      : [{ value: 'general_document', label: 'مستند عام' }]
+  const options = requirementOptions.length > 0
+    ? requirementOptions
+    : [{ value: 'general_document', label: 'مستند عام' }]
 
-  const documentType = selectedType || options[0]?.value || 'general_document'
-  const documentLabel = options.find((option) => option.value === documentType)?.label.replace(' *', '') || 'مستند عام'
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<DocumentUploadFormData>({
+    resolver: zodResolver(documentUploadSchema),
+    defaultValues: {
+      document_type: options[0]?.value || 'general_document',
+    },
+  })
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSelectedFile(event.target.files?.[0] || null)
-  }
-
-  const handleUpload = async () => {
-    if (!selectedFile) return
+  const handleUpload = async (data: DocumentUploadFormData) => {
+    const documentLabel = options.find((option) => option.value === data.document_type)?.label.replace(' *', '') || 'مستند عام'
 
     await uploadDocument({
-      file: selectedFile,
-      document_type: documentType,
+      file: data.file,
+      document_type: data.document_type,
       label: documentLabel,
     })
 
-    setSelectedFile(null)
+    reset({ document_type: options[0]?.value || 'general_document' })
   }
 
   const handleOpenDocument = async (documentId: string) => {
@@ -68,7 +75,7 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
     setOpeningDocumentId(document.id)
 
     try {
-      const signedUrl = await getDocumentDownloadUrl(document.id)
+      const signedUrl = await documentService.createDocumentPreviewUrl(document.id)
       setPreviewDocument({
         url: signedUrl,
         fileName: document.file_name,
@@ -99,7 +106,7 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
           <p className="text-xs text-[var(--color-text-muted)]">
             {status?.canComplete
               ? 'تم رفع كل المستندات المطلوبة.'
-              : 'ارفع المستندات المطلوبة قبل إنهاء هذه الخطوة.'}
+              : 'ارفع هنا مستند هذه الخطوة فقط. لا تعيد رفع مستندات العميل الأساسية التي تم رفعها وقت إضافة العميل.'}
           </p>
         </div>
         {status?.missingRequired?.length ? (
@@ -156,37 +163,45 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
         </ul>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-[1fr_1fr_auto]">
+      <form className="grid grid-cols-1 gap-2 md:grid-cols-[1fr_1fr_auto]" onSubmit={handleSubmit(handleUpload)} noValidate>
         <FormGroup>
           <Label htmlFor={`document-type-${stepId}`}>نوع المستند</Label>
           <Select
             id={`document-type-${stepId}`}
-            value={documentType}
-            onChange={(event) => setSelectedType(event.target.value)}
             options={options}
             disabled={disabled || loading}
+            error={errors.document_type?.message}
+            {...register('document_type')}
           />
         </FormGroup>
 
         <FormGroup>
           <Label htmlFor={`document-file-${stepId}`}>الملف</Label>
-          <input
-            id={`document-file-${stepId}`}
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-            onChange={handleFileChange}
-            disabled={disabled || loading}
-            className="text-sm"
+          <Controller
+            control={control}
+            name="file"
+            render={({ field: { onChange, ref } }) => (
+              <input
+                id={`document-file-${stepId}`}
+                ref={ref}
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                onChange={(event) => onChange(event.target.files?.[0])}
+                disabled={disabled || loading}
+                className="text-sm"
+              />
+            )}
           />
           <p className="mt-1 text-xs text-[var(--color-text-muted)]">المسموح: PDF و JPG و PNG حتى 10 ميجابايت.</p>
+          {errors.file?.message && <p className="text-xs text-[var(--color-error)]">{errors.file.message}</p>}
         </FormGroup>
 
         <div className="flex items-end">
-          <Button size="sm" type="button" loading={loading} disabled={disabled || !selectedFile} onClick={handleUpload}>
+          <Button size="sm" type="submit" loading={loading} disabled={disabled}>
             رفع
           </Button>
         </div>
-      </div>
+      </form>
 
       {error && <p className="mt-2 text-xs text-[var(--color-error)]">{error}</p>}
 

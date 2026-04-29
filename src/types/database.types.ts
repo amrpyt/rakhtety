@@ -194,6 +194,19 @@ export interface WorkflowDocument {
   uploaded_at: string
 }
 
+export interface ClientIntakeDocument {
+  id: string
+  client_id: string
+  document_type: string
+  label: string
+  file_name: string
+  storage_path: string
+  mime_type: string | null
+  file_size: number | null
+  uploaded_by: string | null
+  uploaded_at: string
+}
+
 export interface Employee {
   id: string
   user_id: string
