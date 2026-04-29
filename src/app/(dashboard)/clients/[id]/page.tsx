@@ -12,8 +12,60 @@ import { FinancialSummaryCard } from '@/components/financial/FinancialSummaryCar
 import { PaymentForm } from '@/components/financial/PaymentForm'
 import { useFinancials } from '@/hooks/useFinancials'
 import { useWorkflows } from '@/hooks/useWorkflows'
-import { clientService } from '@/lib/services/client.service'
 import type { Client } from '@/types/database.types'
+
+function ClientWorkGuide() {
+  const steps = [
+    'ابدأ من مسار رخصة الجهاز. هذا هو المسار الأساسي لهذا العميل.',
+    'اضغط "بدء التنفيذ" على أول خطوة عندما يبدأ الموظف شغلها فعلاً.',
+    'ارفع مستندات الخطوة من داخل نفس الخطوة لو كانت مطلوبة.',
+    'بعد انتهاء الشغل والمستندات، اضغط "إكمال" لنقل الخطوة للحالة المكتملة.',
+    'لا تبدأ تصريح الحفر إلا بعد اكتمال رخصة الجهاز بالكامل. النظام سيقفل الحفر تلقائياً قبل ذلك.',
+  ]
+
+  return (
+    <Card className="mb-6 border-[var(--color-primary)]/20 bg-[var(--color-primary-light)]/30">
+      <CardHeader>
+        <div>
+          <CardTitle>ماذا يحدث بعد إضافة العميل؟</CardTitle>
+          <CardSubtitle>اتبع هذه الخطوات بالترتيب حتى لا يختلط شغل رخصة الجهاز مع تصريح الحفر.</CardSubtitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr]">
+          <ol className="space-y-2">
+            {steps.map((step, index) => (
+              <li key={step} className="flex gap-3 rounded-[var(--radius-md)] bg-[var(--color-surface)] p-3 text-sm">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-xs font-bold text-white">
+                  {index + 1}
+                </span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm">
+            <p className="font-bold">قاعدة مهمة</p>
+            <p className="mt-2 text-[var(--color-text-muted)]">
+              هذا البرنامج معمول كدفتر متابعة للموظفين. كل عميل له مسارين: رخصة الجهاز أولاً، ثم تصريح الحفر.
+              كل مسار مقسم لخطوات. الموظف يفتح الخطوة، ينفذها، يرفع مستنداتها، ثم يكملها.
+            </p>
+            <div className="mt-4 grid gap-2 text-xs">
+              <div className="rounded-[var(--radius-md)] bg-[var(--color-surface-offset)] p-2">
+                <strong>بدء التنفيذ:</strong> يعني أن الموظف بدأ يشتغل على الخطوة.
+              </div>
+              <div className="rounded-[var(--radius-md)] bg-[var(--color-surface-offset)] p-2">
+                <strong>إكمال:</strong> يعني أن الخطوة خلصت ومستنداتها سليمة.
+              </div>
+              <div className="rounded-[var(--radius-md)] bg-[var(--color-surface-offset)] p-2">
+                <strong>تجاوز طارئ:</strong> يستخدم فقط لو المدير قرر إكمال خطوة رغم وجود نقص، ويجب كتابة السبب.
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function ClientDetailPage() {
   const params = useParams()
@@ -32,6 +84,7 @@ export default function ClientDetailPage() {
     excavationPermitBlockedReason,
     loading: workflowsLoading,
     error: workflowError,
+    createWorkflow,
     updateStepStatus,
     emergencyCompleteStep,
     moveStepBack,
@@ -46,16 +99,32 @@ export default function ClientDetailPage() {
   } = useFinancials(activeWorkflow?.id)
 
   useEffect(() => {
-    clientService
-      .findById(clientId)
-      .then(setClient)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load client'))
-      .finally(() => setLoading(false))
+    async function loadClient() {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetch(`/api/clients/${clientId}`)
+        const payload = await response.json()
+
+        if (!response.ok) {
+          throw new Error(payload.error || 'Failed to load client')
+        }
+
+        setClient(payload.client as Client)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load client')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadClient()
   }, [clientId])
 
   if (loading || workflowsLoading) {
     return (
-      <div className="p-6 max-w-[1300px]">
+      <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
         <LoadingSpinner label="جارٍ تحميل بيانات العميل..." />
       </div>
     )
@@ -63,7 +132,7 @@ export default function ClientDetailPage() {
 
   if (error || !client) {
     return (
-      <div className="p-6 max-w-[1300px]">
+      <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
         <EmptyState
           icon="M12 9v2m0 4h.01 M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           title="حدث خطأ"
@@ -78,8 +147,8 @@ export default function ClientDetailPage() {
   }
 
   return (
-    <div className="p-6 max-w-[1300px]">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <Button variant="ghost" onClick={() => router.push('/clients')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
             <path d="M9 18l6-6-6-6" />
@@ -91,7 +160,7 @@ export default function ClientDetailPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
         <Card className="lg:col-span-2">
           <CardHeader>
             <div>
@@ -101,7 +170,7 @@ export default function ClientDetailPage() {
             <Button variant="secondary">تعديل</Button>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-xs text-[var(--color-text-muted)] mb-1">الهاتف</p>
                 <p dir="ltr">{client.phone || '-'}</p>
@@ -128,13 +197,13 @@ export default function ClientDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-sm text-[var(--color-text-muted)]">رخصة الجهاز</span>
                 <Badge variant={deviceLicense?.status === 'completed' ? 'completed' : deviceLicense ? 'in_progress' : 'pending'}>
                   {deviceLicense?.status === 'completed' ? 'مكتمل' : deviceLicense ? 'جاري' : 'لم يبدآ'}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-sm text-[var(--color-text-muted)]">تصريح الحفر</span>
                 <Badge
                   variant={excavationPermit?.status === 'completed' ? 'completed' : excavationPermit ? 'in_progress' : 'pending'}
@@ -149,6 +218,8 @@ export default function ClientDetailPage() {
         </Card>
       </div>
 
+      <ClientWorkGuide />
+
       <WorkflowTabs
         deviceLicenseWorkflow={deviceLicense}
         excavationPermitWorkflow={excavationPermit}
@@ -159,6 +230,7 @@ export default function ClientDetailPage() {
         onStart={(stepId) => updateStepStatus(stepId, 'in_progress')}
         onEmergencyComplete={emergencyCompleteStep}
         onMoveBack={moveStepBack}
+        onCreateWorkflow={createWorkflow}
       />
       {workflowError && (
         <p className="mt-3 rounded-[var(--radius-md)] bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">
@@ -167,7 +239,7 @@ export default function ClientDetailPage() {
       )}
 
       {activeWorkflow && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
           <FinancialSummaryCard summary={financialSummary} loading={financialLoading} />
           <div>
             <PaymentForm

@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { DocumentUploadPanel } from '@/components/documents/DocumentUploadPanel'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { workflowReasonSchema, type WorkflowReasonFormData } from '@/lib/validation/schemas'
 import type { StepStatus } from '@/types/database.types'
 
 interface WorkflowStepProps {
@@ -49,7 +52,16 @@ export function WorkflowStep({
   onMoveBack,
 }: WorkflowStepProps) {
   const [pendingAction, setPendingAction] = useState<'emergency' | 'back' | null>(null)
-  const [reason, setReason] = useState('')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<WorkflowReasonFormData>({
+    resolver: zodResolver(workflowReasonSchema),
+    defaultValues: { reason: '' },
+    mode: 'onChange',
+  })
   const config = statusConfig[status]
   const showStart = canAct && !isLocked && status === 'pending' && onStart
   const showComplete = canAct && !isLocked && status === 'in_progress' && onMarkComplete
@@ -58,22 +70,21 @@ export function WorkflowStep({
 
   const openReasonBox = (action: 'emergency' | 'back') => {
     setPendingAction(action)
-    setReason('')
+    reset({ reason: '' })
   }
 
   const closeReasonBox = () => {
     setPendingAction(null)
-    setReason('')
+    reset({ reason: '' })
   }
 
-  const submitReason = async () => {
-    const trimmedReason = reason.trim()
-    if (!pendingAction || !trimmedReason) return
+  const submitReason = async ({ reason }: WorkflowReasonFormData) => {
+    if (!pendingAction) return
 
     if (pendingAction === 'emergency') {
-      await onEmergencyComplete?.(id, trimmedReason)
+      await onEmergencyComplete?.(id, reason)
     } else {
-      await onMoveBack?.(id, trimmedReason)
+      await onMoveBack?.(id, reason)
     }
 
     closeReasonBox()
@@ -82,7 +93,7 @@ export function WorkflowStep({
   return (
     <div
       className={`
-        flex gap-4 p-4 rounded-[var(--radius-lg)]
+        flex flex-col gap-3 rounded-[var(--radius-lg)] p-4 sm:flex-row sm:gap-4
         border border-[var(--color-border)]
         ${isLocked ? 'opacity-50' : ''}
         ${status === 'completed' ? 'bg-[var(--color-success-light)] border-[var(--color-success)]/20' : 'bg-[var(--color-surface)]'}
@@ -90,7 +101,7 @@ export function WorkflowStep({
     >
       <div
         className={`
-          w-10 h-10 rounded-full flex items-center justify-center
+          h-10 w-10 rounded-full flex items-center justify-center
           flex-shrink-0 text-sm font-bold
           ${status === 'completed' ? 'bg-[var(--color-success)] text-white' : 'bg-[var(--color-surface-offset)]'}
         `}
@@ -99,7 +110,7 @@ export function WorkflowStep({
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-3 mb-2">
+        <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span className="font-semibold break-words">{name}</span>
           <Badge variant={config.variant}>{config.label}</Badge>
         </div>
@@ -141,6 +152,15 @@ export function WorkflowStep({
           </div>
         )}
 
+        {!isLocked && canAct && status !== 'completed' && (
+          <div className="mt-3 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-3 text-xs text-[var(--color-text-muted)]">
+            <span className="font-bold text-[var(--color-text)]">إرشاد للموظف: </span>
+            {status === 'pending'
+              ? 'اضغط بدء التنفيذ عندما تبدأ هذه الخطوة فعلاً. بعدها ارفع المستندات المطلوبة إن وجدت.'
+              : 'ارفع أو راجع مستندات هذه الخطوة، ثم اضغط إكمال عندما تصبح جاهزة.'}
+          </div>
+        )}
+
         {isLocked && (
           <div className="flex items-center gap-2 mt-3 p-2 rounded-[var(--radius-md)] bg-[var(--color-surface-offset)]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-[var(--color-error)]">
@@ -154,7 +174,7 @@ export function WorkflowStep({
         )}
 
         {(showStart || showComplete || showEmergencyComplete || showMoveBack) && (
-          <div className="flex justify-end gap-2 mt-4">
+          <div className="mt-4 flex flex-wrap justify-end gap-2">
             {showMoveBack && (
               <Button size="sm" variant="ghost" onClick={() => openReasonBox('back')}>
                 رجوع
@@ -185,7 +205,11 @@ export function WorkflowStep({
         )}
 
         {pendingAction && (
-          <div className="mt-3 rounded-[var(--radius-lg)] border border-[var(--color-warning)]/30 bg-[var(--color-warning-light)] p-3">
+          <form
+            className="mt-3 rounded-[var(--radius-lg)] border border-[var(--color-warning)]/30 bg-[var(--color-warning-light)] p-3"
+            onSubmit={handleSubmit(submitReason)}
+            noValidate
+          >
             <p className="mb-2 text-sm font-semibold text-[var(--color-text)]">
               {pendingAction === 'emergency' ? 'تأكيد التجاوز الطارئ' : 'تأكيد الرجوع'}
             </p>
@@ -195,20 +219,22 @@ export function WorkflowStep({
                 : 'سيتم إرجاع حالة الخطوة للخلف. اكتب السبب ليظهر في سجل المدير.'}
             </p>
             <textarea
-              value={reason}
-              onChange={(event) => setReason(event.target.value)}
               className="min-h-20 w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-2 text-sm outline-none focus:border-[var(--color-primary)]"
               placeholder="اكتب السبب..."
+              {...register('reason')}
             />
-            <div className="mt-3 flex justify-end gap-2">
-              <Button size="sm" variant="ghost" onClick={closeReasonBox}>
+            {errors.reason?.message && (
+              <p className="mt-1 text-xs text-[var(--color-error)]">{errors.reason.message}</p>
+            )}
+            <div className="mt-3 flex flex-wrap justify-end gap-2">
+              <Button size="sm" type="button" variant="ghost" onClick={closeReasonBox}>
                 إلغاء
               </Button>
-              <Button size="sm" disabled={!reason.trim()} onClick={submitReason}>
+              <Button size="sm" type="submit" disabled={!isValid}>
                 تأكيد
               </Button>
             </div>
-          </div>
+          </form>
         )}
 
         {workflowId && !id.startsWith('placeholder-') && (

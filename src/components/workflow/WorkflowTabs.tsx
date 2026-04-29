@@ -4,6 +4,7 @@ import React from 'react'
 import { Tabs, TabPanel } from '@/components/ui/Tabs'
 import { Card, CardHeader, CardTitle, CardSubtitle } from '@/components/ui/Card'
 import { WorkflowTimeline } from '@/components/workflow/WorkflowTimeline'
+import { getWorkflowStepTemplates } from '@/lib/domain/workflow-templates'
 import type { WorkflowWithSteps } from '@/types/database.types'
 
 interface WorkflowTabsProps {
@@ -16,23 +17,11 @@ interface WorkflowTabsProps {
   onStart?: (stepId: string) => Promise<void>
   onEmergencyComplete?: (stepId: string, reason: string) => Promise<void>
   onMoveBack?: (stepId: string, reason: string) => Promise<void>
+  onCreateWorkflow?: (type: WorkflowWithSteps['type']) => Promise<void>
 }
 
-const DEVICE_LICENSE_STEPS = [
-  'بيان الصلاحية',
-  'تقديم المجمعة العشرية للإسكان المميز',
-  'تقديم الملف',
-  'دفع إذن الرخصة وشراء عقد مخلفات',
-  'استلام الرخصة',
-]
-
-const EXCAVATION_PERMIT_STEPS = [
-  'تقديم واستلام شهادة الإشراف',
-  'تقديم واستلام التأمينات',
-  'التقديم على العداد الإنشائي',
-  'تقديم ودفع واستلام تصريح الحفر',
-  'تصريح التعدين',
-]
+const DEVICE_LICENSE_STEPS = getWorkflowStepTemplates('DEVICE_LICENSE')
+const EXCAVATION_PERMIT_STEPS = getWorkflowStepTemplates('EXCAVATION_PERMIT')
 
 export function WorkflowTabs({
   deviceLicenseWorkflow,
@@ -44,6 +33,7 @@ export function WorkflowTabs({
   onStart,
   onEmergencyComplete,
   onMoveBack,
+  onCreateWorkflow,
 }: WorkflowTabsProps) {
   const tabs = [
     { id: 'device', label: 'مسار رخصة الجهاز', disabled: false },
@@ -57,23 +47,46 @@ export function WorkflowTabs({
           <CardHeader>
             <div>
               <CardTitle>خطوات رخصة الجهاز</CardTitle>
-              <CardSubtitle>المسار الأول · 5 خطوات رئيسية</CardSubtitle>
+              <CardSubtitle>
+                المسار الأول - {DEVICE_LICENSE_STEPS.length} خطوة فعلية. ابدأ من أول خطوة، ثم أكمل الخطوات بالترتيب.
+              </CardSubtitle>
             </div>
           </CardHeader>
+          <div className="mb-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-3 text-sm text-[var(--color-text-muted)]">
+            هذا المسار هو الأساس. طالما رخصة الجهاز لم تكتمل، تصريح الحفر سيظل مقفلاً. كل خطوة لها حالة واضحة:
+            في الانتظار، جاري، مكتمل، أو موقوف.
+          </div>
+          {!deviceLicenseWorkflow && (
+            <div className="mb-4 flex flex-col gap-3 rounded-[var(--radius-md)] border border-[var(--color-primary)]/20 bg-[var(--color-primary-light)]/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-bold text-[var(--color-text)]">لم يتم فتح مسار رخصة الجهاز بعد</p>
+                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                  اضغط الزر لإنشاء خطوات رخصة الجهاز الحقيقية لهذا العميل، وبعدها سيظهر زر بدء التنفيذ داخل أول خطوة.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onCreateWorkflow?.('DEVICE_LICENSE')}
+                className="rounded-[var(--radius-md)] bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white hover:bg-[var(--color-primary-hover)]"
+              >
+                فتح مسار رخصة الجهاز
+              </button>
+            </div>
+          )}
           <WorkflowTimeline
             steps={
               deviceLicenseWorkflow?.steps?.length
                 ? deviceLicenseWorkflow.steps
-                : DEVICE_LICENSE_STEPS.map((name, i) => ({
+                : DEVICE_LICENSE_STEPS.map((step, i) => ({
                     id: `placeholder-device-${i}`,
                     workflow_id: deviceLicenseWorkflow?.id || '',
                     step_order: i + 1,
-                    name,
+                    name: step.name,
                     status: 'pending' as const,
                     assigned_to: null,
                     completed_at: null,
-                    fees: 0,
-                    profit: 0,
+                    fees: step.fees,
+                    profit: step.profit,
                     created_at: '',
                     updated_at: '',
                   }))
@@ -91,7 +104,9 @@ export function WorkflowTabs({
           <CardHeader>
             <div>
               <CardTitle>خطوات تصريح الحفر</CardTitle>
-              <CardSubtitle>المسار الثاني · 5 خطوات</CardSubtitle>
+              <CardSubtitle>
+                المسار الثاني - {EXCAVATION_PERMIT_STEPS.length} خطوة تفصيلية. يبدأ فقط بعد انتهاء رخصة الجهاز.
+              </CardSubtitle>
             </div>
           </CardHeader>
           {excavationPermitBlocked && (
@@ -104,7 +119,7 @@ export function WorkflowTabs({
                 <div>
                   <div className="font-medium">المسار مقفل</div>
                   <div className="text-sm mt-1 opacity-75">
-                    {excavationPermitBlockedReason || 'لا يمكن بدء مسار تصريح الحفر قبل اكتمال رخصة الجهاز بالكامل'}
+                    {excavationPermitBlockedReason || 'لا يمكن بدء تصريح الحفر قبل اكتمال رخصة الجهاز بالكامل'}
                   </div>
                 </div>
               </div>
@@ -114,16 +129,16 @@ export function WorkflowTabs({
             steps={
               excavationPermitWorkflow?.steps?.length
                 ? excavationPermitWorkflow.steps
-                : EXCAVATION_PERMIT_STEPS.map((name, i) => ({
+                : EXCAVATION_PERMIT_STEPS.map((step, i) => ({
                     id: `placeholder-excavation-${i}`,
                     workflow_id: excavationPermitWorkflow?.id || '',
                     step_order: i + 1,
-                    name,
+                    name: step.name,
                     status: excavationPermitBlocked ? 'blocked' as const : 'pending' as const,
                     assigned_to: null,
                     completed_at: null,
-                    fees: 0,
-                    profit: 0,
+                    fees: step.fees,
+                    profit: step.profit,
                     created_at: '',
                     updated_at: '',
                   }))

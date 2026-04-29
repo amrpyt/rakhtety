@@ -12,6 +12,7 @@ interface UseWorkflowsReturn {
   loading: boolean
   error: string | null
   fetchWorkflows: (clientId: string) => Promise<void>
+  createWorkflow: (type: WorkflowWithSteps['type']) => Promise<void>
   updateStepStatus: (stepId: string, status: Extract<StepStatus, 'in_progress' | 'completed'>) => Promise<void>
   emergencyCompleteStep: (stepId: string, reason: string) => Promise<void>
   moveStepBack: (stepId: string, reason: string) => Promise<void>
@@ -31,35 +32,53 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
     setLoading(true)
     setError(null)
     try {
-      const workflows = await workflowService.findByClientId(id)
-      const device = workflows.find((w) => w.type === 'DEVICE_LICENSE') || null
-      const excavation = workflows.find((w) => w.type === 'EXCAVATION_PERMIT') || null
+      const response = await fetch(`/api/clients/${id}/workflows`)
+      const payload = await response.json()
 
-      if (device) {
-        const deviceWithSteps = await workflowService.getWithSteps(device.id)
-        setDeviceLicense(deviceWithSteps)
-        setDeviceLicenseCompleted(deviceWithSteps.status === 'completed')
-      } else {
-        setDeviceLicense(null)
-        setDeviceLicenseCompleted(false)
+      if (!response.ok) {
+        throw new Error(payload.error || 'Failed to fetch workflows')
       }
 
-      const dependencyStatus = await workflowService.checkDependency(id)
-      setExcavationPermitBlocked(dependencyStatus.isBlocked)
-      setExcavationPermitBlockedReason(dependencyStatus.reason)
-
-      if (excavation) {
-        const excavationWithSteps = await workflowService.getWithSteps(excavation.id)
-        setExcavationPermit(excavationWithSteps)
-      } else {
-        setExcavationPermit(null)
-      }
+      setDeviceLicense(payload.deviceLicense)
+      setExcavationPermit(payload.excavationPermit)
+      setDeviceLicenseCompleted(payload.deviceLicenseCompleted)
+      setExcavationPermitBlocked(payload.excavationPermitBlocked)
+      setExcavationPermitBlockedReason(payload.excavationPermitBlockedReason)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch workflows')
     } finally {
       setLoading(false)
     }
   }, [])
+
+  const createWorkflow = useCallback(
+    async (type: WorkflowWithSteps['type']) => {
+      if (!clientId) return
+
+      try {
+        setLoading(true)
+        setError(null)
+        const response = await fetch(`/api/clients/${clientId}/workflows`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type }),
+        })
+        const payload = await response.json()
+
+        if (!response.ok) {
+          throw new Error(payload.error || 'Failed to create workflow')
+        }
+
+        await fetchWorkflows(clientId)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to create workflow'
+        setError(message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [clientId, fetchWorkflows]
+  )
 
   const updateStepStatus = useCallback(
     async (stepId: string, status: Extract<StepStatus, 'in_progress' | 'completed'>) => {
@@ -133,6 +152,7 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
     loading,
     error,
     fetchWorkflows,
+    createWorkflow,
     updateStepStatus,
     emergencyCompleteStep,
     moveStepBack,
