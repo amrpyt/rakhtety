@@ -59,6 +59,12 @@ See: .planning/PROJECT.md
 - **Parallelization:** true
 - **Next phase:** Phase 6 — Client Reporting & Polish
 
+## Quick Tasks Completed
+
+| Date | Task | Result |
+|------|------|--------|
+| 2026-04-30 | Client intake document gallery | Added preview/download actions for basic client documents on the client detail page. |
+
 ---
 
 *State updated: 2026-04-30 after adding Phase 07*

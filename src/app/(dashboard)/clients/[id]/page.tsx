@@ -73,6 +73,67 @@ function ClientWorkGuide() {
 }
 
 function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocument[] }) {
+  const params = useParams()
+  const clientId = params.id as string
+  const [openingDocumentId, setOpeningDocumentId] = useState<string | null>(null)
+  const [documentError, setDocumentError] = useState<string | null>(null)
+  const [previewDocument, setPreviewDocument] = useState<{
+    url: string
+    fileName: string
+    mimeType: string | null
+  } | null>(null)
+
+  const getSignedUrl = async (documentId: string, download = false) => {
+    const response = await fetch(
+      `/api/clients/${clientId}/intake-documents/${documentId}/signed-url${download ? '?download=1' : ''}`
+    )
+    const payload = await response.json()
+
+    if (!response.ok) {
+      throw new Error(payload.error || 'تعذر فتح المستند')
+    }
+
+    return payload.signedUrl as string
+  }
+
+  const handlePreviewDocument = async (document: ClientIntakeDocument) => {
+    setOpeningDocumentId(document.id)
+    setDocumentError(null)
+
+    try {
+      const signedUrl = await getSignedUrl(document.id)
+      setPreviewDocument({
+        url: signedUrl,
+        fileName: document.file_name,
+        mimeType: document.mime_type,
+      })
+    } catch (err) {
+      setDocumentError(err instanceof Error ? err.message : 'تعذر فتح المستند')
+    } finally {
+      setOpeningDocumentId(null)
+    }
+  }
+
+  const handleDownloadDocument = async (document: ClientIntakeDocument) => {
+    setOpeningDocumentId(document.id)
+    setDocumentError(null)
+
+    try {
+      const signedUrl = await getSignedUrl(document.id, true)
+      window.open(signedUrl, '_blank', 'noopener,noreferrer')
+    } catch (err) {
+      setDocumentError(err instanceof Error ? err.message : 'تعذر تحميل المستند')
+    } finally {
+      setOpeningDocumentId(null)
+    }
+  }
+
+  const isImagePreview = (document: { fileName: string; mimeType: string | null }) =>
+    document.mimeType?.startsWith('image/') || /\.(png|jpe?g)$/i.test(document.fileName)
+
+  const isPdfPreview = (document: { fileName: string; mimeType: string | null }) =>
+    document.mimeType === 'application/pdf' || /\.pdf$/i.test(document.fileName)
+
   return (
     <Card className="mb-6 border-[var(--color-success)]/20 bg-[var(--color-success-light)]/30">
       <CardHeader>
@@ -84,15 +145,42 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
         </div>
       </CardHeader>
       <CardContent>
+        {documentError && (
+          <div className="mb-3 rounded-[var(--radius-md)] bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">
+            {documentError}
+          </div>
+        )}
         {documents.length > 0 ? (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {documents.map((document) => (
               <div
                 key={document.id}
-                className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm"
+                className="flex min-h-32 flex-col justify-between rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm"
               >
-                <p className="font-semibold">{document.label}</p>
-                <p className="mt-1 truncate text-xs text-[var(--color-text-muted)]">{document.file_name}</p>
+                <div>
+                  <p className="font-semibold">{document.label}</p>
+                  <p className="mt-1 truncate text-xs text-[var(--color-text-muted)]">{document.file_name}</p>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    loading={openingDocumentId === document.id}
+                    onClick={() => handlePreviewDocument(document)}
+                  >
+                    معاينة
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    loading={openingDocumentId === document.id}
+                    onClick={() => handleDownloadDocument(document)}
+                  >
+                    تحميل
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -102,6 +190,40 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
           </div>
         )}
       </CardContent>
+      {previewDocument && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-[var(--radius-lg)] bg-[var(--color-surface)] shadow-xl">
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] p-3">
+              <div className="min-w-0">
+                <p className="font-semibold text-[var(--color-text)]">معاينة المستند الأساسي</p>
+                <p className="truncate text-xs text-[var(--color-text-muted)]">{previewDocument.fileName}</p>
+              </div>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setPreviewDocument(null)}>
+                إغلاق
+              </Button>
+            </div>
+            <div className="min-h-[60vh] overflow-auto p-3">
+              {isImagePreview(previewDocument) ? (
+                <img
+                  src={previewDocument.url}
+                  alt={previewDocument.fileName}
+                  className="mx-auto max-h-[70vh] max-w-full rounded-[var(--radius-md)] object-contain"
+                />
+              ) : isPdfPreview(previewDocument) ? (
+                <iframe
+                  src={previewDocument.url}
+                  title={previewDocument.fileName}
+                  className="h-[70vh] w-full rounded-[var(--radius-md)] border border-[var(--color-border)]"
+                />
+              ) : (
+                <div className="flex min-h-[50vh] items-center justify-center text-sm text-[var(--color-text-muted)]">
+                  لا يمكن معاينة هذا النوع من الملفات داخل الصفحة. استخدم زر تحميل لفتحه.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   )
 }
