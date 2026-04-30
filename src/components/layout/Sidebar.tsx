@@ -1,14 +1,24 @@
 'use client'
 
 import Link from 'next/link'
+import {
+  Banknote,
+  GitBranch,
+  Home,
+  LayoutDashboard,
+  LogOut,
+  UserCheck,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { useAuth } from '@/hooks/auth/useAuth'
 import { roleLabels } from '@/config/auth.config'
+import { useAuth } from '@/hooks/auth/useAuth'
 
 interface NavItem {
   href: string
   label: string
-  icon: string
+  icon: LucideIcon
 }
 
 interface NavSection {
@@ -20,38 +30,31 @@ const navSections: NavSection[] = [
   {
     section: 'الرئيسية',
     items: [
-      { href: '/dashboard', label: 'لوحة التحكم', icon: 'layout-dashboard' },
-      { href: '/clients', label: 'ملفات العملاء', icon: 'users' },
-      { href: '/workflows', label: 'مسارات العمل', icon: 'git-branch' },
+      { href: '/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
+      { href: '/clients', label: 'ملفات العملاء', icon: Users },
+      { href: '/workflows', label: 'مسارات العمل', icon: GitBranch },
     ],
   },
   {
     section: 'المالية',
-    items: [{ href: '/finance', label: 'الإدارة المالية', icon: 'banknote' }],
+    items: [{ href: '/finance', label: 'الإدارة المالية', icon: Banknote }],
   },
   {
     section: 'الإدارة',
-    items: [{ href: '/employees', label: 'الموظفون', icon: 'user-check' }],
+    items: [{ href: '/employees', label: 'الموظفون', icon: UserCheck }],
   },
 ]
-
-const iconPaths: Record<string, string> = {
-  'layout-dashboard': 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10',
-  users: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75',
-  'git-branch': 'M6 3v12 M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M18 9a9 9 0 0 1-9 9',
-  banknote: 'M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0 M21 12h-4l-3 9L14 3l-3 9H2',
-  'user-check': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M17 11l2 2 4-4',
-}
 
 export function Sidebar() {
   const pathname = usePathname()
   const { user, logout } = useAuth()
 
-  const initials = user?.full_name
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2) || ''
+  const initials =
+    user?.full_name
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .slice(0, 2) || ''
 
   const roleLabel = user?.role ? roleLabels[user.role]?.ar || user.role : ''
 
@@ -68,10 +71,7 @@ export function Sidebar() {
           className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-lg)] shadow-lg"
           style={{ background: 'linear-gradient(135deg, var(--shell-accent), #f4d28a)' }}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="#102321" strokeWidth="2.5" className="h-5 w-5">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-          </svg>
+          <Home className="h-5 w-5 text-[#102321]" strokeWidth={2.5} aria-hidden="true" />
         </div>
         <div>
           <div className="text-lg font-bold">رخصتي</div>
@@ -79,7 +79,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav className="p-4 flex-1">
+      <nav className="flex-1 p-4">
         {navSections.map((section) => (
           <div key={section.section} className="mb-4">
             <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/38">
@@ -87,6 +87,8 @@ export function Sidebar() {
             </div>
             {section.items.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+              const Icon = item.icon
+
               return (
                 <Link
                   key={item.href}
@@ -94,15 +96,14 @@ export function Sidebar() {
                   className={`
                     flex min-h-11 items-center gap-3 rounded-[var(--radius-lg)] px-3 py-2
                     text-sm font-medium transition-all duration-150
-                    ${isActive
-                      ? 'bg-white text-[var(--shell-sidebar)] shadow-lg'
-                      : 'text-white/66 hover:bg-white/10 hover:text-white'
+                    ${
+                      isActive
+                        ? 'bg-white text-[var(--shell-sidebar)] shadow-lg'
+                        : 'text-white/66 hover:bg-white/10 hover:text-white'
                     }
                   `}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 shrink-0">
-                    <path d={iconPaths[item.icon]} />
-                  </svg>
+                  <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                   <span className="truncate">{item.label}</span>
                 </Link>
               )
@@ -112,7 +113,7 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-white/10 p-4">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="mb-3 flex items-center gap-3">
           <div
             className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-[var(--shell-sidebar)]"
             style={{ background: 'var(--shell-accent)' }}
@@ -128,9 +129,7 @@ export function Sidebar() {
           onClick={logout}
           className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-lg)] px-3 py-2 text-sm text-white/62 transition-all duration-150 hover:bg-white/10 hover:text-white"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9" />
-          </svg>
+          <LogOut className="h-4 w-4" aria-hidden="true" />
           تسجيل الخروج
         </button>
       </div>
@@ -147,19 +146,17 @@ export function MobileNav() {
       <div className="grid grid-cols-5 gap-1">
         {flatItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+          const Icon = item.icon
+
           return (
             <Link
               key={item.href}
               href={item.href}
               className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-[var(--radius-md)] px-1 py-2 text-[10px] font-semibold transition-colors ${
-                isActive
-                  ? 'bg-white text-[var(--shell-sidebar)]'
-                  : 'text-white/62'
+                isActive ? 'bg-white text-[var(--shell-sidebar)]' : 'text-white/62'
               }`}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
-                <path d={iconPaths[item.icon]} />
-              </svg>
+              <Icon className="h-4 w-4" aria-hidden="true" />
               <span className="max-w-full truncate">{item.label}</span>
             </Link>
           )
