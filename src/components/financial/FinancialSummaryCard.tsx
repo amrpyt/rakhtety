@@ -23,19 +23,19 @@ export function FinancialSummaryCard({ summary, loading = false }: FinancialSumm
   ]
 
   return (
-    <Card>
+    <Card className="paper-card">
       <CardHeader>
         <div>
-          <CardTitle>الملخص المالي</CardTitle>
-          <CardSubtitle>التكلفة والمدفوع والمتبقي</CardSubtitle>
+          <CardTitle>الموقف المالي</CardTitle>
+          <CardSubtitle>صورة سريعة: المطلوب، المدفوع، والمتبقي</CardSubtitle>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {items.map((item) => (
-            <div key={item.label} className="rounded-[var(--radius-lg)] bg-[var(--color-surface-offset)] p-3">
-              <p className="text-xs text-[var(--color-text-muted)] mb-1">{item.label}</p>
-              <p className="font-bold text-[var(--color-text)]">
+            <div key={item.label} className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white/78 p-4 shadow-sm">
+              <p className="mb-1 text-xs font-bold text-[var(--color-text-muted)]">{item.label}</p>
+              <p className="text-lg font-black text-[var(--color-text)]">
                 {loading ? '...' : formatCurrency(item.value)}
               </p>
             </div>

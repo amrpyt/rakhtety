@@ -99,7 +99,7 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
     document.mimeType === 'application/pdf' || /\.pdf$/i.test(document.fileName)
 
   return (
-    <div className="mt-4 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-3">
+    <div className="mt-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface-2)]/80 p-3">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <p className="text-sm font-semibold">المستندات</p>
@@ -130,7 +130,7 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
       {status?.documents?.length ? (
         <ul className="mb-3 space-y-2 text-xs text-[var(--color-text-muted)]">
           {status.documents.map((document) => (
-            <li key={document.id} className="flex items-center justify-between gap-3 rounded-[var(--radius-md)] bg-[var(--color-surface)] p-2">
+            <li key={document.id} className="flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white/80 p-2">
               <div className="min-w-0">
                 <p className="font-medium text-[var(--color-text)]">{document.label}</p>
                 <p className="truncate">{document.file_name}</p>
@@ -163,7 +163,7 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
         </ul>
       ) : null}
 
-      <form className="grid grid-cols-1 gap-2 md:grid-cols-[1fr_1fr_auto]" onSubmit={handleSubmit(handleUpload)} noValidate>
+      <form className="grid grid-cols-1 gap-2 rounded-[var(--radius-lg)] bg-white/64 p-3 md:grid-cols-[1fr_1fr_auto]" onSubmit={handleSubmit(handleUpload)} noValidate>
         <FormGroup>
           <Label htmlFor={`document-type-${stepId}`}>نوع المستند</Label>
           <Select

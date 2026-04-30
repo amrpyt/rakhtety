@@ -67,6 +67,7 @@ export function WorkflowStep({
   const showComplete = canAct && !isLocked && status === 'in_progress' && onMarkComplete
   const showEmergencyComplete = canAct && !isLocked && status === 'in_progress' && onEmergencyComplete
   const showMoveBack = canAct && !isLocked && (status === 'in_progress' || status === 'completed') && onMoveBack
+  const isCurrentAction = !isLocked && status !== 'completed' && canAct
 
   const openReasonBox = (action: 'emergency' | 'back') => {
     setPendingAction(action)
@@ -93,17 +94,18 @@ export function WorkflowStep({
   return (
     <div
       className={`
-        flex flex-col gap-3 rounded-[var(--radius-lg)] p-4 sm:flex-row sm:gap-4
-        border border-[var(--color-border)]
+        flex flex-col gap-3 rounded-[var(--radius-xl)] p-4 sm:flex-row sm:gap-4
+        border shadow-sm transition-all duration-200
         ${isLocked ? 'opacity-50' : ''}
-        ${status === 'completed' ? 'bg-[var(--color-success-light)] border-[var(--color-success)]/20' : 'bg-[var(--color-surface)]'}
+        ${status === 'completed' ? 'border-[var(--color-success)]/20 bg-[var(--color-success-light)]' : 'border-[var(--color-border)] bg-white/82'}
+        ${isCurrentAction ? 'hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)]' : ''}
       `}
     >
       <div
         className={`
-          h-10 w-10 rounded-full flex items-center justify-center
+          h-11 w-11 rounded-full flex items-center justify-center
           flex-shrink-0 text-sm font-bold
-          ${status === 'completed' ? 'bg-[var(--color-success)] text-white' : 'bg-[var(--color-surface-offset)]'}
+          ${status === 'completed' ? 'bg-[var(--color-success)] text-white' : isCurrentAction ? 'bg-[var(--color-primary)] text-white' : 'bg-[var(--color-surface-offset)]'}
         `}
       >
         {stepNumber || 1}
@@ -111,7 +113,7 @@ export function WorkflowStep({
 
       <div className="flex-1 min-w-0">
         <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <span className="font-semibold break-words">{name}</span>
+          <span className="break-words text-base font-black">{name}</span>
           <Badge variant={config.variant}>{config.label}</Badge>
         </div>
 
@@ -132,9 +134,9 @@ export function WorkflowStep({
         )}
 
         {(fees !== undefined || profit !== undefined) && (
-          <div className="flex flex-wrap gap-4 mt-2 pt-2 border-t border-[var(--color-border)]">
+          <div className="mt-3 flex flex-wrap gap-2 border-t border-[var(--color-border)] pt-3">
             {fees !== undefined && fees > 0 && (
-              <div className="text-xs">
+              <div className="rounded-full bg-[var(--color-warning-light)] px-3 py-1 text-xs">
                 <span className="text-[var(--color-text-muted)]">رسوم: </span>
                 <span className="font-semibold text-[var(--color-warning)]">
                   {fees.toLocaleString('ar-EG')} ج.م
@@ -142,7 +144,7 @@ export function WorkflowStep({
               </div>
             )}
             {profit !== undefined && profit > 0 && (
-              <div className="text-xs">
+              <div className="rounded-full bg-[var(--color-success-light)] px-3 py-1 text-xs">
                 <span className="text-[var(--color-text-muted)]">أتعاب: </span>
                 <span className="font-semibold text-[var(--color-success)]">
                   {profit.toLocaleString('ar-EG')} ج.م
@@ -153,7 +155,7 @@ export function WorkflowStep({
         )}
 
         {!isLocked && canAct && status !== 'completed' && (
-          <div className="mt-3 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-3 text-xs text-[var(--color-text-muted)]">
+          <div className="mt-3 rounded-[var(--radius-lg)] border border-[var(--color-primary)]/15 bg-[var(--color-primary-light)]/50 p-3 text-xs text-[var(--color-text-muted)]">
             <span className="font-bold text-[var(--color-text)]">إرشاد للموظف: </span>
             {status === 'pending'
               ? 'اضغط بدء التنفيذ عندما تبدأ هذه الخطوة فعلاً. بعدها ارفع المستندات المطلوبة إن وجدت.'

@@ -30,7 +30,7 @@ export function Tabs({ tabs, defaultTab, onChange, children }: TabsProps) {
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
+      <div className="mb-4 inline-flex max-w-full flex-wrap gap-2 rounded-[var(--radius-2xl)] border border-[var(--color-border)] bg-white/62 p-1 shadow-sm">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id
           return (
@@ -39,12 +39,12 @@ export function Tabs({ tabs, defaultTab, onChange, children }: TabsProps) {
               onClick={() => handleTabClick(tab.id, tab.disabled)}
               disabled={tab.disabled}
               className={`
-                px-4 py-2 rounded-[var(--radius-md)]
-                text-sm font-medium
-                transition-all duration-150
+                min-h-10 rounded-[var(--radius-xl)] px-4 py-2
+                text-sm font-bold whitespace-nowrap
+                transition-all duration-200
                 ${isActive
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:bg-[var(--color-divider)]'
+                  ? 'bg-[var(--color-primary)] text-white shadow-md'
+                  : 'text-[var(--color-text-muted)] hover:bg-white hover:text-[var(--color-text)]'
                 }
                 ${tab.disabled ? 'opacity-50 cursor-not-allowed' : ''}
               `}

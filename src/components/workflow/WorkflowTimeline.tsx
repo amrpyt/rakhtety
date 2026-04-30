@@ -30,7 +30,7 @@ export function WorkflowTimeline({
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="relative flex flex-col gap-3">
       {steps.map((step, index) => (
         <WorkflowStep
           key={step.id}

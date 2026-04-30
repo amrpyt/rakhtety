@@ -43,21 +43,20 @@ export function WorkflowTabs({
   return (
     <Tabs tabs={tabs}>
       <TabPanel id="device">
-        <Card>
+        <Card className="paper-card">
           <CardHeader>
             <div>
-              <CardTitle>خطوات رخصة الجهاز</CardTitle>
+              <CardTitle>لوحة تنفيذ رخصة الجهاز</CardTitle>
               <CardSubtitle>
-                المسار الأول - {DEVICE_LICENSE_STEPS.length} خطوة فعلية. ابدأ من أول خطوة، ثم أكمل الخطوات بالترتيب.
+                {DEVICE_LICENSE_STEPS.length} خطوات. ركّز على أول خطوة غير مكتملة فقط.
               </CardSubtitle>
             </div>
           </CardHeader>
-          <div className="mb-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-3 text-sm text-[var(--color-text-muted)]">
-            هذا المسار هو الأساس. طالما رخصة الجهاز لم تكتمل، تصريح الحفر سيظل مقفلاً. كل خطوة لها حالة واضحة:
-            في الانتظار، جاري، مكتمل، أو موقوف.
+          <div className="mb-4 rounded-[var(--radius-xl)] border border-[var(--color-primary)]/20 bg-[var(--color-primary-light)]/60 p-4 text-sm text-[var(--color-text-muted)]">
+            هذا هو مسار التشغيل الأساسي. لما يخلص بالكامل، تصريح الحفر يفتح تلقائياً. كل كارت تحت يمثل خطوة واحدة فقط.
           </div>
           {!deviceLicenseWorkflow && (
-            <div className="mb-4 flex flex-col gap-3 rounded-[var(--radius-md)] border border-[var(--color-primary)]/20 bg-[var(--color-primary-light)]/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-4 flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--color-primary)]/20 bg-white/70 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-bold text-[var(--color-text)]">لم يتم فتح مسار رخصة الجهاز بعد</p>
                 <p className="mt-1 text-sm text-[var(--color-text-muted)]">
@@ -67,7 +66,7 @@ export function WorkflowTabs({
               <button
                 type="button"
                 onClick={() => onCreateWorkflow?.('DEVICE_LICENSE')}
-                className="rounded-[var(--radius-md)] bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white hover:bg-[var(--color-primary-hover)]"
+                className="rounded-[var(--radius-xl)] bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white shadow-md hover:bg-[var(--color-primary-hover)]"
               >
                 فتح مسار رخصة الجهاز
               </button>
@@ -100,17 +99,17 @@ export function WorkflowTabs({
       </TabPanel>
 
       <TabPanel id="excavation">
-        <Card>
+        <Card className="paper-card">
           <CardHeader>
             <div>
-              <CardTitle>خطوات تصريح الحفر</CardTitle>
+              <CardTitle>لوحة تنفيذ تصريح الحفر</CardTitle>
               <CardSubtitle>
-                المسار الثاني - {EXCAVATION_PERMIT_STEPS.length} خطوة تفصيلية. يبدأ فقط بعد انتهاء رخصة الجهاز.
+                {EXCAVATION_PERMIT_STEPS.length} خطوات. هذا المسار يظل مقفلاً حتى تكتمل رخصة الجهاز.
               </CardSubtitle>
             </div>
           </CardHeader>
           {excavationPermitBlocked && (
-            <div className="p-4 mb-4 rounded-[var(--radius-lg)] bg-[var(--color-error-light)] border border-[var(--color-error)]/20">
+            <div className="mb-4 rounded-[var(--radius-xl)] border border-[var(--color-error)]/20 bg-[var(--color-error-light)] p-4">
               <div className="flex items-center gap-3 text-[var(--color-error)]">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 flex-shrink-0">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />

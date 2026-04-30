@@ -1,7 +1,9 @@
-import { FormEvent, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardSubtitle, CardTitle } from '@/components/ui/Card'
 import { FormGroup, Input, Label, Select } from '@/components/ui/Form'
+import { paymentSchema, type PaymentFormData } from '@/lib/validation/schemas'
 import type { WorkflowStepWithEmployee } from '@/types/database.types'
 
 interface PaymentFormProps {
@@ -17,48 +19,44 @@ interface PaymentFormProps {
 }
 
 export function PaymentForm({ steps = [], loading = false, onSubmit }: PaymentFormProps) {
-  const [amount, setAmount] = useState('')
-  const [workflowStepId, setWorkflowStepId] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState('')
-  const [referenceNumber, setReferenceNumber] = useState('')
-  const [notes, setNotes] = useState('')
-  const [error, setError] = useState<string | undefined>()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(paymentSchema),
+    defaultValues: {
+      amount: 0,
+      workflow_step_id: '',
+      payment_method: '',
+      reference_number: '',
+      notes: '',
+    },
+  })
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const numericAmount = Number(amount)
-
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      setError('المبلغ يجب أن يكون أكبر من صفر')
-      return
-    }
-
-    setError(undefined)
+  const submit = async (data: PaymentFormData) => {
     await onSubmit({
-      amount: numericAmount,
-      workflow_step_id: workflowStepId || null,
-      payment_method: paymentMethod || null,
-      reference_number: referenceNumber || null,
-      notes: notes || null,
+      amount: data.amount,
+      workflow_step_id: data.workflow_step_id || null,
+      payment_method: data.payment_method || null,
+      reference_number: data.reference_number || null,
+      notes: data.notes || null,
     })
 
-    setAmount('')
-    setWorkflowStepId('')
-    setPaymentMethod('')
-    setReferenceNumber('')
-    setNotes('')
+    reset()
   }
 
   return (
-    <Card>
+    <Card className="paper-card">
       <CardHeader>
         <div>
           <CardTitle>تسجيل دفعة</CardTitle>
-          <CardSubtitle>أضف المبلغ الذي دفعه العميل</CardSubtitle>
+          <CardSubtitle>سجّل مبلغ جديد بدون الخروج من ملف العميل.</CardSubtitle>
         </div>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white/70 p-4" onSubmit={handleSubmit((data) => submit(data as PaymentFormData))} noValidate>
           <FormGroup>
             <Label htmlFor="payment-amount">المبلغ</Label>
             <Input
@@ -66,10 +64,9 @@ export function PaymentForm({ steps = [], loading = false, onSubmit }: PaymentFo
               type="number"
               min="0"
               step="0.01"
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-              error={error}
+              error={errors.amount?.message}
               placeholder="0"
+              {...register('amount')}
             />
           </FormGroup>
 
@@ -77,10 +74,10 @@ export function PaymentForm({ steps = [], loading = false, onSubmit }: PaymentFo
             <Label htmlFor="payment-step">تخصيص الدفعة</Label>
             <Select
               id="payment-step"
-              value={workflowStepId}
-              onChange={(event) => setWorkflowStepId(event.target.value)}
               placeholder="دفعة على المسار بالكامل"
               options={steps.map((step) => ({ value: step.id, label: step.name }))}
+              error={errors.workflow_step_id?.message}
+              {...register('workflow_step_id')}
             />
           </FormGroup>
 
@@ -89,9 +86,9 @@ export function PaymentForm({ steps = [], loading = false, onSubmit }: PaymentFo
               <Label htmlFor="payment-method">طريقة الدفع</Label>
               <Input
                 id="payment-method"
-                value={paymentMethod}
-                onChange={(event) => setPaymentMethod(event.target.value)}
                 placeholder="نقدي / تحويل"
+                error={errors.payment_method?.message}
+                {...register('payment_method')}
               />
             </FormGroup>
 
@@ -99,9 +96,9 @@ export function PaymentForm({ steps = [], loading = false, onSubmit }: PaymentFo
               <Label htmlFor="payment-reference">رقم المرجع</Label>
               <Input
                 id="payment-reference"
-                value={referenceNumber}
-                onChange={(event) => setReferenceNumber(event.target.value)}
                 placeholder="اختياري"
+                error={errors.reference_number?.message}
+                {...register('reference_number')}
               />
             </FormGroup>
           </div>
@@ -110,13 +107,13 @@ export function PaymentForm({ steps = [], loading = false, onSubmit }: PaymentFo
             <Label htmlFor="payment-notes">ملاحظات</Label>
             <Input
               id="payment-notes"
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
               placeholder="اختياري"
+              error={errors.notes?.message}
+              {...register('notes')}
             />
           </FormGroup>
 
-          <Button type="submit" loading={loading}>
+          <Button type="submit" loading={loading} className="w-full sm:w-auto">
             حفظ الدفعة
           </Button>
         </form>
