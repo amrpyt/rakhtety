@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sidebar } from '@/components/layout/Sidebar'
+import { MobileNav, Sidebar } from '@/components/layout/Sidebar'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -7,9 +7,10 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="flex min-h-screen">
+    <div className="operations-shell flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 bg-[var(--color-bg)]">{children}</main>
+      <main className="min-w-0 flex-1 pb-24 lg:pb-0">{children}</main>
+      <MobileNav />
     </div>
   )
 }

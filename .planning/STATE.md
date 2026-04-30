@@ -63,6 +63,7 @@ See: .planning/PROJECT.md
 
 | Date | Task | Result |
 |------|------|--------|
+| 2026-04-30 | App shell and client detail redesign | Added premium Arabic operations-dashboard visual direction, redesigned sidebar, hero, guide, and intake document gallery. |
 | 2026-04-30 | Client intake document gallery | Added preview/download actions for basic client documents on the client detail page. |
 
 ---

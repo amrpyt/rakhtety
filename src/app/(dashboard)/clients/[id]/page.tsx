@@ -29,27 +29,27 @@ function ClientWorkGuide() {
   ]
 
   return (
-    <Card className="mb-6 border-[var(--color-primary)]/20 bg-[var(--color-primary-light)]/30">
+    <Card className="paper-card mb-6">
       <CardHeader>
         <div>
-          <CardTitle>ماذا يحدث بعد إضافة العميل؟</CardTitle>
-          <CardSubtitle>اتبع هذه الخطوات بالترتيب حتى لا يختلط شغل رخصة الجهاز مع تصريح الحفر.</CardSubtitle>
+          <CardTitle>دليل التشغيل السريع</CardTitle>
+          <CardSubtitle>الخلاصة التي يحتاجها الموظف قبل لمس أي خطوة.</CardSubtitle>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr]">
-          <ol className="space-y-2">
+        <div className="grid gap-4 lg:grid-cols-[1.55fr_0.95fr]">
+          <ol className="grid gap-2 sm:grid-cols-2">
             {steps.map((step, index) => (
-              <li key={step} className="flex gap-3 rounded-[var(--radius-md)] bg-[var(--color-surface)] p-3 text-sm">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-xs font-bold text-white">
+              <li key={step} className="flex gap-3 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-white/70 p-3 text-sm shadow-sm">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-xs font-bold text-white">
                   {index + 1}
                 </span>
                 <span>{step}</span>
               </li>
             ))}
           </ol>
-          <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm">
-            <p className="font-bold">قاعدة مهمة</p>
+          <div className="rounded-[var(--radius-xl)] border border-[var(--color-gold)]/30 bg-[var(--color-gold-light)] p-4 text-sm">
+            <p className="font-bold text-[var(--color-warning)]">قاعدة المكتب</p>
             <p className="mt-2 text-[var(--color-text-muted)]">
               هذا البرنامج معمول كدفتر متابعة للموظفين. مستندات إضافة العميل هي ملف البداية. مستندات الخطوات
               هي أوراق جديدة تظهر أثناء الشغل. الموظف لا يكرر الرفع؛ هو يرفع فقط الورق الناقص أو الناتج من الخطوة.
@@ -135,12 +135,12 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
     document.mimeType === 'application/pdf' || /\.pdf$/i.test(document.fileName)
 
   return (
-    <Card className="mb-6 border-[var(--color-success)]/20 bg-[var(--color-success-light)]/30">
+    <Card className="paper-card mb-6">
       <CardHeader>
         <div>
-          <CardTitle>مستندات العميل الأساسية</CardTitle>
+          <CardTitle>معرض مستندات العميل الأساسية</CardTitle>
           <CardSubtitle>
-            هذه هي الملفات التي تم رفعها وقت إضافة العميل. اعتبرها ملف البداية، ولا ترفعها مرة أخرى داخل الخطوات.
+            الملفات التي دخلت مع العميل من أول يوم. افتحها أو حمّلها من هنا، ولا تكرر رفعها داخل الخطوات.
           </CardSubtitle>
         </div>
       </CardHeader>
@@ -151,21 +151,29 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
           </div>
         )}
         {documents.length > 0 ? (
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {documents.map((document) => (
               <div
                 key={document.id}
-                className="flex min-h-32 flex-col justify-between rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm"
+                className="group flex min-h-36 flex-col justify-between rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white/80 p-4 text-sm shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-gold)]/60 hover:shadow-[var(--shadow-card)]"
               >
-                <div>
-                  <p className="font-semibold">{document.label}</p>
-                  <p className="mt-1 truncate text-xs text-[var(--color-text-muted)]">{document.file_name}</p>
+                <div className="flex gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--color-gold-light)] text-[var(--color-gold)]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <path d="M14 2v6h6" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold">{document.label}</p>
+                    <p className="mt-1 truncate text-xs text-[var(--color-text-muted)]">{document.file_name}</p>
+                  </div>
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-4 flex flex-wrap gap-2">
                   <Button
                     type="button"
                     size="sm"
-                    variant="secondary"
+                    variant="primary"
                     loading={openingDocumentId === document.id}
                     onClick={() => handlePreviewDocument(document)}
                   >
@@ -174,7 +182,7 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
                   <Button
                     type="button"
                     size="sm"
-                    variant="ghost"
+                    variant="secondary"
                     loading={openingDocumentId === document.id}
                     onClick={() => handleDownloadDocument(document)}
                   >
@@ -308,75 +316,78 @@ export default function ClientDetailPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="mx-auto w-full max-w-[1380px] px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button variant="ghost" onClick={() => router.push('/clients')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
             <path d="M9 18l6-6-6-6" />
           </svg>
           العودة
         </Button>
-        <Button variant="secondary" onClick={() => router.push(`/clients/${clientId}/report`)}>
-          تقرير PDF
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" onClick={() => router.push(`/clients/${clientId}/report`)}>
+            تقرير PDF
+          </Button>
+          <Button variant="primary">تعديل بيانات العميل</Button>
+        </div>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div>
-              <CardTitle>{client.name}</CardTitle>
-              <CardSubtitle>معلومات العميل</CardSubtitle>
+      <div className="client-hero mb-6 rounded-[var(--radius-2xl)] p-5 sm:p-6 lg:p-7">
+        <div className="relative grid gap-5 lg:grid-cols-[1.35fr_0.85fr]">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-[var(--color-primary)] shadow-sm">
+              ملف عميل نشط
             </div>
-            <Button variant="secondary">تعديل</Button>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-xs text-[var(--color-text-muted)] mb-1">الهاتف</p>
-                <p dir="ltr">{client.phone || '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-[var(--color-text-muted)] mb-1">المدينة</p>
-                <p>{client.city || '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-[var(--color-text-muted)] mb-1">الحي</p>
-                <p>{client.neighborhood || '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-[var(--color-text-muted)] mb-1">رقم الملف</p>
-                <p>{client.parcel_number || '-'}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            <h1 className="text-3xl font-black leading-tight text-[var(--color-text)] sm:text-4xl">{client.name}</h1>
+            <p className="mt-2 max-w-2xl text-sm text-[var(--color-text-muted)]">
+              صفحة متابعة واحدة للبيانات، المستندات، المسارات، والمدفوعات. ابدأ من الملف الأساسي ثم نفّذ خطوات رخصة الجهاز.
+            </p>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>ملخص المسارات</CardTitle>
-          </CardHeader>
-          <CardContent>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {[
+                ['الهاتف', client.phone || '-', 'ltr'],
+                ['المدينة', client.city || '-', 'rtl'],
+                ['الحي / المنطقة', client.neighborhood || '-', 'rtl'],
+                ['رقم الملف', client.parcel_number || '-', 'rtl'],
+              ].map(([label, value, dir]) => (
+                <div key={label} className="rounded-[var(--radius-xl)] border border-white/70 bg-white/66 p-3 shadow-sm">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">{label}</p>
+                  <p className="font-bold" dir={dir}>{value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[var(--radius-2xl)] border border-white/70 bg-white/72 p-4 shadow-[var(--shadow-card)]">
+            <p className="mb-3 text-sm font-black">حالة الملف الآن</p>
             <div className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm text-[var(--color-text-muted)]">رخصة الجهاز</span>
-                <Badge variant={deviceLicense?.status === 'completed' ? 'completed' : deviceLicense ? 'in_progress' : 'pending'}>
-                  {deviceLicense?.status === 'completed' ? 'مكتمل' : deviceLicense ? 'جاري' : 'لم يبدآ'}
-                </Badge>
+              <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm font-bold">رخصة الجهاز</span>
+                  <Badge variant={deviceLicense?.status === 'completed' ? 'completed' : deviceLicense ? 'in_progress' : 'pending'}>
+                    {deviceLicense?.status === 'completed' ? 'مكتمل' : deviceLicense ? 'جاري' : 'لم يبدأ'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-[var(--color-text-muted)]">المسار الأساسي. لا يبدأ تصريح الحفر قبله.</p>
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm text-[var(--color-text-muted)]">تصريح الحفر</span>
-                <Badge
-                  variant={excavationPermit?.status === 'completed' ? 'completed' : excavationPermit ? 'in_progress' : 'pending'}
-                  aria-disabled={!deviceLicenseCompleted}
-                  className={!deviceLicenseCompleted ? 'opacity-60' : ''}
-                >
-                  {!deviceLicenseCompleted ? 'مقفل' : excavationPermit?.status === 'completed' ? 'مكتمل' : excavationPermit ? 'جاري' : 'لم يبدآ'}
-                </Badge>
+              <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-sm font-bold">تصريح الحفر</span>
+                  <Badge
+                    variant={excavationPermit?.status === 'completed' ? 'completed' : excavationPermit ? 'in_progress' : 'blocked'}
+                    aria-disabled={!deviceLicenseCompleted}
+                    className={!deviceLicenseCompleted ? 'opacity-75' : ''}
+                  >
+                    {!deviceLicenseCompleted ? 'مقفل' : excavationPermit?.status === 'completed' ? 'مكتمل' : excavationPermit ? 'جاري' : 'لم يبدأ'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-[var(--color-text-muted)]">
+                  {!deviceLicenseCompleted ? 'مقفول تلقائياً حتى اكتمال رخصة الجهاز.' : 'جاهز للبدء بعد اكتمال المسار الأول.'}
+                </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       <ClientWorkGuide />
