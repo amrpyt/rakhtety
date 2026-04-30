@@ -9,6 +9,7 @@ import { ClientCard } from '@/components/client/ClientCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Button } from '@/components/ui/Button'
+import { useAuth } from '@/hooks/auth/useAuth'
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,7 @@ import {
 } from '@/components/ui/Dialog'
 import { FormGroup, Input, Label } from '@/components/ui/Form'
 import { useClients } from '@/hooks/useClients'
+import { can } from '@/lib/auth/permissions'
 import { CLIENT_INTAKE_DOCUMENTS } from '@/lib/domain/workflow-templates'
 import { clientCreateSchema, sanitizePhoneInput, type ClientCreateFormData } from '@/lib/validation/schemas'
 
@@ -34,6 +36,7 @@ const emptyForm: ClientCreateFormData = {
 
 export default function ClientsPage() {
   const router = useRouter()
+  const { user } = useAuth()
   const {
     clients,
     loading,
@@ -61,6 +64,7 @@ export default function ClientsPage() {
 
   const hasSearch = searchQuery.trim().length >= 2
   const displayedClients = hasSearch ? searchResults : clients
+  const canManageClients = can(user?.role, 'manageClients')
 
   const phoneField = register('phone')
   const requiredDocumentCount = CLIENT_INTAKE_DOCUMENTS.filter((document) => document.required).length
@@ -128,9 +132,9 @@ export default function ClientsPage() {
             <h2 className="text-base font-black">المطلوب هنا</h2>
             <p className="text-sm text-[var(--color-text-muted)]">اكتب اسم العميل أو رقم الملف. لو العميل جديد، اضغط إضافة عميل.</p>
           </div>
-          <Button className="w-full sm:w-auto" onClick={() => setShowAddDialog(true)}>
+          {canManageClients && <Button className="w-full sm:w-auto" onClick={() => setShowAddDialog(true)}>
             + إضافة عميل
-          </Button>
+          </Button>}
         </div>
         <div className="mt-4">
           <SearchBar
@@ -166,12 +170,12 @@ export default function ClientsPage() {
           icon="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 7a4 4 0 1 0 0 0 0 8 M17 11l2 2 4-4"
           title={hasSearch ? 'لا توجد نتائج' : 'لا يوجد عملاء'}
           description={
-            hasSearch
+            hasSearch || !canManageClients
               ? 'جرّب البحث باسم العميل، رقم الملف، المدينة، أو الهاتف.'
               : 'اضغط إضافة عميل لإدخال أول ملف.'
           }
           action={
-            hasSearch
+            hasSearch || !canManageClients
               ? undefined
               : {
                   label: 'إضافة عميل',

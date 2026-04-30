@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { employeeService, CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
+import { directoryClient } from '@/lib/client-data/directory-client'
 import type { EmployeeWithProfile } from '@/types/database.types'
 
 interface UseEmployeesReturn {
@@ -23,8 +24,7 @@ export function useEmployees(): UseEmployeesReturn {
     setLoading(true)
     setError(null)
     try {
-      const data = await employeeService.findAll()
-      setEmployees(data)
+      setEmployees(await directoryClient.listEmployees())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch employees')
     } finally {
@@ -38,7 +38,7 @@ export function useEmployees(): UseEmployeesReturn {
 
   const createEmployee = useCallback(
     async (data: CreateEmployeeDto) => {
-      const newEmployee = await employeeService.create(data)
+      const newEmployee = await directoryClient.createEmployee(data)
       setEmployees((prev) => [newEmployee, ...prev])
       return newEmployee
     },

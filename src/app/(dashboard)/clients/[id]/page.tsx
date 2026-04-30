@@ -11,7 +11,9 @@ import { WorkflowTabs } from '@/components/workflow/WorkflowTabs'
 import { FinancialSummaryCard } from '@/components/financial/FinancialSummaryCard'
 import { PaymentForm } from '@/components/financial/PaymentForm'
 import { useFinancials } from '@/hooks/useFinancials'
+import { useAuth } from '@/hooks/auth/useAuth'
 import { useWorkflows } from '@/hooks/useWorkflows'
+import { can } from '@/lib/auth/permissions'
 import type { Client, ClientIntakeDocument } from '@/types/database.types'
 
 type ClientDetail = Client & {
@@ -25,14 +27,16 @@ function CurrentTaskPanel({
 }: {
   deviceLicense?: ReturnType<typeof useWorkflows>['deviceLicense']
   deviceLicenseCompleted: boolean
-  onCreateWorkflow: (type: 'DEVICE_LICENSE' | 'EXCAVATION_PERMIT') => Promise<void>
+  onCreateWorkflow?: (type: 'DEVICE_LICENSE' | 'EXCAVATION_PERMIT') => Promise<void>
 }) {
   const currentStep = deviceLicense?.steps?.find((step) => step.status === 'in_progress' || step.status === 'pending')
 
   let title = 'افتح مسار رخصة الجهاز'
   let description = 'هذا العميل له ملف، لكن خطوات رخصة الجهاز لم تبدأ بعد.'
   let actionLabel = 'فتح مسار رخصة الجهاز'
-  let action: (() => void) | undefined = () => void onCreateWorkflow('DEVICE_LICENSE')
+  let action: (() => void) | undefined = onCreateWorkflow
+    ? () => void onCreateWorkflow('DEVICE_LICENSE')
+    : undefined
 
   if (deviceLicenseCompleted) {
     title = 'رخصة الجهاز مكتملة'
@@ -301,7 +305,10 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
 export default function ClientDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { user } = useAuth()
   const clientId = params.id as string
+  const canManageWorkflows = can(user?.role, 'manageWorkflows')
+  const canUseEmergencyOverride = can(user?.role, 'emergencyOverride')
 
   const [client, setClient] = useState<ClientDetail | null>(null)
   const [showFinance, setShowFinance] = useState(false)
@@ -456,7 +463,7 @@ export default function ClientDetailPage() {
       <CurrentTaskPanel
         deviceLicense={deviceLicense}
         deviceLicenseCompleted={deviceLicenseCompleted}
-        onCreateWorkflow={createWorkflow}
+        onCreateWorkflow={canManageWorkflows ? createWorkflow : undefined}
       />
 
       <ClientWorkGuide />
@@ -471,9 +478,9 @@ export default function ClientDetailPage() {
         excavationPermitBlockedReason={excavationPermitBlockedReason}
         onMarkComplete={(stepId) => updateStepStatus(stepId, 'completed')}
         onStart={(stepId) => updateStepStatus(stepId, 'in_progress')}
-        onEmergencyComplete={emergencyCompleteStep}
-        onMoveBack={moveStepBack}
-        onCreateWorkflow={createWorkflow}
+        onEmergencyComplete={canUseEmergencyOverride ? emergencyCompleteStep : undefined}
+        onMoveBack={canUseEmergencyOverride ? moveStepBack : undefined}
+        onCreateWorkflow={canManageWorkflows ? createWorkflow : undefined}
       />
       {workflowError && (
         <p className="mt-3 rounded-[var(--radius-md)] bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">

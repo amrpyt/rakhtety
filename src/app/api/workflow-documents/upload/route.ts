@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requirePermission } from '@/lib/auth/server-permissions'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerClient } from '@/lib/supabase/server'
 import { buildDocumentStoragePath, validateDocumentFile } from '@/lib/services/document-helpers'
@@ -7,15 +8,9 @@ import type { WorkflowDocument } from '@/types/database.types'
 const BUCKET = 'workflow-documents'
 
 export async function POST(request: NextRequest) {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
-
-  if (authError || !user) {
-    return NextResponse.json({ error: 'يجب تسجيل الدخول أولاً.' }, { status: 401 })
-  }
+  const supabase = await createServerClient()
+  const permission = await requirePermission(supabase, 'uploadWorkflowDocuments')
+  if (permission instanceof NextResponse) return permission
 
   const formData = await request.formData()
   const workflowId = String(formData.get('workflow_id') || '')
@@ -31,29 +26,18 @@ export async function POST(request: NextRequest) {
   validateDocumentFile(file)
 
   const admin = createAdminClient()
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
+  const { data: step, error: stepError } = await admin
+    .from('workflow_steps')
+    .select('id, workflow_id')
+    .eq('id', workflowStepId)
     .maybeSingle()
 
-  if (profileError) {
-    return NextResponse.json({ error: profileError.message }, { status: 500 })
+  if (stepError) {
+    return NextResponse.json({ error: stepError.message }, { status: 500 })
   }
 
-  const { data: workflow, error: workflowError } = await admin
-    .from('workflows')
-    .select('assigned_to')
-    .eq('id', workflowId)
-    .maybeSingle()
-
-  if (workflowError) {
-    return NextResponse.json({ error: workflowError.message }, { status: 500 })
-  }
-
-  const canUpload = profile?.role === 'admin' || profile?.role === 'manager' || workflow?.assigned_to === user.id
-  if (!canUpload) {
-    return NextResponse.json({ error: 'ليس لديك صلاحية رفع مستند لهذا المسار.' }, { status: 403 })
+  if (!step || step.workflow_id !== workflowId) {
+    return NextResponse.json({ error: 'الخطوة لا تتبع هذا المسار.' }, { status: 400 })
   }
 
   const storagePath = buildDocumentStoragePath(workflowId, workflowStepId, file.name)
@@ -77,7 +61,7 @@ export async function POST(request: NextRequest) {
       storage_path: storagePath,
       mime_type: file.type || null,
       file_size: file.size,
-      uploaded_by: user.id,
+      uploaded_by: permission.user.id,
     })
     .select()
     .single<WorkflowDocument>()

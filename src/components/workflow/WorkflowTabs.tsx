@@ -55,7 +55,7 @@ export function WorkflowTabs({
           <div className="mb-4 rounded-[var(--radius-xl)] border border-[var(--color-primary)]/20 bg-[var(--color-primary-light)]/60 p-4 text-sm text-[var(--color-text-muted)]">
             هذا هو مسار التشغيل الأساسي. لما يخلص بالكامل، تصريح الحفر يفتح تلقائياً. كل كارت تحت يمثل خطوة واحدة فقط.
           </div>
-          {!deviceLicenseWorkflow && (
+          {!deviceLicenseWorkflow && onCreateWorkflow && (
             <div className="mb-4 flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--color-primary)]/20 bg-white/70 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-bold text-[var(--color-text)]">لم يتم فتح مسار رخصة الجهاز بعد</p>

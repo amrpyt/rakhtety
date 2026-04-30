@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { roleLabels } from '@/config/auth.config'
+import { canAccessRoute } from '@/lib/auth/permissions'
 import { useAuth } from '@/hooks/auth/useAuth'
 
 interface NavItem {
@@ -48,6 +49,12 @@ const navSections: NavSection[] = [
 export function Sidebar() {
   const pathname = usePathname()
   const { user, logout } = useAuth()
+  const visibleSections = navSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => canAccessRoute(user?.role, item.href)),
+    }))
+    .filter((section) => section.items.length > 0)
 
   const initials =
     user?.full_name
@@ -80,7 +87,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 p-4">
-        {navSections.map((section) => (
+        {visibleSections.map((section) => (
           <div key={section.section} className="mb-4">
             <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/38">
               {section.section}
@@ -139,7 +146,10 @@ export function Sidebar() {
 
 export function MobileNav() {
   const pathname = usePathname()
-  const flatItems = navSections.flatMap((section) => section.items)
+  const { user } = useAuth()
+  const flatItems = navSections
+    .flatMap((section) => section.items)
+    .filter((item) => canAccessRoute(user?.role, item.href))
 
   return (
     <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[var(--radius-xl)] border border-white/15 bg-[var(--shell-sidebar)] p-2 text-white shadow-2xl lg:hidden">

@@ -1,15 +1,18 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
+import { useAuth } from '@/hooks/auth/useAuth'
 import { useEmployees } from '@/hooks/useEmployees'
+import { can } from '@/lib/auth/permissions'
 import { Button } from '@/components/ui/Button'
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogContent, DialogFooter } from '@/components/ui/Dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { EmployeeForm } from '@/components/employees/EmployeeForm'
 import { EmployeeList } from '@/components/employees/EmployeeList'
 import type { EmployeeWithProfile } from '@/types/database.types'
 import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
 
 export default function EmployeesPage() {
+  const { user } = useAuth()
   const {
     employees,
     loading,
@@ -25,6 +28,7 @@ export default function EmployeesPage() {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeWithProfile | null>(null)
+  const canManageEmployees = can(user?.role, 'manageEmployees')
 
   const handleAdd = useCallback(() => {
     setSelectedEmployee(null)
@@ -77,23 +81,34 @@ export default function EmployeesPage() {
         await deleteEmployee(selectedEmployee.id)
         setShowDeleteDialog(false)
         setSelectedEmployee(null)
-      } catch (err) {
-        // Error handled by hook
+      } catch {
+        // Error handled by hook.
       }
     }
   }, [selectedEmployee, deleteEmployee])
 
-  return (
-    <div className="p-6 max-w-[1300px]">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-lg font-bold">إدارة الموظفين</h1>
-          <p className="text-sm text-[var(--color-text-muted)] mt-1">
-            {employees.length} موظف
+  if (!canManageEmployees) {
+    return (
+      <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
+        <div className="rounded-[var(--radius-xl)] border border-[var(--color-error)]/25 bg-[var(--color-error-light)] p-5">
+          <h1 className="text-lg font-bold text-[var(--color-error)]">غير مسموح</h1>
+          <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+            إدارة الموظفين متاحة للمدير فقط. حساب الموظف يركز على ملفات العملاء وخطوات العمل والمدفوعات.
           </p>
         </div>
-        <Button onClick={handleAdd}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+      </div>
+    )
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-bold">إدارة الموظفين</h1>
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">{employees.length} موظف</p>
+        </div>
+        <Button onClick={handleAdd} className="w-full sm:w-auto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -117,11 +132,7 @@ export default function EmployeesPage() {
             <DialogTitle>إضافة موظف جديد</DialogTitle>
             <DialogDescription>أدخل بيانات الموظف الجديد. سيتم إرسال كلمة مرور مؤقتة إلى بريده الإلكتروني.</DialogDescription>
           </DialogHeader>
-          <EmployeeForm
-            mode="create"
-            onSubmit={handleAddSubmit}
-            onCancel={() => setShowAddDialog(false)}
-          />
+          <EmployeeForm mode="create" onSubmit={handleAddSubmit} onCancel={() => setShowAddDialog(false)} />
         </DialogContent>
       </Dialog>
 
@@ -145,8 +156,7 @@ export default function EmployeesPage() {
           <DialogHeader>
             <DialogTitle>حذف الموظف</DialogTitle>
             <DialogDescription>
-              هل أنت متأكد من حذف الموظف <strong>{selectedEmployee?.profile.full_name}</strong>؟
-              لا يمكن التراجع عن هذا الإجراء.
+              هل أنت متأكد من حذف الموظف <strong>{selectedEmployee?.profile.full_name}</strong>؟ لا يمكن التراجع عن هذا الإجراء.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

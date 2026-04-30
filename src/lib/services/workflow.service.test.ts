@@ -9,6 +9,7 @@ const {
   mockFindWorkflowSteps,
   mockAssertStepCanComplete,
   mockCreateActionLog,
+  mockProfileMaybeSingle,
 } = vi.hoisted(() => ({
   mockFindStepById: vi.fn(),
   mockUpdateStepStatus: vi.fn(),
@@ -16,6 +17,7 @@ const {
   mockFindWorkflowSteps: vi.fn(),
   mockAssertStepCanComplete: vi.fn(),
   mockCreateActionLog: vi.fn(),
+  mockProfileMaybeSingle: vi.fn(),
 }))
 
 vi.mock('@/lib/database/repositories/workflow-step.repository', () => ({
@@ -54,11 +56,24 @@ vi.mock('@/lib/database/repositories/workflow-action-log.repository', () => ({
   },
 }))
 
+vi.mock('@/lib/supabase/client', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          maybeSingle: mockProfileMaybeSingle,
+        })),
+      })),
+    })),
+  },
+}))
+
 import { workflowService } from './workflow.service'
 
 describe('WorkflowService emergency override', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockProfileMaybeSingle.mockResolvedValue({ data: { role: 'admin' }, error: null })
 
     mockFindStepById.mockResolvedValue({
       id: 'step-1',
@@ -161,6 +176,19 @@ describe('WorkflowService emergency override', () => {
       })
     ).rejects.toMatchObject({
       code: ErrorCodes.VALIDATION_FAILED,
+    })
+  })
+
+  it('rejects emergency override for employees', async () => {
+    mockProfileMaybeSingle.mockResolvedValue({ data: { role: 'employee' }, error: null })
+
+    await expect(
+      workflowService.emergencyCompleteStep('step-1', {
+        reason: 'Urgent municipal deadline',
+        actorId: 'employee-1',
+      })
+    ).rejects.toMatchObject({
+      code: ErrorCodes.OPERATION_NOT_ALLOWED,
     })
   })
 

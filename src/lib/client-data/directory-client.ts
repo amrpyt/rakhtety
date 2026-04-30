@@ -1,5 +1,6 @@
 import type { Client, EmployeeWithProfile } from '@/types/database.types'
 import type { CreateClientDto } from '@/lib/services/client.service'
+import type { CreateEmployeeDto } from '@/lib/services/employee.service'
 
 const MAX_DOCUMENT_FILE_SIZE = 10 * 1024 * 1024
 const ALLOWED_DOCUMENT_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png']
@@ -102,5 +103,17 @@ export const directoryClient = {
       'Failed to fetch employees'
     )
     return payload.employees
+  },
+
+  async createEmployee(data: CreateEmployeeDto): Promise<EmployeeWithProfile> {
+    const payload = await readJson<{ employee: EmployeeWithProfile }>(
+      await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+      'Failed to create employee'
+    )
+    return payload.employee
   },
 }

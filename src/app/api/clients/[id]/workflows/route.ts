@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerClient } from '@/lib/supabase/server'
+import { requirePermission } from '@/lib/auth/server-permissions'
 import { getWorkflowStepTemplates } from '@/lib/domain/workflow-templates'
 import { getBlockedExcavationReason, domainMessages } from '@/lib/domain/messages'
 import type { Workflow, WorkflowType, WorkflowWithSteps } from '@/types/database.types'
@@ -40,6 +41,8 @@ export async function GET(_request: NextRequest, { params }: Params) {
 export async function POST(request: NextRequest, { params }: Params) {
   const { id } = await params
   const supabase = await createServerClient()
+  const permission = await requirePermission(supabase, 'manageWorkflows')
+  if (permission instanceof NextResponse) return permission
 
   const {
     data: { user },

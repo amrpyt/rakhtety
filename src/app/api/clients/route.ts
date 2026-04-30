@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requirePermission } from '@/lib/auth/server-permissions'
 import { createClient, listClients } from '@/lib/server-data/directory-query'
 import { buildClientIntakeStoragePath } from '@/lib/services/document-helpers'
 import { createServerClient } from '@/lib/supabase/server'
@@ -53,6 +54,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const supabase = await createServerClient()
+  const permission = await requirePermission(supabase, 'manageClients')
+  if (permission instanceof NextResponse) return permission
 
   try {
     const {

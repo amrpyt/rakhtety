@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/proxy'
+import { canAccessRoute } from '@/lib/auth/permissions'
+import { createServerClient } from '@supabase/ssr'
+import { databaseConfig } from '@/config/database.config'
 
 const PUBLIC_ROUTES = ['/login', '/signup', '/api/auth']
-const PROTECTED_ROUTES = ['/dashboard', '/clients', '/workflows', '/employees', '/settings']
+const PROTECTED_ROUTES = ['/dashboard', '/clients', '/workflows', '/employees', '/finance', '/settings']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -27,6 +30,25 @@ export async function middleware(request: NextRequest) {
     const redirectUrl = new URL('/login', request.url)
     redirectUrl.searchParams.set('redirect', pathname)
     return applyCookies(NextResponse.redirect(redirectUrl))
+  }
+
+  if (isProtectedRoute && user) {
+    const supabase = createServerClient(databaseConfig.supabaseUrl, databaseConfig.supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll() {
+          // updateSession already collected refreshed cookies for the response.
+        },
+      },
+    })
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+
+    const role = profile?.role || user.user_metadata?.role
+    if (!canAccessRoute(role, pathname)) {
+      return applyCookies(NextResponse.redirect(new URL('/dashboard', request.url)))
+    }
   }
 
   if (pathname.startsWith('/login') && user) {
