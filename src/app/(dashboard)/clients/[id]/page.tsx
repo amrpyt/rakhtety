@@ -307,6 +307,7 @@ export default function ClientDetailPage() {
   const router = useRouter()
   const { user } = useAuth()
   const clientId = params.id as string
+  const canManageClients = can(user?.role, 'manageClients')
   const canManageWorkflows = can(user?.role, 'manageWorkflows')
   const canUseEmergencyOverride = can(user?.role, 'emergencyOverride')
 
@@ -398,7 +399,7 @@ export default function ClientDetailPage() {
           <Button variant="secondary" onClick={() => router.push(`/clients/${clientId}/report`)}>
             تقرير PDF
           </Button>
-          <Button variant="primary">تعديل بيانات العميل</Button>
+          {canManageClients && <Button variant="primary">تعديل بيانات العميل</Button>}
         </div>
       </div>
 
