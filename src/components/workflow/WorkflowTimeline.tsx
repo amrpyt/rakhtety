@@ -29,6 +29,10 @@ export function WorkflowTimeline({
     )
   }
 
+  const currentIndex = locked
+    ? -1
+    : steps.findIndex((step) => step.status === 'in_progress' || step.status === 'pending')
+
   return (
     <div className="relative flex flex-col gap-3">
       {steps.map((step, index) => (
@@ -45,7 +49,9 @@ export function WorkflowTimeline({
           isLocked={locked}
           lockedReason={lockedReason}
           stepNumber={index + 1}
-          canAct={!step.id.startsWith('placeholder-')}
+          canAct={!step.id.startsWith('placeholder-') && index === currentIndex}
+          isCurrentStep={index === currentIndex}
+          isExpanded={index === currentIndex || step.status === 'in_progress'}
           onMarkComplete={onMarkComplete}
           onStart={onStart}
           onEmergencyComplete={onEmergencyComplete}

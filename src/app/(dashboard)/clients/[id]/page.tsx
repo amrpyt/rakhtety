@@ -18,7 +18,56 @@ type ClientDetail = Client & {
   intake_documents?: ClientIntakeDocument[]
 }
 
+function CurrentTaskPanel({
+  deviceLicense,
+  deviceLicenseCompleted,
+  onCreateWorkflow,
+}: {
+  deviceLicense?: ReturnType<typeof useWorkflows>['deviceLicense']
+  deviceLicenseCompleted: boolean
+  onCreateWorkflow: (type: 'DEVICE_LICENSE' | 'EXCAVATION_PERMIT') => Promise<void>
+}) {
+  const currentStep = deviceLicense?.steps?.find((step) => step.status === 'in_progress' || step.status === 'pending')
+
+  let title = 'افتح مسار رخصة الجهاز'
+  let description = 'هذا العميل له ملف، لكن خطوات رخصة الجهاز لم تبدأ بعد.'
+  let actionLabel = 'فتح مسار رخصة الجهاز'
+  let action: (() => void) | undefined = () => void onCreateWorkflow('DEVICE_LICENSE')
+
+  if (deviceLicenseCompleted) {
+    title = 'رخصة الجهاز مكتملة'
+    description = 'المسار الأول انتهى. يمكن متابعة تصريح الحفر من تبويب تصريح الحفر.'
+    actionLabel = ''
+    action = undefined
+  } else if (currentStep) {
+    title = currentStep.status === 'in_progress' ? `أكمل: ${currentStep.name}` : `ابدأ: ${currentStep.name}`
+    description = currentStep.status === 'in_progress'
+      ? 'راجع مستندات هذه الخطوة، ارفع المطلوب فقط، ثم اضغط إكمال.'
+      : 'اضغط بدء التنفيذ داخل كارت الخطوة. بعدها سيظهر رفع المستندات الخاص بها.'
+    actionLabel = ''
+    action = undefined
+  }
+
+  return (
+    <div className="mb-6 rounded-[var(--radius-2xl)] border border-[var(--color-primary)]/20 bg-[var(--color-primary-light)]/70 p-4 shadow-[var(--shadow-card)] sm:p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--color-primary)]">المطلوب الآن</p>
+          <h2 className="mt-1 text-xl font-black text-[var(--color-text)]">{title}</h2>
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">{description}</p>
+        </div>
+        {action && (
+          <Button type="button" onClick={action}>
+            {actionLabel}
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ClientWorkGuide() {
+  const [open, setOpen] = useState(false)
   const steps = [
     'مستندات إضافة العميل محفوظة بالفعل في ملف العميل. لا ترفعها مرة ثانية إلا لو الملف ناقص أو غير واضح.',
     'ابدأ من مسار رخصة الجهاز. هذا هو المسار الأساسي لهذا العميل.',
@@ -30,13 +79,19 @@ function ClientWorkGuide() {
 
   return (
     <Card className="paper-card mb-6">
-      <CardHeader>
+      <CardHeader
+        action={
+          <Button type="button" variant="ghost" size="sm" onClick={() => setOpen((value) => !value)}>
+            {open ? 'إخفاء التعليمات' : 'عرض التعليمات'}
+          </Button>
+        }
+      >
         <div>
           <CardTitle>دليل التشغيل السريع</CardTitle>
-          <CardSubtitle>الخلاصة التي يحتاجها الموظف قبل لمس أي خطوة.</CardSubtitle>
+          <CardSubtitle>مختصر: الملف الأساسي محفوظ، والشغل الحقيقي يتم خطوة بخطوة.</CardSubtitle>
         </div>
       </CardHeader>
-      <CardContent>
+      {open && <CardContent>
         <div className="grid gap-4 lg:grid-cols-[1.55fr_0.95fr]">
           <ol className="grid gap-2 sm:grid-cols-2">
             {steps.map((step, index) => (
@@ -67,7 +122,7 @@ function ClientWorkGuide() {
             </div>
           </div>
         </div>
-      </CardContent>
+      </CardContent>}
     </Card>
   )
 }
@@ -75,6 +130,7 @@ function ClientWorkGuide() {
 function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocument[] }) {
   const params = useParams()
   const clientId = params.id as string
+  const [open, setOpen] = useState(false)
   const [openingDocumentId, setOpeningDocumentId] = useState<string | null>(null)
   const [documentError, setDocumentError] = useState<string | null>(null)
   const [previewDocument, setPreviewDocument] = useState<{
@@ -136,15 +192,21 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
 
   return (
     <Card className="paper-card mb-6">
-      <CardHeader>
+      <CardHeader
+        action={
+          <Button type="button" variant="secondary" size="sm" onClick={() => setOpen((value) => !value)}>
+            {open ? 'إخفاء المستندات' : 'عرض المستندات'}
+          </Button>
+        }
+      >
         <div>
           <CardTitle>معرض مستندات العميل الأساسية</CardTitle>
           <CardSubtitle>
-            الملفات التي دخلت مع العميل من أول يوم. افتحها أو حمّلها من هنا، ولا تكرر رفعها داخل الخطوات.
+            {documents.length} مستند محفوظ. افتح المعرض عند الحاجة فقط.
           </CardSubtitle>
         </div>
       </CardHeader>
-      <CardContent>
+      {open && <CardContent>
         {documentError && (
           <div className="mb-3 rounded-[var(--radius-md)] bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">
             {documentError}
@@ -197,7 +259,7 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
             لا توجد مستندات أساسية محفوظة لهذا العميل حتى الآن. لو العميل سلّم الورق، ارفعه من شاشة إضافة العميل أو من تحديث الملف لاحقاً.
           </div>
         )}
-      </CardContent>
+      </CardContent>}
       {previewDocument && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-[var(--radius-lg)] bg-[var(--color-surface)] shadow-xl">
@@ -242,6 +304,7 @@ export default function ClientDetailPage() {
   const clientId = params.id as string
 
   const [client, setClient] = useState<ClientDetail | null>(null)
+  const [showFinance, setShowFinance] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -390,6 +453,12 @@ export default function ClientDetailPage() {
         </div>
       </div>
 
+      <CurrentTaskPanel
+        deviceLicense={deviceLicense}
+        deviceLicenseCompleted={deviceLicenseCompleted}
+        onCreateWorkflow={createWorkflow}
+      />
+
       <ClientWorkGuide />
 
       <ClientIntakeDocumentsCard documents={client.intake_documents || []} />
@@ -413,19 +482,37 @@ export default function ClientDetailPage() {
       )}
 
       {activeWorkflow && (
-        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
-          <FinancialSummaryCard summary={financialSummary} loading={financialLoading} />
-          <div>
-            <PaymentForm
-              steps={activeWorkflow.steps}
-              loading={financialLoading}
-              onSubmit={recordPayment}
-            />
-            {financialError && (
-              <p className="text-sm text-[var(--color-error)] mt-2">{financialError}</p>
-            )}
+        <div className="mt-6">
+          <div className="paper-card rounded-[var(--radius-2xl)] p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-base font-black">المالية</h2>
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  للمدير أو الموظف المسؤول عن التحصيل. مخفية حتى لا تزحم خطوات التنفيذ.
+                </p>
+              </div>
+              <Button type="button" variant="secondary" onClick={() => setShowFinance((value) => !value)}>
+                {showFinance ? 'إخفاء المالية' : 'عرض المالية'}
+              </Button>
+            </div>
           </div>
-        </div>
+
+          {showFinance && (
+            <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
+              <FinancialSummaryCard summary={financialSummary} loading={financialLoading} />
+              <div>
+                <PaymentForm
+                  steps={activeWorkflow.steps}
+                  loading={financialLoading}
+                  onSubmit={recordPayment}
+                />
+                {financialError && (
+                  <p className="text-sm text-[var(--color-error)] mt-2">{financialError}</p>
+                )}
+              </div>
+            </div>
+          )}
+          </div>
       )}
     </div>
   )

@@ -20,6 +20,8 @@ interface WorkflowStepProps {
   lockedReason?: string
   stepNumber?: number
   canAct?: boolean
+  isCurrentStep?: boolean
+  isExpanded?: boolean
   onMarkComplete?: (stepId: string) => Promise<void>
   onStart?: (stepId: string) => Promise<void>
   onEmergencyComplete?: (stepId: string, reason: string) => Promise<void>
@@ -46,6 +48,8 @@ export function WorkflowStep({
   lockedReason,
   stepNumber,
   canAct = true,
+  isCurrentStep = false,
+  isExpanded = true,
   onMarkComplete,
   onStart,
   onEmergencyComplete,
@@ -67,7 +71,7 @@ export function WorkflowStep({
   const showComplete = canAct && !isLocked && status === 'in_progress' && onMarkComplete
   const showEmergencyComplete = canAct && !isLocked && status === 'in_progress' && onEmergencyComplete
   const showMoveBack = canAct && !isLocked && (status === 'in_progress' || status === 'completed') && onMoveBack
-  const isCurrentAction = !isLocked && status !== 'completed' && canAct
+  const isCurrentAction = !isLocked && status !== 'completed' && isCurrentStep
 
   const openReasonBox = (action: 'emergency' | 'back') => {
     setPendingAction(action)
@@ -117,7 +121,7 @@ export function WorkflowStep({
           <Badge variant={config.variant}>{config.label}</Badge>
         </div>
 
-        {assignedTo && (
+        {assignedTo && isExpanded && (
           <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)] mb-2">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -133,7 +137,7 @@ export function WorkflowStep({
           </div>
         )}
 
-        {(fees !== undefined || profit !== undefined) && (
+        {isExpanded && (fees !== undefined || profit !== undefined) && (
           <div className="mt-3 flex flex-wrap gap-2 border-t border-[var(--color-border)] pt-3">
             {fees !== undefined && fees > 0 && (
               <div className="rounded-full bg-[var(--color-warning-light)] px-3 py-1 text-xs">
@@ -154,7 +158,7 @@ export function WorkflowStep({
           </div>
         )}
 
-        {!isLocked && canAct && status !== 'completed' && (
+        {!isLocked && canAct && isExpanded && status !== 'completed' && (
           <div className="mt-3 rounded-[var(--radius-lg)] border border-[var(--color-primary)]/15 bg-[var(--color-primary-light)]/50 p-3 text-xs text-[var(--color-text-muted)]">
             <span className="font-bold text-[var(--color-text)]">إرشاد للموظف: </span>
             {status === 'pending'
@@ -163,7 +167,7 @@ export function WorkflowStep({
           </div>
         )}
 
-        {isLocked && (
+        {isLocked && isExpanded && (
           <div className="flex items-center gap-2 mt-3 p-2 rounded-[var(--radius-md)] bg-[var(--color-surface-offset)]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-[var(--color-error)]">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -175,7 +179,7 @@ export function WorkflowStep({
           </div>
         )}
 
-        {(showStart || showComplete || showEmergencyComplete || showMoveBack) && (
+        {isExpanded && (showStart || showComplete || showEmergencyComplete || showMoveBack) && (
           <div className="mt-4 flex flex-wrap justify-end gap-2">
             {showMoveBack && (
               <Button size="sm" variant="ghost" onClick={() => openReasonBox('back')}>
@@ -206,7 +210,7 @@ export function WorkflowStep({
           </div>
         )}
 
-        {pendingAction && (
+        {pendingAction && isExpanded && (
           <form
             className="mt-3 rounded-[var(--radius-lg)] border border-[var(--color-warning)]/30 bg-[var(--color-warning-light)] p-3"
             onSubmit={handleSubmit(submitReason)}
@@ -239,7 +243,7 @@ export function WorkflowStep({
           </form>
         )}
 
-        {workflowId && !id.startsWith('placeholder-') && (
+        {workflowId && !id.startsWith('placeholder-') && isExpanded && status === 'in_progress' && (
           <DocumentUploadPanel workflowId={workflowId} stepId={id} disabled={isLocked} />
         )}
       </div>

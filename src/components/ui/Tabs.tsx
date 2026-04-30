@@ -55,7 +55,10 @@ export function Tabs({ tabs, defaultTab, onChange, children }: TabsProps) {
           )
         })}
       </div>
-      {children}
+      {React.Children.map(children, (child) => {
+        if (!React.isValidElement<TabPanelProps>(child)) return child
+        return child.props.id === activeTab ? child : null
+      })}
     </div>
   )
 }
