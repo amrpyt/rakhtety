@@ -161,6 +161,8 @@ You can say things like:
 - The Supabase magic-link `redirect_to` matters. In this repo, `localhost:3000` worked better than `3001` for auth handoff.
 - If a dashboard route keeps bouncing to login, check both the browser storage/cookie state and the app’s session parsing before assuming the link failed.
 - Software admin test account email: `amremaad11@gmail.com`, pass: '1qaz1qaz'.
+- Office E2E admin test account: `e2e.admin.1777590637868@example.com`, pass: `Rakhtety-E2E-260501!`.
+- Office E2E employee test account: `e2e.employee.1777590637868@example.com`, pass: `Rakhtety-E2E-260501!`.
 
 ---
 

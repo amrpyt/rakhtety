@@ -124,6 +124,23 @@ export function WorkflowTabs({
               </div>
             </div>
           )}
+          {!excavationPermitBlocked && !excavationPermitWorkflow && onCreateWorkflow && (
+            <div className="mb-4 flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--color-primary)]/20 bg-white/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-bold text-[var(--color-text)]">لم يتم فتح مسار تصريح الحفر بعد</p>
+                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                  رخصة الجهاز مكتملة. اضغط الزر لإنشاء خطوات تصريح الحفر الحقيقية لهذا العميل.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onCreateWorkflow?.('EXCAVATION_PERMIT')}
+                className="rounded-[var(--radius-xl)] bg-[var(--color-primary)] px-4 py-2 text-sm font-bold text-white shadow-md hover:bg-[var(--color-primary-hover)]"
+              >
+                فتح مسار تصريح الحفر
+              </button>
+            </div>
+          )}
           <WorkflowTimeline
             steps={
               excavationPermitWorkflow?.steps?.length
