@@ -8,35 +8,57 @@ interface ClientCardProps {
   onClick?: () => void
 }
 
+const emptyValue = '—'
+
 export function ClientCard({ client, onClick }: ClientCardProps) {
-  const displayPhone = client.phone?.trim() || '—'
-  const displayCity = client.city?.trim() || client.area?.trim() || '—'
-  const displayParcelNumber = client.parcel_number?.trim() || client.plot_number?.trim() || '—'
+  const displayPhone = client.phone?.trim() || emptyValue
+  const displayCity = client.city?.trim() || client.area?.trim() || emptyValue
+  const displayParcelNumber = client.parcel_number?.trim() || client.plot_number?.trim() || emptyValue
 
   return (
     <Card
-      className={`cursor-pointer hover:shadow-md transition-shadow duration-150 ${onClick ? 'hover:border-[var(--color-primary)]' : ''}`}
+      className={`paper-card cursor-pointer transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${onClick ? 'hover:border-[var(--color-primary)]' : ''}`}
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(event) => {
+        if (!onClick) return
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onClick()
+        }
+      }}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h3 className="font-bold text-sm mb-1">{client.name}</h3>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="truncate text-lg font-black">{client.name}</h3>
+          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+            أُنشئ في {new Date(client.created_at).toLocaleDateString('ar-EG')}
+          </p>
         </div>
-        <Badge variant="default">عميل</Badge>
+        <Badge variant="default">ملف</Badge>
       </div>
 
-      <div className="text-xs text-[var(--color-text-muted)] space-y-1">
-        <p>
-          الهاتف: <span dir="ltr">{displayPhone}</span>
+      <div className="grid gap-2 text-sm text-[var(--color-text-muted)]">
+        <p className="flex items-center justify-between gap-3">
+          <span>الهاتف</span>
+          <span className="font-medium text-[var(--color-text)]" dir="ltr">
+            {displayPhone}
+          </span>
         </p>
-        <p>المدينة: {displayCity}</p>
-        {client.neighborhood && <p>الحي: {client.neighborhood}</p>}
-        <p>رقم الملف: {displayParcelNumber}</p>
-      </div>
-
-      <div className="mt-3 pt-3 border-t border-[var(--color-divider)]">
-        <p className="text-[10px] text-[var(--color-text-faint)]">
-          {new Date(client.created_at).toLocaleDateString('ar-EG')}
+        <p className="flex items-center justify-between gap-3">
+          <span>المدينة</span>
+          <span className="font-medium text-[var(--color-text)]">{displayCity}</span>
+        </p>
+        {client.neighborhood && (
+          <p className="flex items-center justify-between gap-3">
+            <span>الحي</span>
+            <span className="font-medium text-[var(--color-text)]">{client.neighborhood}</span>
+          </p>
+        )}
+        <p className="flex items-center justify-between gap-3">
+          <span>رقم الملف</span>
+          <span className="font-medium text-[var(--color-text)]">{displayParcelNumber}</span>
         </p>
       </div>
     </Card>

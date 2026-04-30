@@ -6,11 +6,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { SearchBar } from '@/components/ui/SearchBar'
 import { ClientCard } from '@/components/client/ClientCard'
-import { ClientTable } from '@/components/client/ClientTable'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Button } from '@/components/ui/Button'
-import { Tabs } from '@/components/ui/Tabs'
 import {
   Dialog,
   DialogContent,
@@ -46,7 +44,6 @@ export default function ClientsPage() {
     createClient,
   } = useClients()
 
-  const [viewMode, setViewMode] = useState<'card' | 'table'>('card')
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -65,11 +62,9 @@ export default function ClientsPage() {
   const hasSearch = searchQuery.trim().length >= 2
   const displayedClients = hasSearch ? searchResults : clients
 
-  const tabs = [
-    { id: 'card', label: 'عرض البطاقات' },
-    { id: 'table', label: 'عرض الجدول' },
-  ]
   const phoneField = register('phone')
+  const requiredDocumentCount = CLIENT_INTAKE_DOCUMENTS.filter((document) => document.required).length
+  const uploadedDocumentCount = Object.keys(intakeFiles).length
 
   const updateIntakeFile = (type: string, file?: File) => {
     setIntakeFiles((current) => {
@@ -107,32 +102,49 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold">ملفات العملاء</h1>
-          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-            {clients.length} عميل مسجل
-          </p>
+    <div className="mx-auto w-full max-w-[1380px] px-4 py-5 sm:px-6 lg:px-8">
+      <div className="client-hero mb-6 rounded-[var(--radius-2xl)] p-5 sm:p-6 lg:p-7">
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <div className="mb-4 inline-flex rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-[var(--color-primary)] shadow-sm">
+              غرفة ملفات العملاء
+            </div>
+            <h1 className="text-3xl font-black leading-tight sm:text-4xl">ملفات العملاء</h1>
+            <p className="mt-2 max-w-2xl text-sm text-[var(--color-text-muted)]">
+              ابحث عن ملف، افتحه، أو أضف عميل جديد. لا تختار طريقة عرض؛ الصفحة تعرض الملفات ككروت عمل واضحة.
+            </p>
+          </div>
+          <div className="rounded-[var(--radius-2xl)] border border-white/70 bg-white/72 p-4 shadow-[var(--shadow-card)]">
+            <p className="text-xs font-bold text-[var(--color-text-muted)]">إجمالي الملفات</p>
+            <p className="mt-1 text-3xl font-black">{clients.length}</p>
+            <p className="text-xs text-[var(--color-text-muted)]">عميل مسجل</p>
+          </div>
         </div>
-        <Button className="w-full sm:w-auto" onClick={() => setShowAddDialog(true)}>
-          +
-          إضافة عميل
-        </Button>
       </div>
 
-      <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <SearchBar
-          placeholder="ابحث بالاسم، رقم الملف، المدينة، أو الهاتف..."
-          value={searchQuery}
-          onSearch={setSearchQuery}
-          className="w-full lg:max-w-xl"
-        />
-        <Tabs
-          tabs={tabs}
-          defaultTab={viewMode}
-          onChange={(id) => setViewMode(id as 'card' | 'table')}
-        />
+      <div className="paper-card mb-6 rounded-[var(--radius-2xl)] p-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-base font-black">المطلوب هنا</h2>
+            <p className="text-sm text-[var(--color-text-muted)]">اكتب اسم العميل أو رقم الملف. لو العميل جديد، اضغط إضافة عميل.</p>
+          </div>
+          <Button className="w-full sm:w-auto" onClick={() => setShowAddDialog(true)}>
+            + إضافة عميل
+          </Button>
+        </div>
+        <div className="mt-4">
+          <SearchBar
+            placeholder="ابحث بالاسم، رقم الملف، المدينة، أو الهاتف..."
+            value={searchQuery}
+            onSearch={setSearchQuery}
+            className="w-full"
+          />
+          {hasSearch && (
+            <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+              النتائج الحالية: {displayedClients.length}
+            </p>
+          )}
+        </div>
       </div>
 
       {loading && (
@@ -169,7 +181,7 @@ export default function ClientsPage() {
         />
       )}
 
-      {!loading && !error && displayedClients.length > 0 && viewMode === 'card' && (
+      {!loading && !error && displayedClients.length > 0 && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {displayedClients.map((client) => (
             <ClientCard
@@ -181,19 +193,12 @@ export default function ClientsPage() {
         </div>
       )}
 
-      {!loading && !error && displayedClients.length > 0 && viewMode === 'table' && (
-        <ClientTable
-          clients={displayedClients}
-          onRowClick={(client) => router.push(`/clients/${client.id}`)}
-        />
-      )}
-
       <Dialog open={showAddDialog} onOpenChange={(open) => (open ? setShowAddDialog(true) : closeDialog())}>
         <form onSubmit={handleSubmit((data) => handleCreateClient(data as ClientCreateFormData))} noValidate>
           <DialogHeader>
             <DialogTitle>إضافة عميل جديد</DialogTitle>
             <DialogDescription>
-              أدخل بيانات الملف، ثم أكد وجود المستندات الأساسية قبل الحفظ.
+              أدخل بيانات الملف وارفع مستندات البداية مرة واحدة. بعد الحفظ ستظهر داخل ملف العميل.
             </DialogDescription>
           </DialogHeader>
 
@@ -243,12 +248,17 @@ export default function ClientsPage() {
             </div>
 
             <div>
-              <h3 className="mb-2 text-sm font-bold">المستندات الأساسية</h3>
+              <div className="mb-3 rounded-[var(--radius-xl)] border border-[var(--color-primary)]/15 bg-[var(--color-primary-light)]/50 p-3">
+                <h3 className="text-sm font-bold">مستندات البداية</h3>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                  المطلوب {requiredDocumentCount} ملفات أساسية. المرفوع الآن: {uploadedDocumentCount}.
+                </p>
+              </div>
               <div className="grid gap-2">
                 {CLIENT_INTAKE_DOCUMENTS.map((document) => (
                   <label
                     key={document.type}
-                    className="flex items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-offset)] px-3 py-2 text-sm"
+                    className="flex flex-col gap-2 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white/80 px-3 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
                   >
                     <span>
                       {document.label}

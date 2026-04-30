@@ -63,6 +63,7 @@ See: .planning/PROJECT.md
 
 | Date | Task | Result |
 |------|------|--------|
+| 2026-04-30 | Simplify clients list UX | Removed the view-mode choice, made search/add-client primary, and clarified intake document copy. |
 | 2026-05-01 | Fix sidebar icons | Replaced hand-written sidebar SVG paths with Lucide React icons and verified in Browser Use. |
 | 2026-04-30 | Simplify client detail UX | Added current-task focus, collapsed guidance/docs/finance, hid inactive workflow panels, and made workflow steps checklist-style. |
 | 2026-04-30 | Finish client detail redesign | Restyled workflow board, workflow steps, document upload panels, and finance cards without backend changes. |
