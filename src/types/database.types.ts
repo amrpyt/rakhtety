@@ -146,6 +146,24 @@ export interface DashboardAnalyticsSummary {
   recent_workflows: RecentWorkflowSummary[]
 }
 
+export interface WorkflowOverviewItem {
+  workflow_id: string
+  client_id: string
+  client_name: string
+  client_phone: string | null
+  parcel_number: string | null
+  city: string | null
+  workflow_type: WorkflowType
+  workflow_status: WorkflowStatus
+  current_step_name: string
+  current_step_status: StepStatus | null
+  assigned_employee_name: string | null
+  updated_at: string
+  days_stuck: number
+  is_stuck: boolean
+  outstanding_debt: number
+}
+
 export interface DashboardAlert {
   id: string
   workflow_id: string

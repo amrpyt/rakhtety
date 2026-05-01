@@ -68,6 +68,7 @@ See: .planning/PROJECT.md
 | 2026-05-01 | Fix sidebar icons | Replaced hand-written sidebar SVG paths with Lucide React icons and verified in Browser Use. |
 | 2026-05-01 | Implement target role-based admin and employee flows | Added shared permissions, route/UI/API gates, RLS migration source, tests, and Browser Use verification for admin vs employee access. |
 | 2026-05-01 | Simulate full office E2E flows | Created fresh admin/employee test accounts, completed Device License and Excavation Permit in Browser Use, fixed document permission and Excavation creation gaps. |
+| 2026-05-01 | Rebuild workflows page as office queue | Replaced the empty workflows placeholder with a live filtered queue, overview API, debt totals, and Browser Use admin/employee verification. |
 | 2026-04-30 | Simplify client detail UX | Added current-task focus, collapsed guidance/docs/finance, hid inactive workflow panels, and made workflow steps checklist-style. |
 | 2026-04-30 | Finish client detail redesign | Restyled workflow board, workflow steps, document upload panels, and finance cards without backend changes. |
 | 2026-04-30 | App shell and client detail redesign | Added premium Arabic operations-dashboard visual direction, redesigned sidebar, hero, guide, and intake document gallery. |
