@@ -343,3 +343,36 @@ This file records useful facts learned during implementation sessions so the nex
 - Current decision:
   - Frappe auth plus the spike workflow path is locally proven.
   - The old general app CRUD routes still contain Supabase imports and must be migrated route-by-route before Supabase can be deleted from the repo.
+
+### 2026-05-03 - Real app routes moved to Frappe adapter
+
+- Implemented a production frontend Frappe adapter at `src/lib/frappe/adapter.ts`.
+- Added real Frappe methods for current app screens in `rakhtety_frappe.api` and `services.py`.
+- Migrated the real app API routes for:
+  - `/api/clients`
+  - `/api/clients/[id]`
+  - `/api/clients/[id]/workflows`
+  - `/api/workflows/overview`
+  - `/api/dashboard/summary`
+  - `/api/workflows/[id]/financial-summary`
+  - `/api/clients/[id]/report`
+  - `/api/employees`
+  - `/api/workflow-documents/upload`
+- Local Frappe Docker note:
+  - `rakhtety-live-backend` does not mount the local `frappe_apps/rakhtety_frappe` folder.
+  - After editing the custom app locally, copy `api.py` and `services.py` into the container, run `bench --site rakhtety-live.localhost migrate`, then restart the container.
+- Adapter auth note:
+  - UI permission checks still use the local `rakhtety-session` cookie.
+  - Backend data calls use a privileged Frappe session from `FRAPPE_USERNAME` / `FRAPPE_PASSWORD`, because forwarding the browser sid from the Next server returned Frappe `417` in local tests.
+- Checks passed after the route migration:
+  - `pnpm typecheck`
+  - `pnpm lint`
+  - `pnpm test`
+  - `pnpm build`
+- Browser Use headed proof on real pages only:
+  - `/dashboard` loaded Frappe-backed summary and recent workflows.
+  - `/clients` listed Frappe clients.
+  - `/clients/Local%20Client` loaded real client detail and workflow panels.
+  - `/workflows` loaded the office queue from Frappe.
+  - `/finance` rendered without Supabase.
+  - `/employees` correctly redirects non-admin users away from employee management.

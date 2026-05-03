@@ -6,7 +6,7 @@
 ## 2. Frappe Adapter
 
 - [x] 2.1 Add a small frontend adapter for Frappe read/write calls.
-- [ ] 2.2 Replace shared repository and service calls with the adapter.
+- [x] 2.2 Replace shared repository and service calls with the adapter.
 - [x] 2.3 Preserve current DTO shapes where the UI already depends on them.
 
 ## 3. Auth and Session
@@ -27,4 +27,4 @@
 - [x] 5.2 Build the frontend locally without Supabase environment variables.
 - [x] 5.3 Use Browser Use in headed mode to verify login, dashboard, client workflow, document upload, and logout on localhost.
 - [x] 5.4 Update `learning.md` with the migration notes and final decision.
-- [ ] 5.5 Commit the completed migration after checks pass.
+- [x] 5.5 Commit the completed migration after checks pass.

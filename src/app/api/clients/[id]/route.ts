@@ -1,28 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
-import { requirePermission } from '@/lib/auth/server-permissions'
+import { can } from '@/lib/auth/permissions'
+import { readServerSession } from '@/lib/auth/server-session'
+import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 
 type Params = { params: Promise<{ id: string }> }
 
-export async function GET(_request: NextRequest, { params }: Params) {
-  const { id } = await params
-  const supabase = await createServerClient()
-  const permission = await requirePermission(supabase, 'readClients')
-  if (permission instanceof NextResponse) return permission
+export async function GET(request: NextRequest, { params }: Params) {
+  const session = readServerSession(request)
+  if (!session?.user) return NextResponse.json({ error: 'Login is required' }, { status: 401 })
+  if (!can(session.user.role, 'readClients')) return NextResponse.json({ error: 'Missing permission' }, { status: 403 })
 
-  const { data, error } = await supabase
-    .from('clients')
-    .select('*, intake_documents:client_intake_documents(*)')
-    .eq('id', id)
-    .maybeSingle()
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  try {
+    const { id } = await params
+    const client = await (await getPrivilegedFrappeAdapterForRequest(request)).getClient(id)
+    return NextResponse.json({ client })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to fetch client'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
-
-  if (!data) {
-    return NextResponse.json({ error: 'العميل غير موجود' }, { status: 404 })
-  }
-
-  return NextResponse.json({ client: data })
 }
