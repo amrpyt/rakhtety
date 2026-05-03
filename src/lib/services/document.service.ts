@@ -68,6 +68,32 @@ export class DocumentService {
     }
   }
 
+  async createDocumentPreviewUrl(documentId: string): Promise<string> {
+    const document = await documentRepository.findById(documentId)
+    if (!document) {
+      throw new NotFoundError('Workflow document', documentId)
+    }
+
+    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(
+      document.storage_path,
+      DOWNLOAD_URL_TTL_SECONDS
+    )
+
+    if (error || !data?.signedUrl) {
+      throw new AppError({
+        code: ErrorCodes.DB_QUERY_FAILED,
+        message: 'تعذر إنشاء رابط المعاينة الآمن.',
+        statusCode: 500,
+        context: {
+          documentId,
+          storagePath: document.storage_path,
+        },
+      })
+    }
+
+    return data.signedUrl
+  }
+
   async createDocumentDownloadUrl(documentId: string): Promise<string> {
     const document = await documentRepository.findById(documentId)
     if (!document) {
@@ -98,7 +124,7 @@ export class DocumentService {
     if (!status.canComplete) {
       throw new AppError({
         code: ErrorCodes.WORKFLOW_DOCUMENTS_MISSING,
-        message: `يجب رفع المستندات المطلوبة أولا: ${status.missingRequired.map((item) => item.label).join('، ')}`,
+        message: `يجب رفع المستندات المطلوبة أولاً: ${status.missingRequired.map((item) => item.label).join('، ')}`,
         statusCode: 400,
         context: {
           stepId,

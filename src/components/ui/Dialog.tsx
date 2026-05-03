@@ -40,7 +40,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
       />
 
       <div
-        className="relative w-full max-w-md bg-[var(--color-surface)] rounded-[var(--radius-xl)] shadow-xl border border-[var(--color-border)]"
+        className="relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xl"
         style={{
           animation: 'dialog-enter 200ms ease-out',
         }}
@@ -106,7 +106,7 @@ interface DialogContentProps {
 
 export function DialogContent({ children, className = '' }: DialogContentProps) {
   return (
-    <div className={`p-6 ${className}`}>
+    <div className={`max-h-[70vh] overflow-y-auto p-6 ${className}`}>
       {children}
     </div>
   )

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 
 interface SearchBarProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   onSearch?: (value: string) => void
@@ -13,28 +13,35 @@ export function SearchBar({
   className = '',
   ...props
 }: SearchBarProps) {
-  const [value, setValue] = useState('')
+  const isControlled = props.value !== undefined
+  const [internalValue, setInternalValue] = useState('')
+  const value = isControlled ? String(props.value ?? '') : internalValue
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value
-      setValue(newValue)
-      onSearch?.(newValue)
-
-      if (onDebouncedSearch) {
-        const timeoutId = setTimeout(() => {
-          onDebouncedSearch(newValue)
-        }, debounceMs)
-        return () => clearTimeout(timeoutId)
+      if (!isControlled) {
+        setInternalValue(newValue)
       }
+      onSearch?.(newValue)
     },
-    [onSearch, onDebouncedSearch, debounceMs]
+    [isControlled, onSearch]
   )
+
+  useEffect(() => {
+    if (!onDebouncedSearch) return
+
+    const timeoutId = window.setTimeout(() => {
+      onDebouncedSearch(value)
+    }, debounceMs)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [debounceMs, onDebouncedSearch, value])
 
   return (
     <div
       className={`
-        relative flex items-center gap-2
+        relative flex min-h-11 min-w-0 items-center gap-2
         px-3 py-2 rounded-[var(--radius-md)]
         bg-[var(--color-surface-offset)]
         border border-[var(--color-border)]
@@ -57,7 +64,7 @@ export function SearchBar({
       </svg>
       <input
         type="text"
-        className="flex-1 bg-transparent outline-none text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-faint)]"
+        className="min-w-0 flex-1 bg-transparent text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-faint)]"
         value={value}
         onChange={handleChange}
         {...props}
@@ -65,10 +72,14 @@ export function SearchBar({
       {value && (
         <button
           onClick={() => {
-            setValue('')
+            if (!isControlled) {
+              setInternalValue('')
+            }
             onSearch?.('')
+            onDebouncedSearch?.('')
           }}
-          className="text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-text)]"
+          type="button"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
             <line x1="18" y1="6" x2="6" y2="18" />

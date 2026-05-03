@@ -1,11 +1,12 @@
 import { createServerClient } from '@supabase/ssr'
+import type { CookieOptions } from '@supabase/ssr'
 import type { NextRequest } from 'next/server'
 import { databaseConfig } from '@/config/database.config'
 
 type CookieToSet = {
   name: string
   value: string
-  options?: any
+  options?: CookieOptions
 }
 
 export async function updateSession(request: NextRequest) {

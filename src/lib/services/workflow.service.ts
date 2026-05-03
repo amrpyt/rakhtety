@@ -1,8 +1,11 @@
+import { clientRepository } from '@/lib/database/repositories/client.repository'
 import { workflowRepository } from '@/lib/database/repositories/workflow.repository'
 import { workflowStepRepository } from '@/lib/database/repositories/workflow-step.repository'
-import { clientRepository } from '@/lib/database/repositories/client.repository'
-import { workflowActionLogRepository } from '@/lib/database/repositories/workflow-action-log.repository'
-import { documentService } from '@/lib/services/document.service'
+import { domainMessages, getBlockedExcavationReason } from '@/lib/domain/messages'
+import { getWorkflowStepTemplates } from '@/lib/domain/workflow-templates'
+import { AppError, NotFoundError } from '@/lib/errors/app-error.class'
+import { workflowActionService } from '@/lib/services/workflow-action.service'
+import { ErrorCodes } from '@/types/error-codes.enum'
 import type {
   StepStatus,
   Workflow,
@@ -10,8 +13,6 @@ import type {
   WorkflowType,
   WorkflowWithSteps,
 } from '@/types/database.types'
-import { NotFoundError, AppError } from '@/lib/errors/app-error.class'
-import { ErrorCodes } from '@/types/error-codes.enum'
 
 export interface CreateWorkflowDto {
   client_id: string
@@ -42,11 +43,6 @@ export interface EmergencyStepActionInput {
   actorId?: string | null
 }
 
-interface SupabaseErrorLike {
-  code?: string
-  message?: string
-}
-
 export class WorkflowService {
   async findById(id: string): Promise<Workflow | null> {
     return workflowRepository.findById(id)
@@ -59,7 +55,7 @@ export class WorkflowService {
   async getWithSteps(id: string): Promise<WorkflowWithSteps> {
     const workflow = await workflowRepository.getWithSteps(id)
     if (!workflow) {
-      throw new NotFoundError('المسار', id)
+      throw new NotFoundError(domainMessages.entities.workflow, id)
     }
     return workflow
   }
@@ -67,7 +63,7 @@ export class WorkflowService {
   async createWithSteps(data: CreateWorkflowDto, stepsData: CreateWorkflowStepsDto['steps']): Promise<WorkflowWithSteps> {
     const existingClient = await clientRepository.findById(data.client_id)
     if (!existingClient) {
-      throw new NotFoundError('العميل', data.client_id)
+      throw new NotFoundError(domainMessages.entities.client, data.client_id)
     }
 
     if (data.type === 'EXCAVATION_PERMIT') {
@@ -75,7 +71,7 @@ export class WorkflowService {
       if (dependencyStatus.isBlocked) {
         throw new AppError({
           code: ErrorCodes.WORKFLOW_DEPENDENCY_NOT_MET,
-          message: dependencyStatus.reason || 'رخصة الجهاز يجب أن تكتمل أولاً',
+          message: dependencyStatus.reason || domainMessages.workflow.deviceLicenseMustComplete,
           statusCode: 400,
           context: {
             requiredWorkflow: dependencyStatus.blockingWorkflow,
@@ -86,9 +82,18 @@ export class WorkflowService {
     }
 
     const workflow = await workflowRepository.create(data)
+    const requestedSteps = stepsData.length
+      ? stepsData
+      : getWorkflowStepTemplates(workflow.type).map((step, index) => ({
+          step_order: index + 1,
+          name: step.name,
+          fees: step.fees,
+          profit: step.profit,
+          assigned_to: data.assigned_to,
+        }))
 
     const steps = await Promise.all(
-      stepsData.map((step) => this.createStepWithConfig(workflow.type, workflow.id, step))
+      requestedSteps.map((step) => this.createStepWithConfig(workflow.type, workflow.id, step))
     )
 
     return {
@@ -100,7 +105,7 @@ export class WorkflowService {
   async updateStatus(id: string, status: Workflow['status']): Promise<Workflow> {
     const workflow = await workflowRepository.findById(id)
     if (!workflow) {
-      throw new NotFoundError('المسار', id)
+      throw new NotFoundError(domainMessages.entities.workflow, id)
     }
     return workflowRepository.updateStatus(id, status)
   }
@@ -109,127 +114,34 @@ export class WorkflowService {
     stepId: string,
     status: Extract<StepStatus, 'in_progress' | 'completed'>
   ): Promise<WorkflowStepWithEmployee> {
-    const step = await workflowStepRepository.findById(stepId)
-    if (!step) {
-      throw new NotFoundError('الخطوة', stepId)
-    }
-
-    if (status === 'completed' && step.status !== 'in_progress') {
-      throw new AppError({
-        code: ErrorCodes.WORKFLOW_STEP_INVALID_TRANSITION,
-        message: 'لا يمكن إكمال خطوة لم تبدأ بعد',
-        statusCode: 400,
-        context: { stepId, currentStatus: step.status, attemptedStatus: status },
-      })
-    }
-
-    if (status === 'completed') {
-      await documentService.assertStepCanComplete(stepId)
-    }
-
-    const completedAt = status === 'completed' ? new Date().toISOString() : undefined
-    const updatedStep = await workflowStepRepository.updateStatus(stepId, status, completedAt)
-    await this.syncWorkflowStatusAfterStepUpdate(updatedStep.workflow_id)
-
-    const workflowSteps = await workflowStepRepository.findByWorkflowId(updatedStep.workflow_id)
-    return workflowSteps.find((workflowStep) => workflowStep.id === updatedStep.id) || updatedStep
+    return workflowActionService.apply({
+      stepId,
+      action: status === 'in_progress' ? 'start' : 'complete',
+    })
   }
 
   async emergencyCompleteStep(
     stepId: string,
     input: EmergencyStepActionInput
   ): Promise<WorkflowStepWithEmployee> {
-    if (!input.reason.trim()) {
-      throw new AppError({
-        code: ErrorCodes.VALIDATION_FAILED,
-        message: 'سبب التجاوز الطارئ مطلوب',
-        statusCode: 400,
-        context: { stepId, actorId: input.actorId || null },
-      })
-    }
-
-    const step = await workflowStepRepository.findById(stepId)
-    if (!step) {
-      throw new NotFoundError('Ø§Ù„Ø®Ø·ÙˆØ©', stepId)
-    }
-
-    if (step.status !== 'in_progress') {
-      throw new AppError({
-        code: ErrorCodes.WORKFLOW_STEP_INVALID_TRANSITION,
-        message: 'ÙŠØ¬Ø¨ Ø¨Ø¯Ø¡ Ø§Ù„Ø®Ø·ÙˆØ© Ø£ÙˆÙ„Ø§Ù‹ Ù‚Ø¨Ù„ Ø§Ù„ØªØ¬Ø§ÙˆØ² Ø§Ù„Ø·Ø§Ø±Ø¦',
-        statusCode: 400,
-        context: { stepId, currentStatus: step.status },
-      })
-    }
-
-    try {
-      await documentService.assertStepCanComplete(stepId)
-    } catch (error) {
-      if (!(error instanceof AppError) || error.code !== ErrorCodes.WORKFLOW_DOCUMENTS_MISSING) {
-        throw error
-      }
-    }
-
-    const completedAt = new Date().toISOString()
-    const updatedStep = await workflowStepRepository.updateStatus(stepId, 'completed', completedAt)
-    await this.createActionLogBestEffort({
-      workflow_id: updatedStep.workflow_id,
-      workflow_step_id: updatedStep.id,
+    return workflowActionService.apply({
+      stepId,
       action: 'emergency_complete',
-      reason: input.reason.trim(),
-      actor_id: input.actorId || null,
+      reason: input.reason,
+      actorId: input.actorId,
     })
-    await this.syncWorkflowStatusAfterStepUpdate(updatedStep.workflow_id)
-
-    const workflowSteps = await workflowStepRepository.findByWorkflowId(updatedStep.workflow_id)
-    return workflowSteps.find((workflowStep) => workflowStep.id === updatedStep.id) || updatedStep
   }
 
   async moveStepBack(
     stepId: string,
     input: EmergencyStepActionInput
   ): Promise<WorkflowStepWithEmployee> {
-    if (!input.reason.trim()) {
-      throw new AppError({
-        code: ErrorCodes.VALIDATION_FAILED,
-        message: 'سبب الرجوع مطلوب',
-        statusCode: 400,
-        context: { stepId, actorId: input.actorId || null },
-      })
-    }
-
-    const step = await workflowStepRepository.findById(stepId)
-    if (!step) {
-      throw new NotFoundError('Ø§Ù„Ø®Ø·ÙˆØ©', stepId)
-    }
-
-    const previousStatus: Partial<Record<StepStatus, StepStatus>> = {
-      completed: 'in_progress',
-      in_progress: 'pending',
-    }
-    const nextStatus = previousStatus[step.status]
-
-    if (!nextStatus) {
-      throw new AppError({
-        code: ErrorCodes.WORKFLOW_STEP_INVALID_TRANSITION,
-        message: 'لا يمكن الرجوع من حالة هذه الخطوة',
-        statusCode: 400,
-        context: { stepId, currentStatus: step.status },
-      })
-    }
-
-    const updatedStep = await workflowStepRepository.updateStatus(stepId, nextStatus, null)
-    await this.createActionLogBestEffort({
-      workflow_id: updatedStep.workflow_id,
-      workflow_step_id: updatedStep.id,
+    return workflowActionService.apply({
+      stepId,
       action: 'move_back',
-      reason: input.reason.trim(),
-      actor_id: input.actorId || null,
+      reason: input.reason,
+      actorId: input.actorId,
     })
-    await this.syncWorkflowStatusAfterStepUpdate(updatedStep.workflow_id)
-
-    const workflowSteps = await workflowStepRepository.findByWorkflowId(updatedStep.workflow_id)
-    return workflowSteps.find((workflowStep) => workflowStep.id === updatedStep.id) || updatedStep
   }
 
   async checkDependency(clientId: string): Promise<WorkflowDependencyStatus> {
@@ -239,22 +151,15 @@ export class WorkflowService {
     if (!deviceLicense) {
       return {
         isBlocked: true,
-        reason: 'رخصة الجهاز غير موجودة — يجب إنشاء رخصة الجهاز أولاً',
+        reason: domainMessages.workflow.deviceLicenseMissing,
         blockingWorkflow: 'DEVICE_LICENSE',
       }
     }
 
     if (deviceLicense.status !== 'completed') {
-      const statusText: Record<Workflow['status'], string> = {
-        pending: 'في الانتظار',
-        in_progress: 'جاري التنفيذ',
-        completed: 'مكتملة',
-        blocked: 'محظورة',
-      }
-
       return {
         isBlocked: true,
-        reason: `رخصة الجهاز ${statusText[deviceLicense.status]} — يجب اكتمالها أولاً`,
+        reason: getBlockedExcavationReason(deviceLicense.status),
         blockingWorkflow: 'DEVICE_LICENSE',
         blockingWorkflowStatus: deviceLicense.status,
       }
@@ -306,40 +211,6 @@ export class WorkflowService {
       fees: step.fees ?? config?.government_fee ?? 0,
       profit: step.profit ?? config?.office_profit ?? 0,
     })
-  }
-
-  private async syncWorkflowStatusAfterStepUpdate(workflowId: string): Promise<void> {
-    const workflow = await workflowRepository.findById(workflowId)
-    if (!workflow) return
-
-    const steps = await workflowStepRepository.findByWorkflowId(workflowId)
-    if (steps.length === 0) return
-
-    const nextStatus: Workflow['status'] = steps.every((step) => step.status === 'completed')
-      ? 'completed'
-      : steps.some((step) => step.status === 'in_progress' || step.status === 'completed')
-      ? 'in_progress'
-      : workflow.status
-
-    if (nextStatus !== workflow.status) {
-      await workflowRepository.updateStatus(workflowId, nextStatus)
-    }
-  }
-
-  private async createActionLogBestEffort(
-    data: Parameters<typeof workflowActionLogRepository.create>[0]
-  ): Promise<void> {
-    try {
-      await workflowActionLogRepository.create(data)
-    } catch (error) {
-      const supabaseError = error as SupabaseErrorLike
-      if (supabaseError.code === 'PGRST205') {
-        console.warn('workflow_action_logs table is missing; skipping audit log until migration 009 is applied')
-        return
-      }
-
-      throw error
-    }
   }
 }
 

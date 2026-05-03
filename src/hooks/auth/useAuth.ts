@@ -2,12 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
 import type { AuthUser, LoginCredentials, SignUpData } from '@/types/auth.types'
 import { useAuthContext } from '@/providers/AuthProvider'
 import { AppError } from '@/lib/errors/app-error.class'
 import { ErrorCodes } from '@/types/error-codes.enum'
-import { toAuthUser } from '@/lib/auth/auth-user'
 
 interface UseAuthReturn {
   user: AuthUser | null
@@ -42,16 +40,38 @@ export function useAuth(): UseAuthReturn {
     setError(null)
 
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
       })
 
-      if (authError) {
-        throw AppError.fromError(authError, ErrorCodes.AUTH_INVALID_CREDENTIALS)
+      const payload = (await response.json().catch(() => null)) as
+        | {
+            user?: AuthUser
+            session?: {
+              access_token: string
+              refresh_token: string
+              expires_at: number
+            }
+            error?: string
+          }
+        | null
+
+      if (!response.ok) {
+        throw new AppError({
+          code: ErrorCodes.AUTH_INVALID_CREDENTIALS,
+          message: payload?.error || 'Login failed',
+          statusCode: response.status,
+        })
       }
 
-      if (!data.user) {
+      if (!payload?.user) {
         throw new AppError({
           code: ErrorCodes.AUTH_USER_NOT_FOUND,
           message: 'User not found',
@@ -59,15 +79,7 @@ export function useAuth(): UseAuthReturn {
         })
       }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .maybeSingle()
-
-      const authUser = toAuthUser(data.user, profile)
-
-      setUser(authUser)
+      setUser(payload.user)
       router.push(normalizeRedirect(redirectTo))
     } catch (err) {
       const message = err instanceof AppError ? err.message : 'Login failed'
@@ -117,7 +129,15 @@ export function useAuth(): UseAuthReturn {
   const logout = useCallback(async () => {
     setActionLoading(true)
     try {
-      await supabase.auth.signOut()
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      })
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null
+        throw new Error(payload?.error || 'Logout failed')
+      }
+
       setUser(null)
       router.push('/login')
     } finally {

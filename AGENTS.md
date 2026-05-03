@@ -181,9 +181,12 @@ Use the default GitHub label names for the five triage roles. See `docs/agents/t
 
 Single-context repo. Read `.planning/STATE.md` first, then the relevant `docs/adr/` files when they exist. See `docs/agents/domain.md`.
 
-for any testing, use Broswer use.
-
-ALAWYES SPEAK ENGLISH.
+<UserPrefnrns>
+حمل السكلز GSD وامشي مع الفلو بتاعه بالظبط زي ما بيقول واوعي تشتغل تاني من دماغك بدون استعمال GSD
+and if any flow requries subagents, do it even i dont  say it.
+- for any testing, use Broswer use.
+- ALAWYES SPEAK ENGLISH.
+<UserPrefnrns>
 
 *Last updated: 2026-04-28*
 *Remember: There's no such thing as a stupid question! If you're confused, I'm doing it wrong.*

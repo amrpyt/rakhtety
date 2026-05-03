@@ -25,7 +25,7 @@ export function EmployeeCard({ employee, onEdit, onDelete, onToggleActive }: Emp
   const statusLabel = employee.is_active ? 'نشط' : 'غير نشط'
 
   return (
-    <Card className="text-center hover:shadow-md transition-shadow duration-150">
+    <Card className="text-center transition-shadow duration-150 hover:shadow-md">
       <Avatar initials={initials} size="lg" className="mx-auto mb-3" />
 
       <h3 className="font-bold text-sm mb-1">{employee.profile.full_name}</h3>
@@ -44,7 +44,7 @@ export function EmployeeCard({ employee, onEdit, onDelete, onToggleActive }: Emp
         <span>• {employee.profile.phone || 'بدون هاتف'}</span>
       </div>
 
-      <div className="flex justify-center gap-2 pt-4 border-t border-[var(--color-divider)]">
+      <div className="flex flex-wrap justify-center gap-2 border-t border-[var(--color-divider)] pt-4">
         {onEdit && (
           <button
             onClick={() => onEdit(employee)}

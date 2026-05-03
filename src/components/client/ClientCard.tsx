@@ -15,20 +15,8 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
   const displayCity = client.city?.trim() || client.area?.trim() || emptyValue
   const displayParcelNumber = client.parcel_number?.trim() || client.plot_number?.trim() || emptyValue
 
-  return (
-    <Card
-      className={`paper-card cursor-pointer transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${onClick ? 'hover:border-[var(--color-primary)]' : ''}`}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={(event) => {
-        if (!onClick) return
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          onClick()
-        }
-      }}
-    >
+  const content = (
+    <>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="truncate text-lg font-black">{client.name}</h3>
@@ -61,6 +49,18 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
           <span className="font-medium text-[var(--color-text)]">{displayParcelNumber}</span>
         </p>
       </div>
-    </Card>
+    </>
   )
+
+  const className = `paper-card w-full text-right transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${onClick ? 'cursor-pointer hover:border-[var(--color-primary)]' : ''}`
+
+  if (onClick) {
+    return (
+      <button type="button" className={className} onClick={onClick}>
+        {content}
+      </button>
+    )
+  }
+
+  return <Card className={className}>{content}</Card>
 }

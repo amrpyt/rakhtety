@@ -35,7 +35,7 @@ export function Button({
   return (
     <button
       className={`
-        inline-flex items-center justify-center gap-2
+        inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap
         transition-all duration-150
         disabled:opacity-50 disabled:cursor-not-allowed
         ${variantStyles[variant]}

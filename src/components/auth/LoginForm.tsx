@@ -1,13 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/hooks/auth/useAuth'
 import { Button } from '@/components/ui/Button'
 import { FormGroup, Label, Input } from '@/components/ui/Form'
 import { Alert } from '@/components/ui/Alert'
-import type { LoginCredentials } from '@/types/auth.types'
+import { loginSchema, type LoginFormData } from '@/lib/validation/schemas'
 
 interface LoginFormProps {
   onSuccess?: () => void
@@ -16,33 +18,17 @@ interface LoginFormProps {
 export function LoginForm({ onSuccess }: LoginFormProps) {
   const searchParams = useSearchParams()
   const { login, loading, error, resetError } = useAuth()
-  const [credentials, setCredentials] = useState<LoginCredentials>({ email: '', password: '' })
-  const [validationErrors, setValidationErrors] = useState<Partial<LoginCredentials>>({})
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  })
 
-  function validate(): boolean {
-    const errors: Partial<LoginCredentials> = {}
-
-    if (!credentials.email) {
-      errors.email = 'البريد الإلكتروني مطلوب'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.email)) {
-      errors.email = 'البريد الإلكتروني غير صالح'
-    }
-
-    if (!credentials.password) {
-      errors.password = 'كلمة المرور مطلوبة'
-    } else if (credentials.password.length < 6) {
-      errors.password = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'
-    }
-
-    setValidationErrors(errors)
-    return Object.keys(errors).length === 0
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function onSubmit(credentials: LoginFormData) {
     resetError()
-
-    if (!validate()) return
 
     try {
       const redirectTo = searchParams.get('redirect')
@@ -53,17 +39,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     }
   }
 
-  function handleChange(field: keyof LoginCredentials) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => {
-      setCredentials((prev) => ({ ...prev, [field]: e.target.value }))
-      if (validationErrors[field]) {
-        setValidationErrors((prev) => ({ ...prev, [field]: undefined }))
-      }
-    }
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <div>
         <div className="mb-3 inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-light)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
@@ -89,14 +66,13 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <Input
             id="email"
             type="email"
-            value={credentials.email}
-            onChange={handleChange('email')}
             placeholder="example@domain.com"
-            error={validationErrors.email}
+            error={errors.email?.message}
             required
             dir="ltr"
             autoComplete="email"
             className="h-12 bg-white text-left"
+            {...register('email')}
           />
         </FormGroup>
 
@@ -110,14 +86,13 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <Input
             id="password"
             type="password"
-            value={credentials.password}
-            onChange={handleChange('password')}
             placeholder="••••••••"
-            error={validationErrors.password}
+            error={errors.password?.message}
             required
             dir="ltr"
             autoComplete="current-password"
             className="h-12 bg-white text-left"
+            {...register('password')}
           />
         </FormGroup>
       </div>

@@ -4,10 +4,10 @@ import { canAccessRoute } from '@/lib/auth/permissions'
 import { createServerClient } from '@supabase/ssr'
 import { databaseConfig } from '@/config/database.config'
 
-const PUBLIC_ROUTES = ['/login', '/signup', '/api/auth']
+const PUBLIC_ROUTES = ['/login', '/signup']
 const PROTECTED_ROUTES = ['/dashboard', '/clients', '/workflows', '/employees', '/finance', '/settings']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname.startsWith(route))
@@ -59,5 +59,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }

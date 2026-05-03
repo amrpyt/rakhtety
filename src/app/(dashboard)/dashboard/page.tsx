@@ -96,9 +96,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="max-w-[1300px] p-6">
+    <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <h1 className="mb-1 text-lg font-bold">لوحة التحكم</h1>
+        <h1 className="mb-1 text-xl font-bold">لوحة التحكم</h1>
         <p className="text-sm text-[var(--color-text-muted)]">
           مرحبا، {user?.full_name || 'مستخدم'}
         </p>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
         <FinancialKpiGrid summary={financialSummary} loading={financialLoading} />
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_1fr]">
+      <div className="mb-6 grid grid-cols-1 gap-4 xl:grid-cols-[1.4fr_1fr] xl:gap-6">
         <BottleneckList
           bottlenecks={summary?.bottlenecks ?? []}
           loading={loading}
@@ -153,18 +153,18 @@ export default function DashboardPage() {
               {summary?.recent_workflows.map((workflow) => (
                 <div
                   key={workflow.workflow_id}
-                  className="flex items-center justify-between border-b border-[var(--color-divider)] py-2 last:border-0"
+                  className="flex flex-col gap-3 border-b border-[var(--color-divider)] py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-surface-offset)] text-xs font-bold">
                       {workflow.client_name[0]}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="text-sm font-medium">{workflow.client_name}</div>
                       <div className="text-xs text-[var(--color-text-muted)]">{workflowLabel(workflow.workflow_type)}</div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <span className="text-xs text-[var(--color-text-faint)]">{relativeDateLabel(workflow.updated_at)}</span>
                     <Badge variant={workflow.status}>{statusLabel(workflow.status)}</Badge>
                   </div>

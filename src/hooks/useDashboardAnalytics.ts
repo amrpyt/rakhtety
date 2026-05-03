@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react'
-import { dashboardService } from '@/lib/services/dashboard.service'
 import type { DashboardAnalyticsSummary } from '@/types/database.types'
 
 interface UseDashboardAnalyticsReturn {
@@ -19,7 +18,14 @@ export function useDashboardAnalytics(): UseDashboardAnalyticsReturn {
     setError(null)
 
     try {
-      setSummary(await dashboardService.getSummary())
+      const response = await fetch('/api/dashboard/summary')
+      const payload = await response.json()
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Failed to load dashboard summary')
+      }
+
+      setSummary(payload.summary as DashboardAnalyticsSummary)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تعذر تحميل بيانات لوحة التحكم')
     } finally {

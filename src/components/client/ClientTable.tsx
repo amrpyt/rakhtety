@@ -10,6 +10,8 @@ interface ClientTableProps {
   onRowClick?: (client: Client) => void
 }
 
+const emptyValue = '—'
+
 export function ClientTable({ clients, onRowClick }: ClientTableProps) {
   return (
     <Table>
@@ -30,15 +32,15 @@ export function ClientTable({ clients, onRowClick }: ClientTableProps) {
               <div className="font-medium">{client.name}</div>
             </TableCell>
             <TableCell>
-              <span dir="ltr">{client.phone || '—'}</span>
+              <span dir="ltr">{client.phone || emptyValue}</span>
             </TableCell>
-            <TableCell>{client.city || client.area || '—'}</TableCell>
-            <TableCell>{client.neighborhood || '—'}</TableCell>
+            <TableCell>{client.city || client.area || emptyValue}</TableCell>
+            <TableCell>{client.neighborhood || emptyValue}</TableCell>
             <TableCell>
               {client.parcel_number || client.plot_number ? (
                 <Badge variant="default">{client.parcel_number || client.plot_number}</Badge>
               ) : (
-                '—'
+                emptyValue
               )}
             </TableCell>
             <TableCell>

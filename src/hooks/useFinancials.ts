@@ -24,7 +24,14 @@ export function useFinancials(workflowId?: string): UseFinancialsReturn {
     setLoading(true)
     setError(null)
     try {
-      setSummary(await financialService.calculateWorkflowSummary(workflowId))
+      const response = await fetch(`/api/workflows/${workflowId}/financial-summary`)
+      const payload = await response.json()
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Failed to load financial summary')
+      }
+
+      setSummary(payload.summary as WorkflowFinancialSummary)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load financial summary')
     } finally {

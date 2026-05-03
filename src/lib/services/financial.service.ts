@@ -1,18 +1,10 @@
 import { financialRepository, type CreateFinancialEventData } from '@/lib/database/repositories/financial.repository'
 import { workflowRepository } from '@/lib/database/repositories/workflow.repository'
-import { workflowStepRepository } from '@/lib/database/repositories/workflow-step.repository'
-import type {
-  FinancialDashboardSummary,
-  FinancialEvent,
-  WorkflowFinancialSummary,
-} from '@/types/database.types'
+import { domainMessages } from '@/lib/domain/messages'
 import { AppError, NotFoundError } from '@/lib/errors/app-error.class'
+import { ledgerSummaryService } from '@/lib/services/ledger-summary.service'
 import { ErrorCodes } from '@/types/error-codes.enum'
-import {
-  calculateRealizedProfit,
-  calculateTotalsFromSteps,
-  getSignedEventAmount,
-} from '@/lib/services/financial-calculations'
+import type { FinancialDashboardSummary, FinancialEvent, WorkflowFinancialSummary } from '@/types/database.types'
 
 export interface RecordFinancialEventInput {
   workflow_id: string
@@ -40,54 +32,22 @@ export class FinancialService {
   }
 
   async calculateWorkflowSummary(workflowId: string): Promise<WorkflowFinancialSummary> {
-    const workflow = await workflowRepository.findById(workflowId)
-    if (!workflow) {
-      throw new NotFoundError('المسار', workflowId)
-    }
-
-    const [steps, events] = await Promise.all([
-      workflowStepRepository.findByWorkflowId(workflowId),
-      financialRepository.findByWorkflowId(workflowId),
-    ])
-
-    const totals = calculateTotalsFromSteps(steps)
-    const totalPaid = events.reduce((sum, event) => sum + getSignedEventAmount(event), 0)
-    const realizedProfit = calculateRealizedProfit(events, totals.planned_profit, totals.total_cost)
-
-    return {
-      workflow_id: workflowId,
-      total_cost: totals.total_cost,
-      total_fees: totals.total_fees,
-      planned_profit: totals.planned_profit,
-      total_paid: totalPaid,
-      realized_profit: realizedProfit,
-      outstanding_debt: Math.max(0, totals.total_cost - totalPaid),
-    }
+    return ledgerSummaryService.summarizeWorkflowLedger(workflowId)
   }
 
   async calculateClientDebt(clientId: string): Promise<number> {
-    const workflows = await workflowRepository.findByClientId(clientId)
-    const summaries = await Promise.all(workflows.map((workflow) => this.calculateWorkflowSummary(workflow.id)))
-    return summaries.reduce((sum, summary) => sum + summary.outstanding_debt, 0)
+    return ledgerSummaryService.summarizeClientDebt(clientId)
   }
 
   async calculateDashboardSummary(): Promise<FinancialDashboardSummary> {
-    const events = await financialRepository.findAll()
-    const workflows = await workflowRepository.findAll()
-    const summaries = await Promise.all(workflows.map((workflow) => this.calculateWorkflowSummary(workflow.id)))
-
-    return {
-      total_fees_collected: events.reduce((sum, event) => sum + (event.type === 'payment' ? Number(event.amount) : 0), 0),
-      realized_profit: summaries.reduce((sum, summary) => sum + summary.realized_profit, 0),
-      outstanding_debt: summaries.reduce((sum, summary) => sum + summary.outstanding_debt, 0),
-    }
+    return ledgerSummaryService.summarizeOfficeLedger()
   }
 
   private async recordEvent(data: FinancialEventWithoutClient): Promise<FinancialEvent> {
     if (!Number.isFinite(data.amount) || data.amount <= 0) {
       throw new AppError({
         code: ErrorCodes.VALIDATION_FAILED,
-        message: 'المبلغ يجب أن يكون أكبر من صفر',
+        message: domainMessages.validation.positiveAmountRequired,
         statusCode: 400,
         context: { amount: data.amount },
       })
@@ -95,7 +55,7 @@ export class FinancialService {
 
     const workflow = await workflowRepository.findById(data.workflow_id)
     if (!workflow) {
-      throw new NotFoundError('المسار', data.workflow_id)
+      throw new NotFoundError(domainMessages.entities.workflow, data.workflow_id)
     }
 
     return financialRepository.createEvent({

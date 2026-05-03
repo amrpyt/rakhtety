@@ -22,7 +22,7 @@ const variantStyles = {
 export function Card({ variant = 'default', padding = 'md', className = '', children, ...props }: CardProps) {
   return (
     <div
-      className={`rounded-[var(--radius-xl)] ${variantStyles[variant]} ${paddingClasses[padding]} ${className}`}
+      className={`rounded-[var(--radius-lg)] ${variantStyles[variant]} ${paddingClasses[padding]} ${className}`}
       {...props}
     >
       {children}
@@ -37,9 +37,9 @@ interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function CardHeader({ children, action, className = '', ...props }: CardHeaderProps) {
   return (
-    <div className={`flex items-center justify-between mb-4 ${className}`} {...props}>
-      <div>{children}</div>
-      {action && <div>{action}</div>}
+    <div className={`mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between ${className}`} {...props}>
+      <div className="min-w-0">{children}</div>
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   )
 }

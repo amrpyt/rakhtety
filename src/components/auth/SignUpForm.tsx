@@ -1,72 +1,43 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/hooks/auth/useAuth'
 import { Button } from '@/components/ui/Button'
 import { FormGroup, Label, Input, Select } from '@/components/ui/Form'
 import { Alert } from '@/components/ui/Alert'
-import type { SignUpData } from '@/types/auth.types'
+import { sanitizePhoneInput, signupSchema, type SignupFormData } from '@/lib/validation/schemas'
 
 interface SignUpFormProps {
   onSuccess?: () => void
 }
 
 export function SignUpForm({ onSuccess }: SignUpFormProps) {
-  const router = useRouter()
   const { signup, loading, error, resetError } = useAuth()
-  const [formData, setFormData] = useState<SignUpData>({
-    email: '',
-    password: '',
-    full_name: '',
-    phone: '',
-    role: 'employee',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      full_name: '',
+      phone: '',
+      role: 'employee',
+    },
   })
-  const [validationErrors, setValidationErrors] = useState<Partial<Record<keyof SignUpData, string>>>({})
 
-  function validate(): boolean {
-    const errors: Partial<Record<keyof SignUpData, string>> = {}
-
-    if (!formData.full_name.trim()) {
-      errors.full_name = 'الاسم مطلوب'
-    }
-
-    if (!formData.email) {
-      errors.email = 'البريد الإلكتروني مطلوب'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'البريد الإلكتروني غير صالح'
-    }
-
-    if (!formData.password) {
-      errors.password = 'كلمة المرور مطلوبة'
-    } else if (formData.password.length < 6) {
-      errors.password = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'
-    }
-
-    setValidationErrors(errors)
-    return Object.keys(errors).length === 0
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function onSubmit(formData: SignupFormData) {
     resetError()
-
-    if (!validate()) return
 
     try {
       await signup(formData)
       onSuccess?.()
     } catch {
-      // Error is handled by useAuth
-    }
-  }
-
-  function handleChange(field: keyof SignUpData) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      setFormData((prev) => ({ ...prev, [field]: e.target.value }))
-      if (validationErrors[field]) {
-        setValidationErrors((prev) => ({ ...prev, [field]: undefined }))
-      }
+      // Error is handled by useAuth.
     }
   }
 
@@ -76,8 +47,10 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     { value: 'admin', label: 'مدير النظام' },
   ]
 
+  const phoneField = register('phone')
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit((data) => onSubmit(data as SignupFormData))} className="space-y-5" noValidate>
       {error && (
         <Alert variant="error" title="خطأ في التسجيل">
           {error}
@@ -89,11 +62,10 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         <Input
           id="full_name"
           type="text"
-          value={formData.full_name}
-          onChange={handleChange('full_name')}
           placeholder="أحمد محمد"
-          error={validationErrors.full_name}
+          error={errors.full_name?.message}
           required
+          {...register('full_name')}
         />
       </FormGroup>
 
@@ -102,13 +74,12 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         <Input
           id="email"
           type="email"
-          value={formData.email}
-          onChange={handleChange('email')}
           placeholder="example@domain.com"
-          error={validationErrors.email}
+          error={errors.email?.message}
           required
           dir="ltr"
           autoComplete="email"
+          {...register('email')}
         />
       </FormGroup>
 
@@ -117,10 +88,14 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         <Input
           id="phone"
           type="tel"
-          value={formData.phone}
-          onChange={handleChange('phone')}
           placeholder="01xxxxxxxxx"
           dir="ltr"
+          error={errors.phone?.message}
+          {...phoneField}
+          onChange={(event) => {
+            event.target.value = sanitizePhoneInput(event.target.value)
+            phoneField.onChange(event)
+          }}
         />
       </FormGroup>
 
@@ -129,28 +104,22 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         <Input
           id="password"
           type="password"
-          value={formData.password}
-          onChange={handleChange('password')}
           placeholder="••••••••"
-          error={validationErrors.password}
+          error={errors.password?.message}
           required
           dir="ltr"
           autoComplete="new-password"
+          {...register('password')}
         />
       </FormGroup>
 
       <FormGroup>
         <Label htmlFor="role">الدور</Label>
-        <Select
-          id="role"
-          value={formData.role || 'employee'}
-          onChange={handleChange('role')}
-          options={roleOptions}
-        />
+        <Select id="role" error={errors.role?.message} options={roleOptions} {...register('role')} />
       </FormGroup>
 
-      <Button type="submit" className="w-full justify-center" disabled={loading}>
-        {loading ? 'جارٍ التسجيل...' : 'تسجيل'}
+      <Button type="submit" className="w-full justify-center" disabled={loading} loading={loading}>
+        {loading ? 'جاري التسجيل...' : 'تسجيل'}
       </Button>
     </form>
   )

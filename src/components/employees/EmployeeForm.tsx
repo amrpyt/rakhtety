@@ -1,9 +1,18 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/Button'
-import { FormGroup, Label, Input, Select } from '@/components/ui/Form'
+import { FormGroup, Input, Label, Select } from '@/components/ui/Form'
 import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
+import {
+  employeeCreateSchema,
+  employeeUpdateSchema,
+  sanitizePhoneInput,
+  type EmployeeCreateFormData,
+  type EmployeeUpdateFormData,
+} from '@/lib/validation/schemas'
 
 interface EmployeeFormProps {
   mode: 'create' | 'edit'
@@ -24,65 +33,56 @@ interface EmployeeWithProfile {
   }
 }
 
+type EmployeeFormData = EmployeeCreateFormData | EmployeeUpdateFormData
+
 export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: EmployeeFormProps) {
-  const [formData, setFormData] = useState({
-    full_name: initialData?.profile?.full_name || '',
-    email: mode === 'create' ? '' : undefined,
-    phone: initialData?.profile?.phone || '',
-    position: initialData?.position || '',
-    role: (initialData?.profile?.role as 'admin' | 'employee' | 'manager') || 'employee',
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EmployeeFormData>({
+    resolver: zodResolver(mode === 'create' ? employeeCreateSchema : employeeUpdateSchema),
+    defaultValues: {
+      full_name: initialData?.profile?.full_name || '',
+      email: '',
+      phone: initialData?.profile?.phone || '',
+      position: initialData?.position || '',
+      role: initialData?.profile?.role || 'employee',
+    } as EmployeeFormData,
+  })
 
+  const phoneField = register('phone')
   const roleOptions = [
     { value: 'employee', label: 'موظف' },
     { value: 'manager', label: 'مدير' },
     { value: 'admin', label: 'مدير النظام' },
   ]
 
-  const validate = useCallback(() => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.full_name.trim()) {
-      newErrors.full_name = 'الاسم مطلوب'
-    }
-
-    if (mode === 'create' && !formData.email) {
-      newErrors.email = 'البريد الإلكتروني مطلوب'
-    } else if (mode === 'create' && formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'البريد الإلكتروني غير صالح'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }, [formData, mode])
-
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault()
+  const submit = useCallback(
+    async (formData: EmployeeFormData) => {
       setApiError(null)
-
-      if (!validate()) return
-
       setLoading(true)
+
       try {
         if (mode === 'create') {
+          const createData = formData as EmployeeCreateFormData
           await onSubmit({
-            email: formData.email!,
+            email: createData.email,
             password: 'temp-password-123',
-            full_name: formData.full_name,
-            phone: formData.phone || undefined,
-            role: formData.role,
-            position: formData.position || undefined,
+            full_name: createData.full_name,
+            phone: createData.phone || undefined,
+            role: createData.role,
+            position: createData.position || undefined,
           } as CreateEmployeeDto)
         } else {
+          const updateData = formData as EmployeeUpdateFormData
           await onSubmit({
-            full_name: formData.full_name,
-            phone: formData.phone || undefined,
-            role: formData.role,
-            position: formData.position || undefined,
+            full_name: updateData.full_name,
+            phone: updateData.phone || undefined,
+            role: updateData.role,
+            position: updateData.position || undefined,
           } as UpdateEmployeeDto)
         }
       } catch (err) {
@@ -90,17 +90,12 @@ export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: Employee
       } finally {
         setLoading(false)
       }
-    }, [formData, mode, onSubmit, validate])
-
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }))
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }))
-    }
-  }
+    },
+    [mode, onSubmit]
+  )
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit(submit)} className="space-y-4" noValidate>
       {apiError && (
         <div className="p-3 rounded-[var(--radius-md)] bg-[var(--color-error-light)] text-[var(--color-error)] text-sm">
           {apiError}
@@ -109,13 +104,7 @@ export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: Employee
 
       <FormGroup>
         <Label htmlFor="full_name">الاسم الكامل</Label>
-        <Input
-          id="full_name"
-          value={formData.full_name}
-          onChange={handleChange('full_name')}
-          error={errors.full_name}
-          required
-        />
+        <Input id="full_name" error={errors.full_name?.message} required {...register('full_name')} />
       </FormGroup>
 
       {mode === 'create' && (
@@ -124,11 +113,10 @@ export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: Employee
           <Input
             id="email"
             type="email"
-            value={formData.email || ''}
-            onChange={handleChange('email')}
-            error={errors.email}
+            error={'email' in errors ? errors.email?.message : undefined}
             required
             dir="ltr"
+            {...register('email' as keyof EmployeeFormData)}
           />
         </FormGroup>
       )}
@@ -137,29 +125,26 @@ export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: Employee
         <Label htmlFor="phone">رقم الهاتف</Label>
         <Input
           id="phone"
-          value={formData.phone}
-          onChange={handleChange('phone')}
+          type="tel"
+          inputMode="tel"
+          error={errors.phone?.message}
           dir="ltr"
+          {...phoneField}
+          onChange={(event) => {
+            event.target.value = sanitizePhoneInput(event.target.value)
+            phoneField.onChange(event)
+          }}
         />
       </FormGroup>
 
       <FormGroup>
         <Label htmlFor="position">الوظيفة</Label>
-        <Input
-          id="position"
-          value={formData.position}
-          onChange={handleChange('position')}
-        />
+        <Input id="position" error={errors.position?.message} {...register('position')} />
       </FormGroup>
 
       <FormGroup>
         <Label htmlFor="role">الدور</Label>
-        <Select
-          id="role"
-          value={formData.role}
-          onChange={handleChange('role')}
-          options={roleOptions}
-        />
+        <Select id="role" error={errors.role?.message} options={roleOptions} {...register('role')} />
       </FormGroup>
 
       <div className="flex justify-end gap-3 pt-4">
