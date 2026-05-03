@@ -185,3 +185,26 @@ This file records useful facts learned during implementation sessions so the nex
   - `Blocked Employee` page does not show `Test Client One`.
 - Important limitation: this is assignment filtering, not full Frappe user-permission proof, because the Next.js spike still uses Administrator credentials server-side.
 - Final recommendation: use Frappe as backend engine, keep Rakhtety custom Next.js frontend, and run a second productionization spike before migrating real data.
+
+### 2026-05-03 - Productionized Frappe custom app start
+
+- Created OpenSpec change: `productionize-frappe-custom-app`.
+- Web/Frappe best-practice research confirmed:
+  - Put business backend code in a real Frappe custom app.
+  - Do not keep production logic as SSH-patched files inside a running container.
+  - For Docker production with custom apps, use a custom/layered image path.
+- Created local Frappe app scaffold at:
+  `frappe_apps/rakhtety_frappe`.
+- Added app metadata, `hooks.py`, `modules.txt`, `patches.txt`, and role creation patch.
+- Added DocTypes:
+  - `Rakhtety Client`
+  - `Rakhtety Employee`
+  - `Rakhtety Workflow`
+  - `Rakhtety Workflow Step`
+  - `Rakhtety Document`
+- Added backend app API methods under:
+  `rakhtety_frappe.api`.
+- Updated Next.js spike routes to call `rakhtety_frappe.api.*` instead of `frappe.rakhtety_spike.*`.
+- Added Frappe test file for workflow dependency, document gate, employee visibility, and API methods.
+- Local Docker image build is blocked because Docker Desktop is not running on this machine.
+- Building on the server should be done from Git when possible, not by copying random edited files into a running container.

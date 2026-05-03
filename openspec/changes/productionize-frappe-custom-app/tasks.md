@@ -63,8 +63,8 @@
 - [ ] 8.1 Create database and file backup before migration/install.
 - [ ] 8.2 Restore backup into a clean target with `rakhtety_frappe` installed.
 - [ ] 8.3 Verify restored workflow data, files, and APIs.
-- [ ] 8.4 Document rollback to previous image tag and pre-migration backup.
-- [ ] 8.5 Document log commands for backend, frontend, workers, database, websocket, tunnel, and proxy.
+- [x] 8.4 Document rollback to previous image tag and pre-migration backup.
+- [x] 8.5 Document log commands for backend, frontend, workers, database, websocket, tunnel, and proxy.
 
 ## 9. Decision Gate
 
