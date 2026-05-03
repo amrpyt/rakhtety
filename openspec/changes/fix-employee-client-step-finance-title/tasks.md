@@ -21,4 +21,4 @@
 
 - [x] 4.1 Run OpenSpec validation for this change.
 - [x] 4.2 Run automated project checks required for this edit round.
-- [ ] 4.3 Verify the employee flow in Browser Use.
+- [x] 4.3 Verify the employee flow in Browser Use.
