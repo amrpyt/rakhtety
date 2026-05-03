@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 
 export async function GET(request: NextRequest) {
   const session = readServerSession(request)
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   if (!can(session.user.role, 'manageEmployees')) return NextResponse.json({ error: 'Missing permission' }, { status: 403 })
 
   try {
-    const employees = await (await getPrivilegedFrappeAdapterForRequest(request)).listEmployees()
+    const employees = await getFrappeAdapterForRequest(request).listEmployees()
     return NextResponse.json({ employees })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to fetch employees'

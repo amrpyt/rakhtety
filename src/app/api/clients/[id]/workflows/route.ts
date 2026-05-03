@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 import type { WorkflowType, WorkflowWithSteps } from '@/types/database.types'
 import { getBlockedExcavationReason, domainMessages } from '@/lib/domain/messages'
 
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
   try {
     const { id } = await params
-    return NextResponse.json(await (await getPrivilegedFrappeAdapterForRequest(request)).listClientWorkflows(id))
+    return NextResponse.json(await getFrappeAdapterForRequest(request).listClientWorkflows(id))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to fetch workflows'
     return NextResponse.json({ error: message }, { status: 500 })
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'نوع المسار غير صالح' }, { status: 400 })
     }
 
-    const adapter = await getPrivilegedFrappeAdapterForRequest(request)
+    const adapter = getFrappeAdapterForRequest(request)
     const existing = await adapter.listClientWorkflows(id)
     const dependency = getExcavationDependency(existing.deviceLicense)
     if (type === 'EXCAVATION_PERMIT' && dependency.isBlocked) {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 import { validateDocumentFile } from '@/lib/services/document-helpers'
 
 function parseOptionalAmount(value: FormDataEntryValue | null) {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'أرقام المحاسبة يجب أن تكون أرقاماً موجبة أو صفر.' }, { status: 400 })
     }
 
-    const document = await (await getPrivilegedFrappeAdapterForRequest(request)).uploadWorkflowDocument({
+    const document = await getFrappeAdapterForRequest(request).uploadWorkflowDocument({
       workflow_id: String(formData.get('workflow_id') || ''),
       workflow_step_id: String(formData.get('workflow_step_id') || ''),
       document_type: String(formData.get('document_type') || ''),

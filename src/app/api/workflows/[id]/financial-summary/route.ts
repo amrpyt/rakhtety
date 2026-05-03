@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
   try {
     const { id } = await params
-    const summary = await (await getPrivilegedFrappeAdapterForRequest(request)).workflowFinancialSummary(id)
+    const summary = await getFrappeAdapterForRequest(request).workflowFinancialSummary(id)
     return NextResponse.json({ summary })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to load financial summary'

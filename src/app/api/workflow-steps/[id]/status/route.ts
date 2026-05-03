@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 import type { StepStatus } from '@/types/database.types'
 
 type Params = { params: Promise<{ id: string }> }
@@ -19,7 +19,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Invalid step status' }, { status: 400 })
     }
 
-    const step = await (await getPrivilegedFrappeAdapterForRequest(request)).updateStepStatus(id, status)
+    const step = await getFrappeAdapterForRequest(request).updateStepStatus(id, status)
     return NextResponse.json({ step })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to update step'

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 import { clientCreateSchema } from '@/lib/validation/schemas'
 import { parseClientCreateRequest } from './request-parser'
 
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const search = request.nextUrl.searchParams.get('q')?.trim()
-    const clients = await (await getPrivilegedFrappeAdapterForRequest(request)).listClients(search)
+    const clients = await getFrappeAdapterForRequest(request).listClients(search)
     return NextResponse.json({ clients })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to fetch clients'
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message || 'بيانات العميل غير صالحة' }, { status: 400 })
     }
 
-    const client = await (await getPrivilegedFrappeAdapterForRequest(request)).createClient(parsed.data)
+    const client = await getFrappeAdapterForRequest(request).createClient(parsed.data)
     return NextResponse.json({ client }, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create client'

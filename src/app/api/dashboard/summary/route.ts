@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 
 export async function GET(request: NextRequest) {
   const session = readServerSession(request)
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   if (!can(session.user.role, 'readClients')) return NextResponse.json({ error: 'Missing permission' }, { status: 403 })
 
   try {
-    const summary = await (await getPrivilegedFrappeAdapterForRequest(request)).dashboardSummary()
+    const summary = await getFrappeAdapterForRequest(request).dashboardSummary()
     return NextResponse.json({ summary })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to load dashboard summary'
