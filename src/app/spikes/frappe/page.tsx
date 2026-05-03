@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { DEFAULT_FRAPPE_CLIENT } from '@/lib/frappe-spike/client'
+import { FrappeSpikeActions } from './actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -36,17 +38,23 @@ interface FrappeWorkflowPayload {
   error?: string
 }
 
-async function getWorkflow(): Promise<FrappeWorkflowPayload> {
+async function getWorkflow(client: string): Promise<FrappeWorkflowPayload> {
   const baseUrl = process.env.FRAPPE_SPIKE_LOCAL_URL || 'http://localhost:3010'
-  const response = await fetch(`${baseUrl}/api/spikes/frappe/client-workflow?client=Test%20Client%20One`, {
+  const response = await fetch(`${baseUrl}/api/spikes/frappe/client-workflow?client=${encodeURIComponent(client)}`, {
     cache: 'no-store',
   })
 
   return response.json()
 }
 
-export default async function FrappeSpikePage() {
-  const payload = await getWorkflow()
+export default async function FrappeSpikePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ client?: string }>
+}) {
+  const params = await searchParams
+  const selectedClient = params?.client || DEFAULT_FRAPPE_CLIENT
+  const payload = await getWorkflow(selectedClient)
 
   if (payload.error || !payload.message) {
     return (
@@ -58,6 +66,9 @@ export default async function FrappeSpikePage() {
   }
 
   const { client, workflows } = payload.message
+  const allSteps = workflows.flatMap((workflow) => workflow.steps)
+  const firstRequiredStep = allSteps.find((step) => step.requires_document && !step.required_document_uploaded)?.name
+  const firstPendingStep = allSteps.find((step) => step.status !== 'completed')?.name
 
   return (
     <main className="min-h-screen bg-slate-50 p-8 text-slate-950" dir="rtl">
@@ -74,6 +85,12 @@ export default async function FrappeSpikePage() {
             العودة للوحة التحكم
           </Link>
         </header>
+
+        <FrappeSpikeActions
+          client={client.title}
+          firstPendingStep={firstPendingStep}
+          firstRequiredStep={firstRequiredStep}
+        />
 
         <section className="grid gap-4">
           {workflows.map((workflow) => (

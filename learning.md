@@ -114,6 +114,21 @@ This file records useful facts learned during implementation sessions so the nex
 - Browser Use headed verification could not be completed in this step because the Browser Use runtime failed to start its local app-server with a missing-path error.
 - For production, use a named Cloudflare Tunnel connected to the user's Cloudflare account instead of temporary `trycloudflare.com`.
 
+### 2026-05-03 - Next.js write path proof
+
+- Added isolated Next.js spike APIs for Frappe writes:
+  - `/api/spikes/frappe/upload-document`
+  - `/api/spikes/frappe/update-step`
+  - `/api/spikes/frappe/start-excavation`
+- Added buttons to `/spikes/frappe` for upload, complete step, and start excavation.
+- Created Frappe test client `Blocked Client` to prove dependency blocking before Device License completion.
+- Starting Excavation for `Blocked Client` before completion returned the expected Frappe validation error.
+- Uploading required document marker through Next.js worked.
+- Completing `Blocked Client - Eligibility Statement` through Next.js worked and changed the Frappe workflow status to `Completed`.
+- Starting Excavation after completion worked and created `Blocked Client - Excavation Permit`.
+- Browser Use headed runtime loaded the spike page and DOM showed `Blocked Client`, `Device License Completed`, `المستند: مرفوع`, and `Excavation Permit In Progress`.
+- Browser Use screenshot capture timed out once, but DOM verification succeeded.
+
 ### Best-practice notes
 
 - Keep Traefik as the edge router and put Frappe/Next.js behind it.

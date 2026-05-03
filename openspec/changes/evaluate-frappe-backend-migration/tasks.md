@@ -18,9 +18,9 @@
 
 - [x] 3.1 Create a small isolated integration path from the current Next.js app to the Frappe test site.
 - [x] 3.2 Read one client workflow from Frappe and render it in the Rakhtety UI shape.
-- [ ] 3.3 Update one workflow step from Next.js and verify Frappe persists it.
-- [ ] 3.4 Upload one required document from Next.js and verify Frappe stores it.
-- [ ] 3.5 Verify the frontend shows the dependency block before Device License completion.
+- [x] 3.3 Update one workflow step from Next.js and verify Frappe persists it.
+- [x] 3.4 Upload one required document from Next.js and verify Frappe stores it.
+- [x] 3.5 Verify the frontend shows the dependency block before Device License completion.
 
 ## 4. Deployment Proof
 
@@ -41,8 +41,8 @@
 
 - [x] 6.1 Use Browser Use to verify login or authenticated access against the test deployment.
 - [x] 6.2 Use Browser Use to verify client workflow read.
-- [ ] 6.3 Use Browser Use to verify step update.
-- [ ] 6.4 Use Browser Use to verify required document upload.
+- [x] 6.3 Use Browser Use to verify step update.
+- [x] 6.4 Use Browser Use to verify required document upload.
 - [ ] 6.5 Use Browser Use to verify employee access does not show unrelated work.
 
 ## 7. Decision
