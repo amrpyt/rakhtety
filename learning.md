@@ -208,3 +208,17 @@ This file records useful facts learned during implementation sessions so the nex
 - Added Frappe test file for workflow dependency, document gate, employee visibility, and API methods.
 - Local Docker image build is blocked because Docker Desktop is not running on this machine.
 - Building on the server should be done from Git when possible, not by copying random edited files into a running container.
+
+### 2026-05-03 - Local custom Frappe image build proof
+
+- Docker Desktop was started locally.
+- Built custom image:
+  `rakhtety-frappe:v16.16.0-dev`.
+- Build command:
+  `docker build --tag rakhtety-frappe:v16.16.0-dev --file frappe_apps/docker/Containerfile .`
+- Build succeeded and installed `rakhtety_frappe-0.0.1` inside the image.
+- Image check proved:
+  - `/home/frappe/frappe-bench/apps/rakhtety_frappe` exists.
+  - Python can import `rakhtety_frappe`.
+  - Imported version is `0.0.1`.
+- Local image size shown by Docker: `3.22GB`.

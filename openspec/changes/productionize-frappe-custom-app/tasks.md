@@ -3,7 +3,7 @@
 - [x] 1.1 Decide final app location: inside this repo or separate Git repo.
 - [x] 1.2 Create `rakhtety_frappe` app scaffold with Frappe app metadata.
 - [x] 1.3 Add `required_apps`, `modules.txt`, `patches.txt`, and app package structure.
-- [ ] 1.4 Verify the app can be discovered by bench and appears in the apps list.
+- [x] 1.4 Verify the app can be discovered by bench and appears in the apps list.
 
 ## 2. Data Model
 
@@ -45,7 +45,7 @@
 ## 6. Docker Deployment
 
 - [x] 6.1 Create `apps.json` or equivalent app-source config for the custom image.
-- [ ] 6.2 Build a custom/layered Frappe Docker image containing `rakhtety_frappe`.
+- [x] 6.2 Build a custom/layered Frappe Docker image containing `rakhtety_frappe`.
 - [ ] 6.3 Start a clean Frappe test site from the custom image.
 - [ ] 6.4 Install `rakhtety_frappe` on the clean test site.
 - [ ] 6.5 Run migrate/build/restart and verify all Frappe services are healthy.
