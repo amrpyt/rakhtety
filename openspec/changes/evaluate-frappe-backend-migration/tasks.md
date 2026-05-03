@@ -24,11 +24,11 @@
 
 ## 4. Deployment Proof
 
-- [ ] 4.1 Define frontend and backend URLs for the server deployment.
-- [ ] 4.2 Configure reverse proxy routing for frontend and Frappe backend/admin.
-- [ ] 4.3 Configure HTTPS or document the exact blocker if no domain is available.
+- [x] 4.1 Define frontend and backend URLs for the server deployment.
+- [x] 4.2 Configure reverse proxy routing for frontend and Frappe backend/admin.
+- [x] 4.3 Configure HTTPS or document the exact blocker if no domain is available.
 - [ ] 4.4 Verify the Frappe test site restarts cleanly after service restart or server reboot.
-- [ ] 4.5 Verify logs are accessible for frontend, backend, workers, database, and proxy.
+- [x] 4.5 Verify logs are accessible for frontend, backend, workers, database, and proxy.
 
 ## 5. Backup Proof
 
@@ -39,8 +39,8 @@
 
 ## 6. Browser Verification
 
-- [ ] 6.1 Use Browser Use to verify login or authenticated access against the test deployment.
-- [ ] 6.2 Use Browser Use to verify client workflow read.
+- [x] 6.1 Use Browser Use to verify login or authenticated access against the test deployment.
+- [x] 6.2 Use Browser Use to verify client workflow read.
 - [ ] 6.3 Use Browser Use to verify step update.
 - [ ] 6.4 Use Browser Use to verify required document upload.
 - [ ] 6.5 Use Browser Use to verify employee access does not show unrelated work.
