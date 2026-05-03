@@ -44,7 +44,7 @@
 
 ## 6. Docker Deployment
 
-- [ ] 6.1 Create `apps.json` or equivalent app-source config for the custom image.
+- [x] 6.1 Create `apps.json` or equivalent app-source config for the custom image.
 - [ ] 6.2 Build a custom/layered Frappe Docker image containing `rakhtety_frappe`.
 - [ ] 6.3 Start a clean Frappe test site from the custom image.
 - [ ] 6.4 Install `rakhtety_frappe` on the clean test site.

@@ -1,0 +1,11 @@
+FROM frappe/erpnext:v16.16.0
+
+USER root
+
+COPY frappe_apps/rakhtety_frappe /home/frappe/frappe-bench/apps/rakhtety_frappe
+RUN chown -R frappe:frappe /home/frappe/frappe-bench/apps/rakhtety_frappe
+
+USER frappe
+
+RUN cd /home/frappe/frappe-bench \
+    && ./env/bin/pip install --no-cache-dir -e apps/rakhtety_frappe
