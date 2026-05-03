@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { employeeService, CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
+import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
 import { directoryClient } from '@/lib/client-data/directory-client'
 import type { EmployeeWithProfile } from '@/types/database.types'
 
@@ -51,7 +51,7 @@ export function useEmployees(): UseEmployeesReturn {
 
   const updateEmployee = useCallback(
     async (id: string, data: UpdateEmployeeDto) => {
-      const updated = await employeeService.update(id, data)
+      const updated = await directoryClient.updateEmployee(id, data)
       setEmployees((prev) => prev.map((e) => (e.id === id ? updated : e)))
       return updated
     },
@@ -60,7 +60,7 @@ export function useEmployees(): UseEmployeesReturn {
 
   const deleteEmployee = useCallback(
     async (id: string) => {
-      await employeeService.delete(id)
+      await directoryClient.deleteEmployee(id)
       setEmployees((prev) => prev.filter((e) => e.id !== id))
     },
     []
@@ -68,7 +68,7 @@ export function useEmployees(): UseEmployeesReturn {
 
   const deactivateEmployee = useCallback(
     async (id: string) => {
-      const updated = await employeeService.deactivate(id)
+      const updated = await directoryClient.updateEmployee(id, { is_active: false })
       setEmployees((prev) => prev.map((e) => (e.id === id ? updated : e)))
       return updated
     },
@@ -77,7 +77,7 @@ export function useEmployees(): UseEmployeesReturn {
 
   const reactivateEmployee = useCallback(
     async (id: string) => {
-      const updated = await employeeService.reactivate(id)
+      const updated = await directoryClient.updateEmployee(id, { is_active: true })
       setEmployees((prev) => prev.map((e) => (e.id === id ? updated : e)))
       return updated
     },

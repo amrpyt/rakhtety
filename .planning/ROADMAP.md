@@ -161,6 +161,21 @@
 
 ---
 
+### Phase 06.1: Close v1.0 audit blockers (INSERTED)
+
+**Goal:** Close the v1.0 milestone audit blockers so the milestone can be archived with proof.
+**Requirements**: CRM-01, CRM-04, AUTH-01, AUTH-02, AUTH-03, AUTH-04, EMP-01, EMP-02, WF-01, WF-02, WF-03, WF-04, WF-05, RPT-01, RPT-02, RPT-03, RPT-04, RPT-05
+**Depends on:** Phase 6
+**Plans:** 4 plans
+
+Plans:
+- [ ] 06.1-01 Atomic client intake
+- [ ] 06.1-02 Server-safe dashboard and admin APIs
+- [ ] 06.1-03 Verification backfill for Phases 1 and 2
+- [ ] 06.1-04 Milestone readiness proof
+
+---
+
 ## Success Criteria Summary
 
 | Phase | Criteria |
@@ -171,8 +186,9 @@
 | 4 | Documents uploaded, required docs enforced, optional docs allowed |
 | 5 | KPIs displayed, bottlenecks detected, alerts sent |
 | 6 | Arabic PDF generated, app deployed to Cloudflare Pages |
+| 06.1 | Audit blockers closed and v1.0 ready for archive |
 
 ---
 
 *Roadmap created: 2026-04-27*
-*Last updated: 2026-05-03 - Phase 7 and Phase 8 removed*
+*Last updated: 2026-05-03 - Phase 06.1 inserted to close v1.0 audit blockers*

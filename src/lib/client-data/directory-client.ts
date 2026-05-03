@@ -1,6 +1,6 @@
 import type { Client, EmployeeWithProfile } from '@/types/database.types'
 import type { CreateClientDto } from '@/lib/services/client.service'
-import type { CreateEmployeeDto } from '@/lib/services/employee.service'
+import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
 
 const MAX_DOCUMENT_FILE_SIZE = 10 * 1024 * 1024
 const ALLOWED_DOCUMENT_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png']
@@ -37,20 +37,23 @@ function validateIntakeFile(file: File) {
   }
 }
 
-async function uploadClientIntakeDocument(clientId: string, documentType: string, file: File) {
-  validateIntakeFile(file)
-
+function buildClientCreateFormData(data: CreateClientDto, files: [string, File][]) {
   const formData = new FormData()
-  formData.append('document_type', documentType)
-  formData.append('file', file)
+  formData.append('name', data.name)
 
-  await readJson(
-    await fetch(`/api/clients/${clientId}/intake-documents/upload`, {
-      method: 'POST',
-      body: formData,
-    }),
-    'Failed to upload client document'
-  )
+  if (data.phone) formData.append('phone', data.phone)
+  if (data.city) formData.append('city', data.city)
+  if (data.district) formData.append('district', data.district)
+  if (data.neighborhood) formData.append('neighborhood', data.neighborhood)
+  if (data.parcel_number) formData.append('parcel_number', data.parcel_number)
+
+  for (const [type, file] of files) {
+    formData.append('intake_documents', type)
+    formData.append('intake_file_types', type)
+    formData.append('intake_files', file)
+  }
+
+  return formData
 }
 
 export const directoryClient = {
@@ -78,6 +81,18 @@ export const directoryClient = {
       validateIntakeFile(file)
     }
 
+    if (files.length > 0) {
+      const payload = await readJson<{ client: Client }>(
+        await fetch('/api/clients', {
+          method: 'POST',
+          body: buildClientCreateFormData(data, files),
+        }),
+        'Failed to create client'
+      )
+
+      return payload.client
+    }
+
     const payload = await readJson<{ client: Client }>(
       await fetch('/api/clients', {
         method: 'POST',
@@ -89,10 +104,6 @@ export const directoryClient = {
       }),
       'Failed to create client'
     )
-
-    for (const [type, file] of files) {
-      await uploadClientIntakeDocument(payload.client.id, type, file)
-    }
 
     return payload.client
   },
@@ -115,5 +126,26 @@ export const directoryClient = {
       'Failed to create employee'
     )
     return payload.employee
+  },
+
+  async updateEmployee(id: string, data: UpdateEmployeeDto): Promise<EmployeeWithProfile> {
+    const payload = await readJson<{ employee: EmployeeWithProfile }>(
+      await fetch(`/api/employees/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+      'Failed to update employee'
+    )
+    return payload.employee
+  },
+
+  async deleteEmployee(id: string): Promise<void> {
+    await readJson<{ ok: true }>(
+      await fetch(`/api/employees/${id}`, {
+        method: 'DELETE',
+      }),
+      'Failed to delete employee'
+    )
   },
 }

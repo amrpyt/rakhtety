@@ -9,7 +9,7 @@ export async function GET() {
   if (permission instanceof NextResponse) return permission
 
   try {
-    return NextResponse.json({ summary: await dashboardService.getSummary() })
+    return NextResponse.json({ summary: await dashboardService.getSummary(supabase) })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to load dashboard summary'
     return NextResponse.json({ error: message }, { status: 500 })
