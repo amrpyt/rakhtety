@@ -172,27 +172,7 @@
 | 5 | KPIs displayed, bottlenecks detected, alerts sent |
 | 6 | Arabic PDF generated, app deployed to Cloudflare Pages |
 
-### Phase 7: Upgrade Next.js stack and regression test the app
-
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 6
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (run /gsd-plan-phase 7 to break down)
-
-### Phase 8: Rebuild Rakhtety on Frappe ERPNext
-
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 7
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (run /gsd-plan-phase 8 to break down)
-
 ---
 
 *Roadmap created: 2026-04-27*
-*Last updated: 2026-04-29 - Phase 5 verified complete*
+*Last updated: 2026-05-03 - Phase 7 and Phase 8 removed*
