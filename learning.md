@@ -171,3 +171,17 @@ This file records useful facts learned during implementation sessions so the nex
   - `tar -tf` passed for public file backup.
   - `tar -tf` passed for private file backup.
 - Full restore drill was not done yet because the spike code is patched inside the running Frappe container. Production restore proof should wait until Rakhtety code is moved into a real Frappe custom app.
+
+### 2026-05-03 18:05 +03:00 - Employee access and final decision
+
+- Added a small read-only Next.js proof for assigned Frappe work:
+  `/api/spikes/frappe/assigned-work?employee=<employee>`.
+- Added browser page:
+  `/spikes/frappe/employee?employee=<employee>`.
+- Browser Use verified:
+  - `Ahmed Employee` page shows `Test Client One` work.
+  - `Ahmed Employee` page does not show `Blocked Client`.
+  - `Blocked Employee` page shows `Blocked Client` work.
+  - `Blocked Employee` page does not show `Test Client One`.
+- Important limitation: this is assignment filtering, not full Frappe user-permission proof, because the Next.js spike still uses Administrator credentials server-side.
+- Final recommendation: use Frappe as backend engine, keep Rakhtety custom Next.js frontend, and run a second productionization spike before migrating real data.

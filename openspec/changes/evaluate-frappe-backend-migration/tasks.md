@@ -43,10 +43,10 @@
 - [x] 6.2 Use Browser Use to verify client workflow read.
 - [x] 6.3 Use Browser Use to verify step update.
 - [x] 6.4 Use Browser Use to verify required document upload.
-- [ ] 6.5 Use Browser Use to verify employee access does not show unrelated work.
+- [x] 6.5 Use Browser Use to verify employee access does not show unrelated work.
 
 ## 7. Decision
 
-- [ ] 7.1 Write the final spike result: migrate, do not migrate, or run a second spike.
-- [ ] 7.2 List evidence for the decision, including API fit, workflow fit, permission fit, file fit, and deployment fit.
-- [ ] 7.3 List blockers and estimated next work if migration is approved.
+- [x] 7.1 Write the final spike result: migrate, do not migrate, or run a second spike.
+- [x] 7.2 List evidence for the decision, including API fit, workflow fit, permission fit, file fit, and deployment fit.
+- [x] 7.3 List blockers and estimated next work if migration is approved.
