@@ -287,3 +287,59 @@ This file records useful facts learned during implementation sessions so the nex
 - Local prep completed while blocked:
   - Added production Docker/Traefik templates under `frappe_apps/docker/production/`.
   - Kept secrets out of Git by using `.env.example` only.
+
+### 2026-05-03 - Remove Supabase from frontend start
+
+- Created OpenSpec change:
+  `remove-supabase-from-frontend`.
+- Decision from the user:
+  use Frappe login as the only auth source.
+- Current frontend auth changes:
+  - `AuthProvider` now reads a local session cookie instead of Supabase session state.
+  - `useSession` now reads the same local session cookie.
+  - `login` route now posts to Frappe login and stores a local session cookie.
+  - `logout` route clears the local session cookie.
+- Frontend build proof:
+  - `pnpm typecheck` passed.
+  - `pnpm lint` passed.
+  - `docker build -f Dockerfile.next` passed after removing the hard Supabase build dependency.
+- Local browser proof:
+  - The login page opens in headed `browser-use`.
+  - Login currently fails because the local Frappe backend container cannot reach its MySQL host:
+    `MySQLdb.OperationalError: (2005, "Unknown server host 'rakhtety-test-db'")`
+- Practical blocker:
+  - The local Frappe container needs its network/database wiring fixed before browser login can pass.
+  - This is a backend local-compose issue, not a frontend build issue.
+
+### 2026-05-03 19:56 +03:00 - Frappe auth and local E2E passed
+
+- Fixed local Frappe container networking by connecting `rakhtety-live-backend` to `rakhtety-frappe-test`.
+- Added Frappe-backed frontend session flow:
+  - Login posts to Frappe `/api/method/login`.
+  - Current user comes from `rakhtety_frappe.api.current_user`.
+  - The frontend stores a local `rakhtety-session` cookie.
+  - Middleware and hooks read that cookie instead of Supabase auth.
+- Frappe session cookie note:
+  - Next cookies can double-encode values.
+  - The browser saw `%257B...`, so local/server session readers now decode up to 3 times before parsing JSON.
+- Removed Supabase build/runtime requirement from:
+  - `Dockerfile.next`.
+  - `frappe_apps/docker/production/compose.prod.yml`.
+  - `frappe_apps/docker/production/.env.example`.
+- Local checks passed:
+  - `pnpm typecheck`.
+  - `pnpm lint`.
+  - `docker build --tag rakhtety-next:prod --file Dockerfile.next .` with no Supabase build args.
+- Browser Use headed E2E passed on `http://localhost:3010`:
+  - Login as `frappe.local@example.com`.
+  - Dashboard showed `Frappe Local` and loaded Frappe-backed recent workflow data.
+  - Created fresh Frappe client `E2E Client 20260503195124`.
+  - Verified excavation is blocked before Device License completion.
+  - Uploaded required document marker.
+  - Completed all Device License steps.
+  - Started Excavation Permit after completion.
+  - Verified employee assigned-work page for `Local Employee`.
+  - Logged out and returned to `/login`.
+- Current decision:
+  - Frappe auth plus the spike workflow path is locally proven.
+  - The old general app CRUD routes still contain Supabase imports and must be migrated route-by-route before Supabase can be deleted from the repo.

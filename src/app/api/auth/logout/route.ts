@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+
+const SESSION_COOKIE = 'rakhtety-session'
 
 export async function POST() {
-  const supabase = await createServerClient()
-  const { error } = await supabase.auth.signOut()
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-
-  return NextResponse.json({ ok: true })
+  const response = NextResponse.json({ ok: true })
+  response.cookies.set(SESSION_COOKIE, '', {
+    path: '/',
+    maxAge: 0,
+  })
+  return response
 }

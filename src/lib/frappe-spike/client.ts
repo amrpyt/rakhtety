@@ -1,11 +1,21 @@
 export const DEFAULT_FRAPPE_CLIENT = 'Test Client One'
 
-export function getFrappeConfig() {
+export function getFrappeBaseUrl() {
   const baseUrl = process.env.FRAPPE_BASE_URL?.replace(/\/$/, '')
+
+  if (!baseUrl) {
+    throw new Error('FRAPPE_BASE_URL is required')
+  }
+
+  return baseUrl
+}
+
+export function getFrappeConfig() {
+  const baseUrl = getFrappeBaseUrl()
   const username = process.env.FRAPPE_USERNAME
   const password = process.env.FRAPPE_PASSWORD
 
-  if (!baseUrl || !username || !password) {
+  if (!username || !password) {
     throw new Error('FRAPPE_BASE_URL, FRAPPE_USERNAME, and FRAPPE_PASSWORD are required')
   }
 

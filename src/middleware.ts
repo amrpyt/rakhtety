@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/lib/supabase/proxy'
 import { canAccessRoute } from '@/lib/auth/permissions'
-import { createServerClient } from '@supabase/ssr'
-import { databaseConfig } from '@/config/database.config'
+import { readServerSession } from '@/lib/auth/server-session'
 
 const PUBLIC_ROUTES = ['/login', '/signup']
 const PROTECTED_ROUTES = ['/dashboard', '/clients', '/workflows', '/employees', '/finance', '/settings']
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname.startsWith(route))
@@ -17,44 +15,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const { cookiesToSet, user } = await updateSession(request)
-
-  const applyCookies = (response: NextResponse) => {
-    cookiesToSet.forEach(({ name, value, options }) => {
-      response.cookies.set(name, value, options)
-    })
-    return response
-  }
+  const session = readServerSession(request)
+  const user = session?.user ?? null
 
   if (isProtectedRoute && !user) {
     const redirectUrl = new URL('/login', request.url)
     redirectUrl.searchParams.set('redirect', pathname)
-    return applyCookies(NextResponse.redirect(redirectUrl))
+    return NextResponse.redirect(redirectUrl)
   }
 
-  if (isProtectedRoute && user) {
-    const supabase = createServerClient(databaseConfig.supabaseUrl, databaseConfig.supabaseAnonKey, {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll() {
-          // updateSession already collected refreshed cookies for the response.
-        },
-      },
-    })
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
-
-    if (!canAccessRoute(profile?.role, pathname)) {
-      return applyCookies(NextResponse.redirect(new URL('/dashboard', request.url)))
-    }
+  if (isProtectedRoute && user && !canAccessRoute(user.role, pathname)) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   if (pathname.startsWith('/login') && user) {
-    return applyCookies(NextResponse.redirect(new URL('/dashboard', request.url)))
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  return applyCookies(NextResponse.next())
+  return NextResponse.next()
 }
 
 export const config = {

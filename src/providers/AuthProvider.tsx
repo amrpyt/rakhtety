@@ -1,10 +1,8 @@
 'use client'
 
-import { useEffect, useState, createContext, useContext, ReactNode } from 'react'
-import type { Session } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase/client'
+import { useState, createContext, useContext, ReactNode } from 'react'
 import type { AuthUser } from '@/types/auth.types'
-import { toAuthUser } from '@/lib/auth/auth-user'
+import { readLocalSessionCookie } from '@/lib/auth/local-session'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -15,50 +13,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    let mounted = true
-
-    const syncSession = async (session: Session | null) => {
-      if (!mounted) {
-        return
-      }
-
-      if (!session?.user) {
-        setUser(null)
-        setLoading(false)
-        return
-      }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .maybeSingle()
-
-      if (!mounted) {
-        return
-      }
-
-      setUser(toAuthUser(session.user, profile))
-      setLoading(false)
-    }
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      void syncSession(session)
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      void syncSession(session)
-    })
-
-    return () => {
-      mounted = false
-      subscription.unsubscribe()
-    }
-  }, [])
+  const [user, setUser] = useState<AuthUser | null>(() => readLocalSessionCookie()?.user ?? null)
+  const [loading] = useState(false)
 
   return (
     <AuthContext.Provider value={{ user, loading, setUser }}>
