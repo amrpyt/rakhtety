@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const client = url.searchParams.get('client') || DEFAULT_FRAPPE_CLIENT
     const { baseUrl, cookie } = await loginToFrappe()
     const workflowResponse = await fetch(
-      `${baseUrl}/api/method/frappe.rakhtety_spike.get_client_workflow?client=${encodeURIComponent(client)}`,
+      `${baseUrl}/api/method/rakhtety_frappe.api.get_client_workflow?client=${encodeURIComponent(client)}`,
       {
         headers: { cookie },
         cache: 'no-store',

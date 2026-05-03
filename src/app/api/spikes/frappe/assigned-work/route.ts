@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'employee is required' }, { status: 400 })
     }
 
-    const { response, payload } = await callFrappeMethod<AssignedWorkPayload>('frappe.rakhtety_spike.assigned_work', {
+    const { response, payload } = await callFrappeMethod<AssignedWorkPayload>('rakhtety_frappe.api.assigned_work', {
       employee,
     })
 

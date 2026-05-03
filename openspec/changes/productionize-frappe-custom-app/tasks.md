@@ -31,7 +31,7 @@
 - [x] 4.3 Add whitelisted method for `update_step_status`.
 - [x] 4.4 Add whitelisted method for `start_excavation`.
 - [x] 4.5 Add whitelisted method for `assigned_work`.
-- [ ] 4.6 Update Next.js spike endpoints to call the custom app method paths.
+- [x] 4.6 Update Next.js spike endpoints to call the custom app method paths.
 
 ## 5. Tests
 

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'client is required' }, { status: 400 })
     }
 
-    const { response, payload } = await callFrappeMethod('frappe.rakhtety_spike.start_excavation', {
+    const { response, payload } = await callFrappeMethod('rakhtety_frappe.api.start_excavation', {
       client: body.client,
     })
 

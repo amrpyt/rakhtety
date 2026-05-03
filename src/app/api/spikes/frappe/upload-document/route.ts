@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'step is required' }, { status: 400 })
     }
 
-    const { response, payload } = await callFrappeMethod('frappe.rakhtety_spike.upload_required_document', {
+    const { response, payload } = await callFrappeMethod('rakhtety_frappe.api.upload_required_document', {
       step: body.step,
       file_url: '/private/files/nextjs-spike-upload.pdf',
     })

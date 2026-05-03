@@ -9,7 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'step and status are required' }, { status: 400 })
     }
 
-    const { response, payload } = await callFrappeMethod('frappe.rakhtety_spike.update_step_status', {
+    const { response, payload } = await callFrappeMethod('rakhtety_frappe.api.update_step_status', {
       step: body.step,
       status: body.status,
     })
