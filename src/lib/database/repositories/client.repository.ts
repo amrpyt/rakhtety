@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import type { Client, ClientFilter, ClientWithWorkflows } from '@/types/database.types'
+import type { Client, ClientFilter } from '@/types/database.types'
 
 export interface IClientRepository {
   findById(id: string): Promise<Client | null>

@@ -1,16 +1,17 @@
 import React from 'react'
+import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import type { Client } from '@/types/database.types'
 
 interface ClientCardProps {
   client: Client
-  onClick?: () => void
+  href?: string
 }
 
 const emptyValue = '—'
 
-export function ClientCard({ client, onClick }: ClientCardProps) {
+export function ClientCard({ client, href }: ClientCardProps) {
   const displayPhone = client.phone?.trim() || emptyValue
   const displayCity = client.city?.trim() || client.area?.trim() || emptyValue
   const displayParcelNumber = client.parcel_number?.trim() || client.plot_number?.trim() || emptyValue
@@ -52,13 +53,13 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
     </>
   )
 
-  const className = `paper-card w-full text-right transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${onClick ? 'cursor-pointer hover:border-[var(--color-primary)]' : ''}`
+  const className = `paper-card block rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 text-right transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] ${href ? 'cursor-pointer hover:border-[var(--color-primary)]' : ''}`
 
-  if (onClick) {
+  if (href) {
     return (
-      <button type="button" className={className} onClick={onClick}>
+      <Link href={href} className={className}>
         {content}
-      </button>
+      </Link>
     )
   }
 

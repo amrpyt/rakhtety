@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   allowedDevOrigins: ['127.0.0.1'],
+  experimental: {
+    proxyClientMaxBodySize: '12mb',
+  },
 }
 
 export default nextConfig

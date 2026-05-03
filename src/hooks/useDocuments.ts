@@ -63,7 +63,11 @@ export function useDocuments(workflowId?: string, stepId?: string): UseDocuments
   }, [])
 
   useEffect(() => {
-    refresh()
+    const timeoutId = setTimeout(() => {
+      void refresh()
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
   }, [refresh])
 
   return { status, loading, error, refresh, uploadDocument, getDocumentDownloadUrl }

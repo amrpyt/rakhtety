@@ -60,7 +60,11 @@ export function useFinancials(workflowId?: string): UseFinancialsReturn {
   )
 
   useEffect(() => {
-    refresh()
+    const timeoutId = setTimeout(() => {
+      void refresh()
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
   }, [refresh])
 
   return { summary, loading, error, refresh, recordPayment }

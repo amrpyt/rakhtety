@@ -11,6 +11,8 @@ type Params = { params: Promise<{ id: string }> }
 export async function GET(_request: NextRequest, { params }: Params) {
   const { id } = await params
   const supabase = await createServerClient()
+  const permission = await requirePermission(supabase, 'readClients')
+  if (permission instanceof NextResponse) return permission
 
   const { data: workflows, error } = await supabase
     .from('workflows')
@@ -108,6 +110,10 @@ export async function POST(request: NextRequest, { params }: Params) {
     .single<Workflow>()
 
   if (workflowError) {
+    if (workflowError.code === '23505') {
+      return NextResponse.json({ error: 'Ù‡Ø°Ø§ Ø§Ù„Ù…Ø³Ø§Ø± Ù…ÙˆØ¬ÙˆØ¯ Ø¨Ø§Ù„ÙØ¹Ù„ Ù„Ù‡Ø°Ø§ Ø§Ù„Ø¹Ù…ÙŠÙ„' }, { status: 409 })
+    }
+
     return NextResponse.json({ error: workflowError.message }, { status: 500 })
   }
 

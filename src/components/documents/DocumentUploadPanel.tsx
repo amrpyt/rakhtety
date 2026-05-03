@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/Button'
@@ -219,10 +220,13 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
             </div>
             <div className="min-h-[60vh] overflow-auto p-3">
               {isImagePreview(previewDocument) ? (
-                <img
+                <Image
                   src={previewDocument.url}
                   alt={previewDocument.fileName}
+                  width={1200}
+                  height={900}
                   className="mx-auto max-h-[70vh] max-w-full rounded-[var(--radius-md)] object-contain"
+                  unoptimized
                 />
               ) : isPdfPreview(previewDocument) ? (
                 <iframe

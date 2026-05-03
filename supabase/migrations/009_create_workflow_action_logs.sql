@@ -1,16 +1,16 @@
-CREATE TABLE workflow_action_logs (
+CREATE TABLE IF NOT EXISTS public.workflow_action_logs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  workflow_id UUID NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
-  workflow_step_id UUID NOT NULL REFERENCES workflow_steps(id) ON DELETE CASCADE,
+  workflow_id UUID NOT NULL REFERENCES public.workflows(id) ON DELETE CASCADE,
+  workflow_step_id UUID NOT NULL REFERENCES public.workflow_steps(id) ON DELETE CASCADE,
   action TEXT NOT NULL CHECK (action IN ('emergency_complete', 'move_back')),
   reason TEXT NOT NULL CHECK (length(trim(reason)) > 0),
-  actor_id UUID REFERENCES profiles(id),
+  actor_id UUID REFERENCES public.profiles(id),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_workflow_action_logs_workflow_id ON workflow_action_logs(workflow_id);
-CREATE INDEX idx_workflow_action_logs_workflow_step_id ON workflow_action_logs(workflow_step_id);
-CREATE INDEX idx_workflow_action_logs_actor_id ON workflow_action_logs(actor_id);
+CREATE INDEX IF NOT EXISTS idx_workflow_action_logs_workflow_id ON public.workflow_action_logs(workflow_id);
+CREATE INDEX IF NOT EXISTS idx_workflow_action_logs_workflow_step_id ON public.workflow_action_logs(workflow_step_id);
+CREATE INDEX IF NOT EXISTS idx_workflow_action_logs_actor_id ON public.workflow_action_logs(actor_id);
 
 CREATE OR REPLACE FUNCTION public.enforce_workflow_step_transition()
 RETURNS TRIGGER AS $$
@@ -44,16 +44,18 @@ END;
 $$ LANGUAGE plpgsql
 SET search_path = public, pg_temp;
 
-ALTER TABLE workflow_action_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.workflow_action_logs ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "workflow_action_logs_select" ON workflow_action_logs
+DROP POLICY IF EXISTS "workflow_action_logs_select" ON public.workflow_action_logs;
+CREATE POLICY "workflow_action_logs_select" ON public.workflow_action_logs
   FOR SELECT TO authenticated USING (
     EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role IN ('admin', 'manager')
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = (select auth.uid())
+        AND profiles.role IN ('admin', 'manager')
     )
   );
 
-CREATE POLICY "workflow_action_logs_insert" ON workflow_action_logs
+DROP POLICY IF EXISTS "workflow_action_logs_insert" ON public.workflow_action_logs;
+CREATE POLICY "workflow_action_logs_insert" ON public.workflow_action_logs
   FOR INSERT TO authenticated WITH CHECK (true);

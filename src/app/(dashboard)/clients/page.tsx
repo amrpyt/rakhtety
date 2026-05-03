@@ -191,7 +191,7 @@ export default function ClientsPage() {
             <ClientCard
               key={client.id}
               client={client}
-              onClick={() => router.push(`/clients/${client.id}`)}
+              href={`/clients/${client.id}`}
             />
           ))}
         </div>

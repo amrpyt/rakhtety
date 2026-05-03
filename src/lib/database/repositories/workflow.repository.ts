@@ -1,7 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import type { Workflow, WorkflowFilter, WorkflowWithSteps, WorkflowStepWithEmployee } from '@/types/database.types'
-import { ErrorCodes } from '@/types/error-codes.enum'
-import { AppError } from '@/lib/errors/app-error.class'
+import type { Workflow, WorkflowFilter, WorkflowWithSteps } from '@/types/database.types'
 
 export interface IWorkflowRepository {
   findById(id: string): Promise<Workflow | null>

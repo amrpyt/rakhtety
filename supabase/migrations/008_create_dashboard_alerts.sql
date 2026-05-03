@@ -28,6 +28,9 @@ CREATE INDEX IF NOT EXISTS idx_dashboard_alerts_workflow_id
 CREATE INDEX IF NOT EXISTS idx_dashboard_alerts_step_id
   ON public.dashboard_alerts(workflow_step_id);
 
+CREATE INDEX IF NOT EXISTS idx_dashboard_alerts_created_by
+  ON public.dashboard_alerts(created_by);
+
 ALTER TABLE public.dashboard_alerts ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "dashboard_alerts_select" ON public.dashboard_alerts;

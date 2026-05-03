@@ -42,6 +42,9 @@ const getErrorStatus = (error: unknown): number | null => {
 
 export async function GET(request: NextRequest) {
   const supabase = await createServerClient()
+  const permission = await requirePermission(supabase, 'readClients')
+  if (permission instanceof NextResponse) return permission
+
   const search = request.nextUrl.searchParams.get('q')?.trim()
 
   try {

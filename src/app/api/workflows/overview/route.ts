@@ -47,10 +47,9 @@ export async function GET() {
   const supabase = await createServerClient()
   const permission = await requirePermission(supabase, 'readClients')
   if (permission instanceof NextResponse) return permission
-  const isEmployee = permission.profile.role === 'employee'
 
   try {
-    let query = supabase
+    const query = supabase
       .from('workflows')
       .select(`
         *,
@@ -60,10 +59,6 @@ export async function GET() {
       `)
       .order('updated_at', { ascending: false })
       .limit(100)
-
-    if (isEmployee) {
-      query = query.eq('assigned_to', permission.user.id)
-    }
 
     const { data: workflows, error: workflowsError } = await query
 

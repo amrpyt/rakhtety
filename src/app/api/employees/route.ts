@@ -3,7 +3,13 @@ import { listEmployees } from '@/lib/server-data/directory-query'
 import { requirePermission } from '@/lib/auth/server-permissions'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerClient } from '@/lib/supabase/server'
+import { employeeCreateSchema } from '@/lib/validation/schemas'
+import { z } from 'zod'
 import type { EmployeeWithProfile } from '@/types/database.types'
+
+const employeeApiCreateSchema = employeeCreateSchema.extend({
+  password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
+})
 
 export async function GET() {
   const supabase = await createServerClient()
@@ -24,7 +30,16 @@ export async function POST(request: NextRequest) {
   if (permission instanceof NextResponse) return permission
 
   try {
-    const body = await request.json()
+    const parsed = employeeApiCreateSchema.safeParse(await request.json())
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message || 'بيانات الموظف غير صالحة' },
+        { status: 400 }
+      )
+    }
+
+    const body = parsed.data
     const admin = createAdminClient()
 
     const { data: authData, error: authError } = await admin.auth.admin.createUser({

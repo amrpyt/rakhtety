@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import type { Employee, EmployeeWithProfile, UserRole } from '@/types/database.types'
+import type { Employee, EmployeeWithProfile } from '@/types/database.types'
 
 export interface IEmployeeRepository {
   findById(id: string): Promise<Employee | null>

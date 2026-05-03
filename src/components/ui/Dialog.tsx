@@ -41,6 +41,9 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
       <div
         className="relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xl"
+        role="dialog"
+        aria-modal="true"
+        onClick={(event) => event.stopPropagation()}
         style={{
           animation: 'dialog-enter 200ms ease-out',
         }}

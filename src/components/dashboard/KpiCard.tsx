@@ -11,10 +11,9 @@ interface KpiCardProps {
   }
   icon?: React.ReactNode
   trend?: 'up' | 'down' | 'neutral'
-  variant?: 'default' | 'success' | 'warning' | 'error'
 }
 
-export function KpiCard({ title, value, change, icon, trend, variant = 'default' }: KpiCardProps) {
+export function KpiCard({ title, value, change, icon, trend }: KpiCardProps) {
   const trendColors = {
     up: 'text-[var(--color-success)]',
     down: 'text-[var(--color-error)]',

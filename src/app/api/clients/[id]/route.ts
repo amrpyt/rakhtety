@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
+import { requirePermission } from '@/lib/auth/server-permissions'
 
 type Params = { params: Promise<{ id: string }> }
 
 export async function GET(_request: NextRequest, { params }: Params) {
   const { id } = await params
   const supabase = await createServerClient()
+  const permission = await requirePermission(supabase, 'readClients')
+  if (permission instanceof NextResponse) return permission
 
   const { data, error } = await supabase
     .from('clients')

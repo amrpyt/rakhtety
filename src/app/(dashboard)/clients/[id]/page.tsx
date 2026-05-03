@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardHeader, CardTitle, CardSubtitle, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -278,10 +279,13 @@ function ClientIntakeDocumentsCard({ documents }: { documents: ClientIntakeDocum
             </div>
             <div className="min-h-[60vh] overflow-auto p-3">
               {isImagePreview(previewDocument) ? (
-                <img
+                <Image
                   src={previewDocument.url}
                   alt={previewDocument.fileName}
+                  width={1200}
+                  height={900}
                   className="mx-auto max-h-[70vh] max-w-full rounded-[var(--radius-md)] object-contain"
+                  unoptimized
                 />
               ) : isPdfPreview(previewDocument) ? (
                 <iframe

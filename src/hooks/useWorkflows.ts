@@ -20,6 +20,7 @@ interface UseWorkflowsReturn {
 
 export function useWorkflows(clientId?: string): UseWorkflowsReturn {
   const { user } = useAuth()
+  const actorId = user?.id || null
   const [deviceLicense, setDeviceLicense] = useState<WorkflowWithSteps | null>(null)
   const [excavationPermit, setExcavationPermit] = useState<WorkflowWithSteps | null>(null)
   const [deviceLicenseCompleted, setDeviceLicenseCompleted] = useState(false)
@@ -104,7 +105,7 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
       try {
         setLoading(true)
         setError(null)
-        await workflowService.emergencyCompleteStep(stepId, { reason, actorId: user?.id || null })
+        await workflowService.emergencyCompleteStep(stepId, { reason, actorId })
         if (clientId) {
           await fetchWorkflows(clientId)
         }
@@ -115,7 +116,7 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
         setLoading(false)
       }
     },
-    [clientId, fetchWorkflows, user?.id]
+    [actorId, clientId, fetchWorkflows]
   )
 
   const moveStepBack = useCallback(
@@ -123,7 +124,7 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
       try {
         setLoading(true)
         setError(null)
-        await workflowService.moveStepBack(stepId, { reason, actorId: user?.id || null })
+        await workflowService.moveStepBack(stepId, { reason, actorId })
         if (clientId) {
           await fetchWorkflows(clientId)
         }
@@ -134,13 +135,17 @@ export function useWorkflows(clientId?: string): UseWorkflowsReturn {
         setLoading(false)
       }
     },
-    [clientId, fetchWorkflows, user?.id]
+    [actorId, clientId, fetchWorkflows]
   )
 
   useEffect(() => {
-    if (clientId) {
-      fetchWorkflows(clientId)
-    }
+    const timeoutId = setTimeout(() => {
+      if (clientId) {
+        void fetchWorkflows(clientId)
+      }
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
   }, [clientId, fetchWorkflows])
 
   return {

@@ -8,7 +8,7 @@ type Params = { params: Promise<{ id: string }> }
 export async function GET(_request: NextRequest, { params }: Params) {
   const { id } = await params
   const supabase = await createServerClient()
-  const permission = await requirePermission(supabase, 'recordPayments')
+  const permission = await requirePermission(supabase, 'readReports')
   if (permission instanceof NextResponse) return permission
 
   try {

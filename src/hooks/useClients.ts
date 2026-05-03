@@ -52,16 +52,24 @@ export function useClients(): UseClientsReturn {
   }, [])
 
   useEffect(() => {
-    fetchClients()
+    const timeoutId = setTimeout(() => {
+      void fetchClients()
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
   }, [fetchClients])
 
   useEffect(() => {
     if (searchQuery.length >= 2) {
       const timeoutId = setTimeout(() => search(searchQuery), 300)
       return () => clearTimeout(timeoutId)
-    } else {
-      setSearchResults([])
     }
+
+    const timeoutId = setTimeout(() => {
+      setSearchResults([])
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
   }, [searchQuery, search])
 
   const createClient = useCallback(

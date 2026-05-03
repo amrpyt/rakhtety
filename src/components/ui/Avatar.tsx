@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 
 interface AvatarProps {
   initials: string
@@ -19,8 +20,8 @@ const sizeStyles = {
 export function Avatar({ initials, size = 'md', src, alt, className = '' }: AvatarProps) {
   if (src) {
     return (
-      <div className={`rounded-full overflow-hidden flex-shrink-0 ${sizeStyles[size]} ${className}`}>
-        <img src={src} alt={alt || initials} className="w-full h-full object-cover" />
+      <div className={`relative rounded-full overflow-hidden flex-shrink-0 ${sizeStyles[size]} ${className}`}>
+        <Image src={src} alt={alt || initials} fill sizes="64px" className="object-cover" unoptimized />
       </div>
     )
   }

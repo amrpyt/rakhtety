@@ -33,7 +33,11 @@ export function useEmployees(): UseEmployeesReturn {
   }, [])
 
   useEffect(() => {
-    fetchEmployees()
+    const timeoutId = setTimeout(() => {
+      void fetchEmployees()
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
   }, [fetchEmployees])
 
   const createEmployee = useCallback(

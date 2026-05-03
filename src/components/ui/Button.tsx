@@ -26,6 +26,7 @@ const sizeStyles: Record<ButtonSize, string> = {
 export function Button({
   variant = 'primary',
   size = 'default',
+  type = 'button',
   loading = false,
   disabled,
   className = '',
@@ -34,6 +35,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
+      type={type}
       className={`
         inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap
         transition-all duration-150
