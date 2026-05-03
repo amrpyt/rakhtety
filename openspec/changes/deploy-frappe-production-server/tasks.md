@@ -42,5 +42,5 @@
 - [ ] 6.1 Document rollback commands for previous image tag and pre-migration backup restore.
 - [ ] 6.2 Test rollback logic on a non-production smoke target when possible.
 - [x] 6.3 Update `learning.md` with deployment discoveries, errors, and final server facts.
-- [ ] 6.4 Run `openspec validate deploy-frappe-production-server --strict`.
+- [x] 6.4 Run `openspec validate deploy-frappe-production-server --strict`.
 - [ ] 6.5 Commit the completed deployment artifacts after checks pass.

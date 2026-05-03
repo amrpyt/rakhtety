@@ -1,6 +1,6 @@
 # Server Readiness
 
-Checked: 2026-05-03 18:xx Africa/Cairo
+Checked: 2026-05-04 02:3x Africa/Cairo
 
 ## Target
 
@@ -16,11 +16,20 @@ Checked: 2026-05-03 18:xx Africa/Cairo
 - `rakhtety.coderaai.com` currently resolves to `156.67.25.212`, not `57.131.19.110`.
 - `frappe-rakhtety.coderaai.com` currently resolves to `156.67.25.212`, not `57.131.19.110`.
 
+Rechecked on 2026-05-04:
+
+- `rakhtety.coderaai.com` still resolves to `156.67.25.212`.
+- `frappe-rakhtety.coderaai.com` still resolves to `156.67.25.212`.
+- `57.131.19.110:22` is reachable.
+- `57.131.19.110:80` failed TCP connect.
+- `57.131.19.110:443` failed TCP connect / timed out.
+
 ## SSH Findings
 
 - `amr@57.131.19.110` failed with `Permission denied (publickey)`.
 - `ubuntu@57.131.19.110` failed with `Permission denied (publickey)`.
 - `root@57.131.19.110` failed with `Permission denied (publickey)`.
+- `amr@57.131.19.110 whoami` rechecked on 2026-05-04 and still failed with `Permission denied (publickey)`.
 - Local keys tried:
   - `$HOME\.ssh\vps_key`
   - `$HOME\.ssh\id_amr`
