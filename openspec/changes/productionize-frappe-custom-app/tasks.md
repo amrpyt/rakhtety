@@ -7,13 +7,13 @@
 
 ## 2. Data Model
 
-- [ ] 2.1 Add `Rakhtety Client` DocType.
-- [ ] 2.2 Add `Rakhtety Employee` DocType linked to Frappe User.
-- [ ] 2.3 Add `Rakhtety Workflow` DocType.
-- [ ] 2.4 Add `Rakhtety Workflow Step` DocType.
-- [ ] 2.5 Add `Rakhtety Document` DocType with file attachment field.
-- [ ] 2.6 Add role and permission fixtures for admin, manager, and employee access.
-- [ ] 2.7 Add install/migration patch for required default records and indexes.
+- [x] 2.1 Add `Rakhtety Client` DocType.
+- [x] 2.2 Add `Rakhtety Employee` DocType linked to Frappe User.
+- [x] 2.3 Add `Rakhtety Workflow` DocType.
+- [x] 2.4 Add `Rakhtety Workflow Step` DocType.
+- [x] 2.5 Add `Rakhtety Document` DocType with file attachment field.
+- [x] 2.6 Add role and permission fixtures for admin, manager, and employee access.
+- [x] 2.7 Add install/migration patch for required default records and indexes.
 
 ## 3. Backend Logic
 

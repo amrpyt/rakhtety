@@ -1,0 +1,27 @@
+{
+  "actions": [],
+  "allow_import": 1,
+  "allow_rename": 1,
+  "autoname": "field:title",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": ["title", "user", "role_label"],
+  "fields": [
+    {"fieldname": "title", "fieldtype": "Data", "in_list_view": 1, "label": "Full Name", "reqd": 1, "unique": 1},
+    {"fieldname": "user", "fieldtype": "Link", "in_list_view": 1, "in_standard_filter": 1, "label": "User", "options": "User", "search_index": 1},
+    {"fieldname": "role_label", "fieldtype": "Select", "in_standard_filter": 1, "label": "Role Label", "options": "Admin\nManager\nEmployee"}
+  ],
+  "module": "Rakhtety",
+  "name": "Rakhtety Employee",
+  "naming_rule": "By Fieldname",
+  "permissions": [
+    {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
+    {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Rakhtety Admin", "share": 1, "write": 1},
+    {"email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Rakhtety Manager"},
+    {"email": 1, "print": 1, "read": 1, "role": "Rakhtety Employee"}
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "title_field": "title",
+  "track_changes": 1
+}
