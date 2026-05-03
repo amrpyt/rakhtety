@@ -17,20 +17,20 @@
 
 ## 3. Backend Logic
 
-- [ ] 3.1 Implement service/controller logic for Device License workflow creation.
-- [ ] 3.2 Implement service/controller logic for Excavation Permit start.
-- [ ] 3.3 Enforce Excavation Permit dependency on completed Device License.
-- [ ] 3.4 Enforce required-document gate before step completion.
-- [ ] 3.5 Implement employee assigned-work query with role-aware filtering.
-- [ ] 3.6 Implement finance fields for government fees and office profit on workflow steps.
+- [x] 3.1 Implement service/controller logic for Device License workflow creation.
+- [x] 3.2 Implement service/controller logic for Excavation Permit start.
+- [x] 3.3 Enforce Excavation Permit dependency on completed Device License.
+- [x] 3.4 Enforce required-document gate before step completion.
+- [x] 3.5 Implement employee assigned-work query with role-aware filtering.
+- [x] 3.6 Implement finance fields for government fees and office profit on workflow steps.
 
 ## 4. API Contract
 
-- [ ] 4.1 Add whitelisted method for `get_client_workflow`.
-- [ ] 4.2 Add whitelisted method for `upload_required_document`.
-- [ ] 4.3 Add whitelisted method for `update_step_status`.
-- [ ] 4.4 Add whitelisted method for `start_excavation`.
-- [ ] 4.5 Add whitelisted method for `assigned_work`.
+- [x] 4.1 Add whitelisted method for `get_client_workflow`.
+- [x] 4.2 Add whitelisted method for `upload_required_document`.
+- [x] 4.3 Add whitelisted method for `update_step_status`.
+- [x] 4.4 Add whitelisted method for `start_excavation`.
+- [x] 4.5 Add whitelisted method for `assigned_work`.
 - [ ] 4.6 Update Next.js spike endpoints to call the custom app method paths.
 
 ## 5. Tests
