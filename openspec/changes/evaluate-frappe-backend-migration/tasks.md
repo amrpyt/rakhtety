@@ -7,17 +7,17 @@
 
 ## 2. Frappe Test Backend
 
-- [ ] 2.1 Create a test Frappe site with no production Rakhtety data.
-- [ ] 2.2 Create minimal Rakhtety backend records for client, workflow, workflow step, employee assignment, document, and finance fields.
-- [ ] 2.3 Add the Device License workflow path with five steps.
-- [ ] 2.4 Add the Excavation Permit dependency rule that blocks start until Device License is complete.
-- [ ] 2.5 Add one required document gate before step completion.
-- [ ] 2.6 Add employee assignment visibility for assigned work only.
+- [x] 2.1 Create a test Frappe site with no production Rakhtety data.
+- [x] 2.2 Create minimal Rakhtety backend records for client, workflow, workflow step, employee assignment, document, and finance fields.
+- [x] 2.3 Add the Device License workflow path with five steps.
+- [x] 2.4 Add the Excavation Permit dependency rule that blocks start until Device License is complete.
+- [x] 2.5 Add one required document gate before step completion.
+- [x] 2.6 Add employee assignment visibility for assigned work only.
 
 ## 3. Next.js Integration Proof
 
-- [ ] 3.1 Create a small isolated integration path from the current Next.js app to the Frappe test site.
-- [ ] 3.2 Read one client workflow from Frappe and render it in the Rakhtety UI shape.
+- [x] 3.1 Create a small isolated integration path from the current Next.js app to the Frappe test site.
+- [x] 3.2 Read one client workflow from Frappe and render it in the Rakhtety UI shape.
 - [ ] 3.3 Update one workflow step from Next.js and verify Frappe persists it.
 - [ ] 3.4 Upload one required document from Next.js and verify Frappe stores it.
 - [ ] 3.5 Verify the frontend shows the dependency block before Device License completion.
