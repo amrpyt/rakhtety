@@ -59,6 +59,7 @@ export function can(role: UserRole | null | undefined, action: PermissionAction)
 }
 
 export function canAccessRoute(role: UserRole | null | undefined, pathname: string): boolean {
+  if (pathname.startsWith('/amr-dashboard')) return Boolean(role)
   if (pathname.startsWith('/employees')) return can(role, 'manageEmployees')
   if (pathname.startsWith('/settings')) return can(role, 'manageSettings')
   if (pathname.startsWith('/clients')) return can(role, 'readClients')

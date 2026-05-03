@@ -398,3 +398,21 @@ This file records useful facts learned during implementation sessions so the nex
   - `pnpm test`
   - `pnpm build`
   - Browser Use headed on `/dashboard`, `/clients`, `/clients/Local%20Client`, `/workflows`, and `/finance`.
+
+### 2026-05-04 - Amr engineering dashboard
+
+- Added `/amr-dashboard` as a protected real app page, not a spike page.
+- The page reads one server overview from `/api/amr-dashboard/overview`.
+- The overview uses the privileged Frappe adapter and combines:
+  - dashboard summary
+  - clients
+  - workflow overview
+  - employees
+- Browser Use headed proof:
+  - `http://localhost:3010/amr-dashboard` redirects to login when logged out.
+  - Login with `local.employee@example.com` / `1qaz1qaz` opens the page.
+  - The page shows `Frappe فقط`, real workflows, real clients, employees, and real app route links only.
+- Browser Use CLI on Windows needs:
+  - `chcp 65001`
+  - `PYTHONIOENCODING=utf-8`
+  - Without that, `browser-use doctor` can fail while printing Unicode check marks.

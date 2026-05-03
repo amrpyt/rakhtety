@@ -3,7 +3,15 @@ import { canAccessRoute } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
 
 const PUBLIC_ROUTES = ['/login', '/signup']
-const PROTECTED_ROUTES = ['/dashboard', '/clients', '/workflows', '/employees', '/finance', '/settings']
+const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/amr-dashboard',
+  '/clients',
+  '/workflows',
+  '/employees',
+  '/finance',
+  '/settings',
+]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

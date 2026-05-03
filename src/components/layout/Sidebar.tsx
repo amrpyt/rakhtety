@@ -7,6 +7,7 @@ import {
   Home,
   LayoutDashboard,
   LogOut,
+  MonitorCog,
   UserCheck,
   Users,
   type LucideIcon,
@@ -32,6 +33,7 @@ const navSections: NavSection[] = [
     section: 'الرئيسية',
     items: [
       { href: '/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
+      { href: '/amr-dashboard', label: 'لوحة عمرو', icon: MonitorCog },
       { href: '/clients', label: 'ملفات العملاء', icon: Users },
       { href: '/workflows', label: 'مسارات العمل', icon: GitBranch },
     ],

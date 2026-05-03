@@ -42,6 +42,8 @@ describe('role permissions', () => {
 
   it('denies unknown roles and protects employee routes', () => {
     expect(can(undefined, 'manageEmployees')).toBe(false)
+    expect(canAccessRoute(undefined, '/amr-dashboard')).toBe(false)
+    expect(canAccessRoute('employee', '/amr-dashboard')).toBe(true)
     expect(canAccessRoute('employee', '/clients')).toBe(true)
     expect(canAccessRoute('employee', '/employees')).toBe(false)
     expect(canAccessRoute('admin', '/employees')).toBe(true)
