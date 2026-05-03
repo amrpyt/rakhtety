@@ -1,9 +1,9 @@
 ## 1. Server Discovery
 
-- [ ] 1.1 Confirm the server login method without committing or printing secrets.
-- [ ] 1.2 Inspect OS, CPU, memory, disk, package manager, and open ports.
-- [ ] 1.3 Check whether Docker, Python, Node.js, Nginx/Caddy, MariaDB, Redis, or existing web services are installed.
-- [ ] 1.4 Decide whether the spike should use Frappe Bench or Docker on this server.
+- [x] 1.1 Confirm the server login method without committing or printing secrets.
+- [x] 1.2 Inspect OS, CPU, memory, disk, package manager, and open ports.
+- [x] 1.3 Check whether Docker, Python, Node.js, Nginx/Caddy, MariaDB, Redis, or existing web services are installed.
+- [x] 1.4 Decide whether the spike should use Frappe Bench or Docker on this server.
 
 ## 2. Frappe Test Backend
 
