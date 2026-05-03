@@ -421,3 +421,7 @@ This file records useful facts learned during implementation sessions so the nex
   - Frappe API method names
   - backend health checks
   - env variable presence without exposing secret values.
+- Added live monitoring to `/amr-dashboard`:
+  - `/api/amr-dashboard/logs` reads recent Next frontend log files.
+  - It also reads Docker logs from `rakhtety-live-backend`.
+  - The UI refreshes every 3 seconds and separates frontend, backend, and error lines.

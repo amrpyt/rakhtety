@@ -14,11 +14,13 @@ import {
   RefreshCw,
   Server,
   Settings2,
+  TerminalSquare,
   Users,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import type { AmrDashboardOverview } from '@/lib/amr-dashboard/overview'
+import type { MonitorSnapshot } from '@/lib/amr-dashboard/log-monitor'
 import type { WorkflowStatus, WorkflowType } from '@/types/database.types'
 
 const formatNumber = (value: number) => new Intl.NumberFormat('ar-EG').format(value)
@@ -53,6 +55,9 @@ export default function AmrDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [logs, setLogs] = useState<MonitorSnapshot | null>(null)
+  const [logsError, setLogsError] = useState<string | null>(null)
+  const [logSource, setLogSource] = useState<'frontend' | 'backend' | 'errors'>('errors')
 
   const loadOverview = useCallback(async () => {
     setRefreshing(true)
@@ -80,6 +85,33 @@ export default function AmrDashboardPage() {
     void task
   }, [loadOverview])
 
+  const loadLogs = useCallback(async () => {
+    try {
+      const response = await fetch('/api/amr-dashboard/logs?limit=300', { cache: 'no-store' })
+      const payload = await response.json()
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'تعذر تحميل اللوجز')
+      }
+
+      setLogs(payload.snapshot)
+      setLogsError(null)
+    } catch (err) {
+      setLogsError(err instanceof Error ? err.message : 'تعذر تحميل اللوجز')
+    }
+  }, [])
+
+  useEffect(() => {
+    const task = Promise.resolve().then(loadLogs)
+    const timer = window.setInterval(() => {
+      void loadLogs()
+    }, 3000)
+
+    void task
+
+    return () => window.clearInterval(timer)
+  }, [loadLogs])
+
   const kpis = useMemo(() => {
     if (!overview) return []
 
@@ -92,6 +124,8 @@ export default function AmrDashboardPage() {
       { label: 'موظفين نشطين', value: formatNumber(overview.totals.activeEmployees), icon: Users },
     ]
   }, [overview])
+
+  const visibleLogs = logs ? logs[logSource] : []
 
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-6 lg:px-8">
@@ -262,6 +296,75 @@ export default function AmrDashboardPage() {
               </div>
             </section>
           </div>
+
+          <section className="mb-5 rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white shadow-sm">
+            <div className="flex flex-col gap-3 border-b border-[var(--color-divider)] p-4 xl:flex-row xl:items-center xl:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <TerminalSquare className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
+                  <h2 className="text-base font-black">Live logs monitor</h2>
+                </div>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+                  بيتحدث كل 3 ثواني: فرونت، باك إند، وأخطاء واضحة.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ['errors', `Errors (${formatNumber(logs?.errors.length ?? 0)})`],
+                  ['frontend', `Frontend (${formatNumber(logs?.frontend.length ?? 0)})`],
+                  ['backend', `Backend (${formatNumber(logs?.backend.length ?? 0)})`],
+                ].map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setLogSource(id as 'frontend' | 'backend' | 'errors')}
+                    className={`rounded-[var(--radius-md)] border px-3 py-1.5 text-xs font-black transition-colors ${
+                      logSource === id
+                        ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white'
+                        : 'border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-3 border-b border-[var(--color-divider)] p-4 text-xs text-[var(--color-text-muted)] md:grid-cols-3">
+              <p>
+                <span className="font-black text-[var(--color-text)]">Backend container:</span>{' '}
+                <span className="font-mono">{logs?.meta.backendContainer || '...'}</span>
+              </p>
+              <p>
+                <span className="font-black text-[var(--color-text)]">Frontend files:</span>{' '}
+                <span className="font-mono">{logs?.meta.frontendFiles.join(', ') || '...'}</span>
+              </p>
+              <p>
+                <span className="font-black text-[var(--color-text)]">Last read:</span>{' '}
+                {logs ? formatDateTime(logs.generatedAt) : '...'}
+              </p>
+            </div>
+
+            {logsError && (
+              <div className="border-b border-[var(--color-divider)] bg-[var(--color-error-light)] p-3 text-sm text-[var(--color-error)]">
+                {logsError}
+              </div>
+            )}
+
+            <div className="max-h-[420px] overflow-auto bg-[#101418] p-4 text-left font-mono text-xs leading-6 text-[#d7e0ea]" dir="ltr">
+              {visibleLogs.length === 0 ? (
+                <p className="text-[#91a0ae]">No logs yet.</p>
+              ) : (
+                visibleLogs.map((entry, index) => (
+                  <div key={`${entry.source}-${entry.stream}-${index}`} className={entry.isError ? 'text-[#ffb4ab]' : ''}>
+                    <span className="text-[#7dd3fc]">[{entry.source}]</span>{' '}
+                    <span className="text-[#c4b5fd]">{entry.stream}</span>{' '}
+                    <span>{entry.line}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
 
           <div className="mb-5 grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
             <section className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white shadow-sm">
