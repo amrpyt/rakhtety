@@ -38,10 +38,10 @@ Output: [What artifacts will be created]
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/execute-plan.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/summary.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/execute-plan.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/summary.md
 [If plan contains checkpoint tasks (type="checkpoint:*"), add:]
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/checkpoints.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/checkpoints.md
 </execution_context>
 
 <context>
@@ -85,7 +85,7 @@ Output: [What artifacts will be created]
   <done>[Acceptance criteria]</done>
 </task>
 
-<!-- For checkpoint task examples and patterns, see @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/checkpoints.md -->
+<!-- For checkpoint task examples and patterns, see @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/checkpoints.md -->
 
 <task type="checkpoint:decision" gate="blocking">
   <decision>[What needs deciding]</decision>
@@ -278,7 +278,7 @@ TDD features get dedicated plans with `type: tdd`.
 → Yes: Create a TDD plan
 → No: Standard task in standard plan
 
-See `/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/tdd.md` for TDD plan structure.
+See `D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/tdd.md` for TDD plan structure.
 
 ---
 
@@ -382,9 +382,9 @@ Output: Working dashboard component.
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/execute-plan.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/summary.md
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/checkpoints.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/execute-plan.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/summary.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/checkpoints.md
 </execution_context>
 
 <context>
@@ -540,7 +540,7 @@ user_setup:
 
 **Result:** Execute-plan generates `{phase}-USER-SETUP.md` with checklist for the user.
 
-See `/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/user-setup.md` for full schema and examples
+See `D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/user-setup.md` for full schema and examples
 
 ---
 
@@ -607,4 +607,4 @@ Task completion ≠ Goal achievement. A task "create chat component" can complet
 5. Gaps found → fix plans created → execute → re-verify
 6. All must_haves pass → phase complete
 
-See `/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/verify-phase.md` for verification logic.
+See `D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/verify-phase.md` for verification logic.

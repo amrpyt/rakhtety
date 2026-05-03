@@ -63,8 +63,8 @@ Output: Milestone archived (roadmap + requirements), PROJECT.md evolved, git tag
 <execution_context>
 **Load these files NOW (before proceeding):**
 
-- @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/complete-milestone.md (main workflow)
-- @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/milestone-archive.md (archive template)
+- @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/complete-milestone.md (main workflow)
+- @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/milestone-archive.md (archive template)
   </execution_context>
 
 <context>

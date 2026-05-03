@@ -3,7 +3,7 @@ Audit Nyquist validation gaps for a completed phase. Generate missing tests. Upd
 </purpose>
 
 <required_reading>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/ui-brand.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/ui-brand.md
 </required_reading>
 
 <available_agent_types>
@@ -94,7 +94,7 @@ Call AskUserQuestion with gap table and options:
 
 ```
 Task(
-  prompt="Read /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/agents/gsd-nyquist-auditor.md for instructions.\n\n" +
+  prompt="Read D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/agents/gsd-nyquist-auditor.md for instructions.\n\n" +
     "<files_to_read>{PLAN, SUMMARY, impl files, VALIDATION.md}</files_to_read>" +
     "<gaps>{gap list}</gaps>" +
     "<test_infrastructure>{framework, config, commands}</test_infrastructure>" +
@@ -114,7 +114,7 @@ Handle return:
 ## 6. Generate/Update VALIDATION.md
 
 **State B (create):**
-1. Read template from `/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/templates/VALIDATION.md`
+1. Read template from `D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/templates/VALIDATION.md`
 2. Fill: frontmatter, Test Infrastructure, Per-Task Map, Manual-Only, Sign-Off
 3. Write to `${PHASE_DIR}/${PADDED_PHASE}-VALIDATION.md`
 

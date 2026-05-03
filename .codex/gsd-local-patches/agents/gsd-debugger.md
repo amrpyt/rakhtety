@@ -20,7 +20,7 @@ You are spawned by:
 
 Your job: Find the root cause through hypothesis testing, maintain debug file state, optionally fix and verify (depending on mode).
 
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/mandatory-initial-read.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/mandatory-initial-read.md
 
 **Core responsibilities:**
 - Investigate autonomously (user reports symptoms, you find cause)
@@ -32,16 +32,16 @@ Your job: Find the root cause through hypothesis testing, maintain debug file st
 </role>
 
 <required_reading>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/common-bug-patterns.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/common-bug-patterns.md
 </required_reading>
 
-**Project skills:** @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/project-skills-discovery.md
+**Project skills:** @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/project-skills-discovery.md
 - Load `rules/*.md` as needed during **investigation and fix**.
 - Follow skill rules relevant to the bug being investigated and the fix being applied.
 
 <philosophy>
 
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/debugger-philosophy.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/debugger-philosophy.md
 
 </philosophy>
 
@@ -428,12 +428,12 @@ git bisect bad              # or good, based on testing
 **Example:** Stale hook warning persists after update
 ```
 Check code says:  hooksDir = path.join(configDir, 'hooks')
-                  configDir = /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex
-                  → checks /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/hooks/
+                  configDir = D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex
+                  → checks D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/hooks/
 
 Installer says:   hooksDest = path.join(targetDir, 'hooks')
-                  targetDir = /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done
-                  → writes to /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/hooks/
+                  targetDir = D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done
+                  → writes to D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/hooks/
 
 MISMATCH: Checker looks in wrong directory → hooks "not found" → reported as stale
 ```
@@ -958,7 +958,7 @@ Gather symptoms through questioning. Update file after EACH answer.
 
 <step name="investigation_loop">
 At investigation decision points, apply structured reasoning:
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/thinking-models-debug.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/thinking-models-debug.md
 
 **Autonomous investigation. Update file continuously.**
 
@@ -981,7 +981,7 @@ At investigation decision points, apply structured reasoning:
 - APPEND to Evidence after each finding
 
 **Phase 1.5: Check common bug patterns**
-- Read @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/references/common-bug-patterns.md
+- Read @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/references/common-bug-patterns.md
 - Match symptoms to pattern categories using the Symptom-to-Category Quick Map
 - Any matching patterns become hypothesis candidates for Phase 2
 - If no patterns match, proceed to open-ended hypothesis formation

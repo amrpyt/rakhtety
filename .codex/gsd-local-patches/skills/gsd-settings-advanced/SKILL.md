@@ -67,11 +67,11 @@ Use `$gsd-settings` for the common-case toggles (model profile, research/plan_ch
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/settings-advanced.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/settings-advanced.md
 </execution_context>
 
 <process>
-**Follow the settings-advanced workflow** from `@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/settings-advanced.md`.
+**Follow the settings-advanced workflow** from `@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/settings-advanced.md`.
 
 The workflow handles all logic including:
 1. Config file creation with defaults if missing (via `gsd-sdk query config-ensure-section`)

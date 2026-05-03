@@ -65,9 +65,9 @@ Before routing to the next step, scans all prior phases for incomplete work: pla
 </objective>
 
 <execution_context>
-@/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/next.md
+@D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/next.md
 </execution_context>
 
 <process>
-Execute the next workflow from @/home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/workflows/next.md end-to-end.
+Execute the next workflow from @D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/workflows/next.md end-to-end.
 </process>

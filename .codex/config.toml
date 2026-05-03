@@ -1,10 +1,8 @@
 # GSD Agent Configuration — managed by get-shit-done installer
 # GSD codex_hooks ownership: section
 
-approval_policy = "never"
-sandbox_mode = "workspace-write"
 [features]
-codex_hooks = false
+codex_hooks = true
 
 [agents.gsd-advisor-researcher]
 description = "Researches a single gray area decision and returns a structured comparison table with rationale. Spawned by discuss-phase advisor mode."
@@ -19,7 +17,7 @@ description = "Deeply analyzes codebase for a phase and returns structured assum
 config_file = "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/agents/gsd-assumptions-analyzer.toml"
 
 [agents.gsd-code-fixer]
-description = "Applies fixes to code review findings from REVIEW.md. Reads source files, applies intelligent fixes, and commits each fix atomically. Spawned by $gsd-code-review-fix."
+description = "Applies fixes to code review findings from REVIEW.md. Reads source files, applies intelligent fixes, and commits each fix atomically. Spawned by $gsd-code-review --fix."
 config_file = "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/agents/gsd-code-fixer.toml"
 
 [agents.gsd-code-reviewer]
@@ -138,5 +136,10 @@ config_file = "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/age
 description = "Verifies phase goal achievement through goal-backward analysis. Checks codebase delivers what phase promised, not just that tasks completed. Creates VERIFICATION.md report."
 config_file = "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/agents/gsd-verifier.toml"
 
-[sandbox_workspace_write]
-network_access = true
+
+# GSD Hooks
+[[hooks.SessionStart]]
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "\"C:/Program Files/nodejs/node.exe\" \"D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/hooks/gsd-check-update.js\""

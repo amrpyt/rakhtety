@@ -182,7 +182,7 @@ Task(
   prompt="You are the gsd-intel-updater agent. Your job is to analyze this codebase and write/update intelligence files in .planning/intel/.
 
 Project root: ${CWD}
-Prefer: gsd-sdk query <subcommand> (installed gsd-sdk on PATH). Legacy: node /home/amr/Coding/Tracking-sys-UsingVanilaCoding/.codex/get-shit-done/bin/gsd-tools.cjs
+Prefer: gsd-sdk query <subcommand> (installed gsd-sdk on PATH). Legacy: node D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/get-shit-done/bin/gsd-tools.cjs
 
 Instructions:
 1. Analyze the codebase structure, dependencies, APIs, and architecture
