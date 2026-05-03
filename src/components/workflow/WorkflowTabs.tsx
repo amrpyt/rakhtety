@@ -84,8 +84,6 @@ export function WorkflowTabs({
                     status: 'pending' as const,
                     assigned_to: null,
                     completed_at: null,
-                    fees: step.fees,
-                    profit: step.profit,
                     created_at: '',
                     updated_at: '',
                   }))
@@ -153,8 +151,6 @@ export function WorkflowTabs({
                     status: excavationPermitBlocked ? 'blocked' as const : 'pending' as const,
                     assigned_to: null,
                     completed_at: null,
-                    fees: step.fees,
-                    profit: step.profit,
                     created_at: '',
                     updated_at: '',
                   }))

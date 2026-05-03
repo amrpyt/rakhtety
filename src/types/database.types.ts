@@ -56,8 +56,8 @@ export interface WorkflowStep {
   status: StepStatus
   assigned_to: string | null
   completed_at: string | null
-  fees: number
-  profit: number
+  fees?: number
+  profit?: number
   created_at: string
   updated_at: string
 }

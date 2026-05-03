@@ -9,9 +9,9 @@ interface StepTotals {
 export function calculateTotalsFromSteps(steps: Pick<WorkflowStep, 'fees' | 'profit'>[]): StepTotals {
   return steps.reduce(
     (totals, step) => ({
-      total_cost: totals.total_cost + Number(step.fees) + Number(step.profit),
-      total_fees: totals.total_fees + Number(step.fees),
-      planned_profit: totals.planned_profit + Number(step.profit),
+      total_cost: totals.total_cost + Number(step.fees ?? 0) + Number(step.profit ?? 0),
+      total_fees: totals.total_fees + Number(step.fees ?? 0),
+      planned_profit: totals.planned_profit + Number(step.profit ?? 0),
     }),
     { total_cost: 0, total_fees: 0, planned_profit: 0 }
   )
