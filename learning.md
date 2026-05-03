@@ -150,3 +150,24 @@ This file records useful facts learned during implementation sessions so the nex
   - service restart proof
   - backup and restore proof
   - final go/no-go decision
+
+### 2026-05-03 17:52 +03:00 - Restart and backup proof
+
+- Restarted Frappe services on the server with Docker Compose:
+  `backend`, `frontend`, `queue-short`, `queue-long`, `scheduler`, and `websocket`.
+- After restart, local Frappe HTTP check returned `200`.
+- Cloudflare tunnel container stayed running during Frappe service restart.
+- Created Frappe backup with:
+  `bench --site frontend backup --with-files`.
+- Backup files were created under:
+  `/home/frappe/frappe-bench/sites/frontend/private/backups/`.
+- Latest backup files:
+  - `20260503_202146-frontend-database.sql.gz`
+  - `20260503_202146-frontend-site_config_backup.json`
+  - `20260503_202146-frontend-files.tar`
+  - `20260503_202146-frontend-private-files.tar`
+- Restore smoke test checked archive integrity:
+  - `gzip -t` passed for database backup.
+  - `tar -tf` passed for public file backup.
+  - `tar -tf` passed for private file backup.
+- Full restore drill was not done yet because the spike code is patched inside the running Frappe container. Production restore proof should wait until Rakhtety code is moved into a real Frappe custom app.

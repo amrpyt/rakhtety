@@ -27,15 +27,15 @@
 - [x] 4.1 Define frontend and backend URLs for the server deployment.
 - [x] 4.2 Configure reverse proxy routing for frontend and Frappe backend/admin.
 - [x] 4.3 Configure HTTPS or document the exact blocker if no domain is available.
-- [ ] 4.4 Verify the Frappe test site restarts cleanly after service restart or server reboot.
+- [x] 4.4 Verify the Frappe test site restarts cleanly after service restart or server reboot.
 - [x] 4.5 Verify logs are accessible for frontend, backend, workers, database, and proxy.
 
 ## 5. Backup Proof
 
-- [ ] 5.1 Create a database backup for the Frappe test site.
-- [ ] 5.2 Create a file backup for uploaded test documents.
-- [ ] 5.3 Run a restore smoke test using test data.
-- [ ] 5.4 Document backup location, command, retention assumption, and restore command.
+- [x] 5.1 Create a database backup for the Frappe test site.
+- [x] 5.2 Create a file backup for uploaded test documents.
+- [x] 5.3 Run a restore smoke test using test data.
+- [x] 5.4 Document backup location, command, retention assumption, and restore command.
 
 ## 6. Browser Verification
 
