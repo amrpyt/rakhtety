@@ -1,0 +1,207 @@
+name: ${COMPOSE_PROJECT_NAME:-rakhtety}
+
+x-frappe-image: &frappe_image
+  image: ${RAKHTETY_FRAPPE_IMAGE:?Set RAKHTETY_FRAPPE_IMAGE}
+  restart: unless-stopped
+  volumes:
+    - sites:/home/frappe/frappe-bench/sites
+    - logs:/home/frappe/frappe-bench/logs
+  networks:
+    - internal
+
+services:
+  traefik:
+    image: traefik:v3.3
+    restart: unless-stopped
+    command:
+      - --api.dashboard=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=rakhtety-public
+      - --certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL:?Set LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --log.level=INFO
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-letsencrypt:/letsencrypt
+    networks:
+      - public
+
+  mariadb:
+    image: mariadb:10.6
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-_site_db}
+      MYSQL_USER: ${MYSQL_USER:-frappe}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - internal
+
+  redis-cache:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    networks:
+      - internal
+
+  redis-queue:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    networks:
+      - internal
+
+  configurator:
+    <<: *frappe_image
+    restart: "no"
+    entrypoint:
+      - bash
+      - -lc
+    command:
+      - >
+        bench set-config -g db_host mariadb;
+        bench set-config -g redis_cache redis://redis-cache:6379;
+        bench set-config -g redis_queue redis://redis-queue:6379;
+        bench set-config -g redis_socketio redis://redis-queue:6379;
+        bench set-config -g socketio_port ${SOCKETIO_PORT:-9000};
+    depends_on:
+      - mariadb
+      - redis-cache
+      - redis-queue
+
+  create-site:
+    <<: *frappe_image
+    restart: "no"
+    entrypoint:
+      - bash
+      - -lc
+    command:
+      - >
+        wait-for-it -t 120 mariadb:3306;
+        wait-for-it -t 120 redis-cache:6379;
+        wait-for-it -t 120 redis-queue:6379;
+        bench new-site ${SITE_NAME:?Set SITE_NAME}
+        --mariadb-root-password ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD}
+        --admin-password ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
+        --install-app erpnext
+        --install-app rakhtety_frappe || true;
+        bench --site ${SITE_NAME:?Set SITE_NAME} migrate;
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+
+  backend:
+    <<: *frappe_image
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+
+  frontend:
+    <<: *frappe_image
+    command:
+      - nginx-entrypoint.sh
+    environment:
+      BACKEND: backend:8000
+      FRAPPE_SITE_NAME_HEADER: ${SITE_NAME:?Set SITE_NAME}
+      SOCKETIO: websocket:${SOCKETIO_PORT:-9000}
+      UPSTREAM_REAL_IP_ADDRESS: ${UPSTREAM_REAL_IP_ADDRESS:-127.0.0.1}
+      UPSTREAM_REAL_IP_HEADER: ${UPSTREAM_REAL_IP_HEADER:-X-Forwarded-For}
+      UPSTREAM_REAL_IP_RECURSIVE: ${UPSTREAM_REAL_IP_RECURSIVE:-off}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=rakhtety-public
+      - traefik.http.routers.frappe.rule=Host(`${FRAPPE_HOSTNAME:?Set FRAPPE_HOSTNAME}`)
+      - traefik.http.routers.frappe.entrypoints=websecure
+      - traefik.http.routers.frappe.tls.certresolver=letsencrypt
+      - traefik.http.services.frappe.loadbalancer.server.port=8080
+    depends_on:
+      backend:
+        condition: service_started
+      websocket:
+        condition: service_started
+    networks:
+      - internal
+      - public
+
+  websocket:
+    <<: *frappe_image
+    command:
+      - node
+      - /home/frappe/frappe-bench/apps/frappe/socketio.js
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+
+  scheduler:
+    <<: *frappe_image
+    command:
+      - bench
+      - schedule
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+
+  queue-short:
+    <<: *frappe_image
+    command:
+      - bench
+      - worker
+      - --queue
+      - short,default
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+
+  queue-long:
+    <<: *frappe_image
+    command:
+      - bench
+      - worker
+      - --queue
+      - long,default,short
+    depends_on:
+      configurator:
+        condition: service_completed_successfully
+
+  next:
+    image: ${RAKHTETY_NEXT_IMAGE:?Set RAKHTETY_NEXT_IMAGE}
+    restart: unless-stopped
+    environment:
+      FRAPPE_BASE_URL: https://${FRAPPE_HOSTNAME:?Set FRAPPE_HOSTNAME}
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=rakhtety-public
+      - traefik.http.routers.next.rule=Host(`${NEXT_HOSTNAME:?Set NEXT_HOSTNAME}`)
+      - traefik.http.routers.next.entrypoints=websecure
+      - traefik.http.routers.next.tls.certresolver=letsencrypt
+      - traefik.http.services.next.loadbalancer.server.port=3000
+    networks:
+      - public
+
+networks:
+  public:
+    name: rakhtety-public
+  internal:
+    name: rakhtety-internal
+    internal: true
+
+volumes:
+  db-data:
+  sites:
+  logs:
+  traefik-letsencrypt:

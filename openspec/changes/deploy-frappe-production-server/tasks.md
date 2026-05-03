@@ -1,17 +1,17 @@
 ## 1. Server Readiness
 
 - [ ] 1.1 Inspect server OS, Docker, Compose, memory, disk, firewall, ports, and existing containers.
-- [ ] 1.2 Record server findings without secrets in `server-readiness.md`.
+- [x] 1.2 Record server findings without secrets in `server-readiness.md`.
 - [ ] 1.3 Choose the production hostname and verify DNS points to the server IP.
 - [ ] 1.4 Verify ports `80` and `443` are reachable from the public internet.
 
 ## 2. Deployment Configuration
 
-- [ ] 2.1 Create Git-tracked production compose and Traefik configuration templates.
-- [ ] 2.2 Create a server-only `.env` template with secret placeholders and document required values.
-- [ ] 2.3 Configure Traefik with Docker provider, `exposedByDefault=false`, HTTP-to-HTTPS redirect, and Let's Encrypt storage.
-- [ ] 2.4 Configure service labels so only the intended frontend/backend routes are public.
-- [ ] 2.5 Confirm no database, Redis, worker, or internal Frappe ports are exposed publicly.
+- [x] 2.1 Create Git-tracked production compose and Traefik configuration templates.
+- [x] 2.2 Create a server-only `.env` template with secret placeholders and document required values.
+- [x] 2.3 Configure Traefik with Docker provider, `exposedByDefault=false`, HTTP-to-HTTPS redirect, and Let's Encrypt storage.
+- [x] 2.4 Configure service labels so only the intended frontend/backend routes are public.
+- [x] 2.5 Confirm no database, Redis, worker, or internal Frappe ports are exposed publicly.
 
 ## 3. Image and App Deployment
 
@@ -41,6 +41,6 @@
 
 - [ ] 6.1 Document rollback commands for previous image tag and pre-migration backup restore.
 - [ ] 6.2 Test rollback logic on a non-production smoke target when possible.
-- [ ] 6.3 Update `learning.md` with deployment discoveries, errors, and final server facts.
+- [x] 6.3 Update `learning.md` with deployment discoveries, errors, and final server facts.
 - [ ] 6.4 Run `openspec validate deploy-frappe-production-server --strict`.
 - [ ] 6.5 Commit the completed deployment artifacts after checks pass.

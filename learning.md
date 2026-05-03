@@ -262,3 +262,28 @@ This file records useful facts learned during implementation sessions so the nex
 - Restore into clean target `rakhtety-restore.localhost` passed.
 - Restored site could read `Local Client`, `Device License`, and `Completed` status.
 - Decision: custom app path is ready for server deployment testing, but not real production data migration yet.
+
+### 2026-05-03 - Production server deployment start
+
+- Created OpenSpec change:
+  `deploy-frappe-production-server`.
+- Official docs checked before planning:
+  - Frappe Docker production path uses Compose plus production overrides for database, Redis, and HTTPS.
+  - Traefik Docker provider should use `exposedByDefault=false` so only explicitly labeled services become public.
+  - Traefik Let's Encrypt HTTP-01 needs port `80` reachable by Let's Encrypt; TLS-ALPN-01 needs port `443`.
+- DNS finding:
+  - `rakhtety.coderaai.com` resolves to `156.67.25.212`, not the target server `57.131.19.110`.
+  - `frappe-rakhtety.coderaai.com` resolves to `156.67.25.212`, not the target server `57.131.19.110`.
+- Network finding:
+  - Port `22` on `57.131.19.110` is reachable.
+  - Ports `80` and `443` did not respond from this machine.
+- SSH finding:
+  - Server rejects password-style login and requires public-key auth.
+  - Tried `amr`, `ubuntu`, and `root`.
+  - Tried local keys `vps_key`, `id_amr`, and `id_ed25519`.
+  - None were accepted.
+- Practical blocker:
+  - Need an authorized SSH key before real server deployment can continue.
+- Local prep completed while blocked:
+  - Added production Docker/Traefik templates under `frappe_apps/docker/production/`.
+  - Kept secrets out of Git by using `.env.example` only.
