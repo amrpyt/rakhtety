@@ -1,0 +1,39 @@
+{
+  "actions": [],
+  "allow_import": 1,
+  "allow_rename": 1,
+  "autoname": "format:RKFE-{#####}",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "workflow",
+    "workflow_step",
+    "event_type",
+    "amount",
+    "payment_method",
+    "reference_number",
+    "notes",
+    "created_by_employee"
+  ],
+  "fields": [
+    {"fieldname": "workflow", "fieldtype": "Link", "in_list_view": 1, "in_standard_filter": 1, "label": "Workflow", "options": "Rakhtety Workflow", "reqd": 1, "search_index": 1},
+    {"fieldname": "workflow_step", "fieldtype": "Link", "in_standard_filter": 1, "label": "Workflow Step", "options": "Rakhtety Workflow Step", "search_index": 1},
+    {"default": "payment", "fieldname": "event_type", "fieldtype": "Select", "in_list_view": 1, "in_standard_filter": 1, "label": "Event Type", "options": "payment\nrefund\nadjustment", "reqd": 1},
+    {"fieldname": "amount", "fieldtype": "Currency", "in_list_view": 1, "label": "Amount", "reqd": 1},
+    {"fieldname": "payment_method", "fieldtype": "Data", "label": "Payment Method"},
+    {"fieldname": "reference_number", "fieldtype": "Data", "label": "Reference Number"},
+    {"fieldname": "notes", "fieldtype": "Small Text", "label": "Notes"},
+    {"fieldname": "created_by_employee", "fieldtype": "Link", "in_standard_filter": 1, "label": "Created By", "options": "Rakhtety Employee", "search_index": 1}
+  ],
+  "module": "Rakhtety",
+  "name": "Rakhtety Financial Event",
+  "permissions": [
+    {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
+    {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Rakhtety Admin", "share": 1, "write": 1},
+    {"create": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Rakhtety Manager", "share": 1, "write": 1},
+    {"create": 1, "email": 1, "print": 1, "read": 1, "role": "Rakhtety Employee"}
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

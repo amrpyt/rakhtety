@@ -13,7 +13,6 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { roleLabels } from '@/config/auth.config'
 import { canAccessRoute } from '@/lib/auth/permissions'
 import { useAuth } from '@/hooks/auth/useAuth'
 
@@ -65,8 +64,7 @@ export function Sidebar() {
       .join('')
       .slice(0, 2) || ''
 
-  const roleLabel = user?.role ? roleLabels[user.role]?.ar || user.role : ''
-  const profileSubtitle = user?.position?.trim() || roleLabel
+  const profileSubtitle = user?.position?.trim() || 'بدون مسمى وظيفي'
 
   return (
     <aside

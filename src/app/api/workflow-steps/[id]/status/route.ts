@@ -9,7 +9,7 @@ type Params = { params: Promise<{ id: string }> }
 export async function PATCH(request: NextRequest, { params }: Params) {
   const session = readServerSession(request)
   if (!session?.user) return NextResponse.json({ error: 'Login is required' }, { status: 401 })
-  if (!can(session.user.role, 'manageWorkflows')) return NextResponse.json({ error: 'Missing permission' }, { status: 403 })
+  if (!can(session.user.role, 'updateWorkflowSteps')) return NextResponse.json({ error: 'Missing permission' }, { status: 403 })
 
   try {
     const { id } = await params

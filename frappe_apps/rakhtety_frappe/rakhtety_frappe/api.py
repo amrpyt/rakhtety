@@ -75,6 +75,16 @@ def get_client_detail(client):
 
 
 @frappe.whitelist(methods=["POST"])
+def update_client(client, data):
+    return services.update_client(client, json.loads(data))
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_client(client):
+    return services.delete_client(client)
+
+
+@frappe.whitelist(methods=["POST"])
 def list_client_workflows(client):
     return services.list_client_workflows(client)
 
@@ -100,13 +110,53 @@ def list_employees():
 
 
 @frappe.whitelist(methods=["POST"])
+def create_employee(data):
+    return services.create_employee(json.loads(data))
+
+
+@frappe.whitelist(methods=["POST"])
+def update_employee(employee, data):
+    return services.update_employee(employee, json.loads(data))
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_employee(employee):
+    return services.delete_employee(employee)
+
+
+@frappe.whitelist(methods=["POST"])
 def upload_workflow_document(data):
     return services.upload_workflow_document(json.loads(data))
 
 
 @frappe.whitelist(methods=["POST"])
+def get_step_document_status(step):
+    return services.get_step_document_status(step)
+
+
+@frappe.whitelist(methods=["POST"])
+def get_workflow_document(document):
+    return services.get_workflow_document(document)
+
+
+@frappe.whitelist(methods=["POST"])
+def upload_client_intake_document(data):
+    return services.upload_client_intake_document(json.loads(data))
+
+
+@frappe.whitelist(methods=["POST"])
+def get_client_intake_document(client, document):
+    return services.get_client_intake_document(client, document)
+
+
+@frappe.whitelist(methods=["POST"])
 def workflow_financial_summary(workflow):
     return services.workflow_financial_summary(workflow)
+
+
+@frappe.whitelist(methods=["POST"])
+def record_payment(data):
+    return services.record_payment(json.loads(data))
 
 
 @frappe.whitelist(methods=["POST"])

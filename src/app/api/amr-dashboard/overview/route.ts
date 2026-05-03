@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readServerSession } from '@/lib/auth/server-session'
-import { getPrivilegedFrappeAdapterForRequest } from '@/lib/frappe/adapter'
+import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 import { buildAmrDashboardOverview } from '@/lib/amr-dashboard/overview'
 
 export async function GET(request: NextRequest) {
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   if (!session?.user) return NextResponse.json({ error: 'Login is required' }, { status: 401 })
 
   try {
-    const adapter = await getPrivilegedFrappeAdapterForRequest(request)
+    const adapter = getFrappeAdapterForRequest(request)
     const [summary, clients, workflows, employees] = await Promise.all([
       adapter.dashboardSummary(),
       adapter.listClients(),

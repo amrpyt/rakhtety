@@ -3,7 +3,7 @@ import { can } from '@/lib/auth/permissions'
 import { readServerSession } from '@/lib/auth/server-session'
 import { getFrappeAdapterForRequest } from '@/lib/frappe/adapter'
 
-type Params = { params: Promise<{ id: string; documentId: string }> }
+type Params = { params: Promise<{ id: string }> }
 
 export async function GET(request: NextRequest, { params }: Params) {
   const session = readServerSession(request)
@@ -11,13 +11,11 @@ export async function GET(request: NextRequest, { params }: Params) {
   if (!can(session.user.role, 'readClients')) return NextResponse.json({ error: 'Missing permission' }, { status: 403 })
 
   try {
-    const { id, documentId } = await params
-    const document = await getFrappeAdapterForRequest(request).getClientIntakeDocument(id, documentId)
-    const download = request.nextUrl.searchParams.get('download') === '1'
-    const signedUrl = `/api/clients/${encodeURIComponent(id)}/intake-documents/${encodeURIComponent(documentId)}/file${download ? '?download=1' : ''}`
-    return NextResponse.json({ signedUrl, document })
+    const { id } = await params
+    const status = await getFrappeAdapterForRequest(request).getStepDocumentStatus(id)
+    return NextResponse.json({ status })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to load intake document'
+    const message = error instanceof Error ? error.message : 'Failed to load step documents'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

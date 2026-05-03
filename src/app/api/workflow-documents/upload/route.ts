@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'أرقام المحاسبة يجب أن تكون أرقاماً موجبة أو صفر.' }, { status: 400 })
     }
 
-    const document = await getFrappeAdapterForRequest(request).uploadWorkflowDocument({
+    const document = await getFrappeAdapterForRequest(request).uploadWorkflowDocumentFile(file, {
       workflow_id: String(formData.get('workflow_id') || ''),
       workflow_step_id: String(formData.get('workflow_step_id') || ''),
       document_type: String(formData.get('document_type') || ''),

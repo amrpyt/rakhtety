@@ -12,7 +12,7 @@ export interface AmrDashboardOverview {
   user: AuthUser
   source: {
     backend: 'Frappe'
-    mode: 'privileged-server-read'
+    mode: 'user-session-read'
     baseUrlConfigured: boolean
   }
   software: {
@@ -79,7 +79,7 @@ export function buildAmrDashboardOverview(input: BuildAmrOverviewInput): AmrDash
     user: input.user,
     source: {
       backend: 'Frappe',
-      mode: 'privileged-server-read',
+      mode: 'user-session-read',
       baseUrlConfigured: input.baseUrlConfigured,
     },
     software: {
@@ -94,16 +94,6 @@ export function buildAmrDashboardOverview(input: BuildAmrOverviewInput): AmrDash
           name: 'FRAPPE_BASE_URL',
           configured: input.baseUrlConfigured,
           purpose: 'عنوان Frappe backend',
-        },
-        {
-          name: 'FRAPPE_USERNAME',
-          configured: Boolean(process.env.FRAPPE_USERNAME),
-          purpose: 'يوزر السيرفر اللي بيقرأ من Frappe',
-        },
-        {
-          name: 'FRAPPE_PASSWORD',
-          configured: Boolean(process.env.FRAPPE_PASSWORD),
-          purpose: 'باسورد يوزر السيرفر',
         },
       ],
       apiMethods: [

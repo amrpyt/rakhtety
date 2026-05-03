@@ -140,6 +140,8 @@ export interface DashboardAnalyticsSummary {
   active_files: number
   completed_this_month: number
   pending_debt: number
+  total_paid?: number
+  realized_profit?: number
   bottleneck_count: number
   bottlenecks: DashboardBottleneck[]
   employee_workloads: EmployeeWorkloadSummary[]

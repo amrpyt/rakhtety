@@ -172,8 +172,8 @@ export default function AmrDashboardPage() {
             </div>
             <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-4 shadow-sm">
               <p className="text-xs font-black text-[var(--color-text-muted)]">قراءة السيرفر</p>
-              <p className="mt-2 text-lg font-black">Privileged Frappe</p>
-              <p className="mt-1 text-xs text-[var(--color-text-muted)]">يعني الصفحة بتسأل السيرفر، والسيرفر يسأل Frappe.</p>
+              <p className="mt-2 text-lg font-black">User Session Frappe</p>
+              <p className="mt-1 text-xs text-[var(--color-text-muted)]">يعني الصفحة بتقرأ بنفس صلاحيات المستخدم الحالي.</p>
             </div>
             <div className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white p-4 shadow-sm">
               <p className="text-xs font-black text-[var(--color-text-muted)]">آخر تحديث</p>

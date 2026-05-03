@@ -39,24 +39,28 @@ export const documentService = {
   },
 
   async getStepDocumentStatus(stepId: string): Promise<StepDocumentStatus> {
-    void stepId
-    return {
-      documents: [],
-      requirements: [],
-      missingRequired: [],
-      canComplete: true,
-    }
+    const response = await fetch(`/api/workflow-steps/${encodeURIComponent(stepId)}/documents`)
+    const payload = await response.json()
+    if (!response.ok) throw new Error(payload.error || 'تعذر تحميل مستندات الخطوة')
+    return payload.status
   },
 
   async createDocumentPreviewUrl(documentId: string): Promise<string> {
-    return `/api/workflow-documents/${encodeURIComponent(documentId)}`
+    const response = await fetch(`/api/workflow-documents/${encodeURIComponent(documentId)}/signed-url`)
+    const payload = await response.json()
+    if (!response.ok) throw new Error(payload.error || 'تعذر فتح المستند')
+    return payload.signedUrl
   },
 
   async createDocumentDownloadUrl(documentId: string): Promise<string> {
-    return `/api/workflow-documents/${encodeURIComponent(documentId)}`
+    const response = await fetch(`/api/workflow-documents/${encodeURIComponent(documentId)}/signed-url?download=1`)
+    const payload = await response.json()
+    if (!response.ok) throw new Error(payload.error || 'تعذر تحميل المستند')
+    return payload.signedUrl
   },
 
   async assertStepCanComplete(stepId: string): Promise<void> {
-    void stepId
+    const status = await this.getStepDocumentStatus(stepId)
+    if (!status.canComplete) throw new Error('يجب رفع المستند المطلوب قبل إكمال الخطوة')
   },
 }

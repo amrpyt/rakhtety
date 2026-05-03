@@ -1,5 +1,5 @@
 import { directoryClient } from '@/lib/client-data/directory-client'
-import type { Employee, EmployeeWithProfile } from '@/types/database.types'
+import type { Employee, EmployeeWithProfile, WorkflowOverviewItem } from '@/types/database.types'
 import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/types/directory.types'
 
 export type { CreateEmployeeDto, UpdateEmployeeDto }
@@ -42,7 +42,16 @@ export const employeeService = {
   },
 
   async getWorkflowStats(userId: string): Promise<{ active: number; completed: number; blocked: number }> {
-    void userId
-    return { active: 0, completed: 0, blocked: 0 }
+    const response = await fetch('/api/workflows/overview')
+    const payload = await response.json()
+    if (!response.ok) throw new Error(payload.error || 'تعذر تحميل إحصائيات الموظف')
+
+    const workflows: WorkflowOverviewItem[] = Array.isArray(payload.workflows) ? payload.workflows : []
+    const assigned = workflows.filter((workflow) => workflow.assigned_employee_name === userId)
+    return {
+      active: assigned.filter((workflow) => workflow.workflow_status !== 'completed').length,
+      completed: assigned.filter((workflow) => workflow.workflow_status === 'completed').length,
+      blocked: assigned.filter((workflow) => workflow.workflow_status === 'blocked' || workflow.is_stuck).length,
+    }
   },
 }

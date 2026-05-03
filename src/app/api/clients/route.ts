@@ -31,13 +31,24 @@ export async function POST(request: NextRequest) {
   if (permission) return permission
 
   try {
-    const { body } = await parseClientCreateRequest(request)
+    const { body, intakeFiles } = await parseClientCreateRequest(request)
     const parsed = clientCreateSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message || 'بيانات العميل غير صالحة' }, { status: 400 })
     }
 
-    const client = await getFrappeAdapterForRequest(request).createClient(parsed.data)
+    const adapter = getFrappeAdapterForRequest(request)
+    const client = await adapter.createClient(parsed.data)
+    for (const [documentType, file] of intakeFiles) {
+      await adapter.uploadClientIntakeDocumentFile(file, {
+        client_id: client.id,
+        document_type: documentType,
+        label: documentType,
+        file_name: file.name,
+        mime_type: file.type || null,
+        file_size: file.size,
+      })
+    }
     return NextResponse.json({ client }, { status: 201 })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create client'
