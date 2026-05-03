@@ -252,6 +252,21 @@ def _iso(value):
     return value.isoformat() if hasattr(value, "isoformat") else str(value or "")
 
 
+def _optional_amount(value):
+    if value in (None, ""):
+        return None
+
+    try:
+        amount = float(value)
+    except (TypeError, ValueError):
+        frappe.throw(_("Invalid accounting amount"))
+
+    if amount < 0:
+        frappe.throw(_("Accounting amount cannot be negative"))
+
+    return amount
+
+
 def _profile(employee_name):
     if not employee_name:
         return None
@@ -455,7 +470,7 @@ def list_employees():
         employees.append({
             "id": doc.name,
             "user_id": doc.user or doc.name,
-            "position": doc.role_label,
+            "position": getattr(doc, "position", None) or doc.role_label,
             "is_active": True,
             "created_at": _iso(doc.creation),
             "updated_at": _iso(doc.modified),
@@ -472,6 +487,15 @@ def upload_workflow_document(data):
     )
     doc = frappe.get_doc("Rakhtety Document", document_name)
     step = frappe.get_doc("Rakhtety Workflow Step", doc.workflow_step)
+    government_fees = _optional_amount(data.get("government_fees"))
+    office_profit = _optional_amount(data.get("office_profit"))
+    if government_fees is not None:
+        step.government_fees = government_fees
+    if office_profit is not None:
+        step.office_profit = office_profit
+    if government_fees is not None or office_profit is not None:
+        step.save()
+
     return {
         "id": doc.name,
         "workflow_id": step.workflow,

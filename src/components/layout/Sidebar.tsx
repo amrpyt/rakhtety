@@ -66,6 +66,7 @@ export function Sidebar() {
       .slice(0, 2) || ''
 
   const roleLabel = user?.role ? roleLabels[user.role]?.ar || user.role : ''
+  const profileSubtitle = user?.position?.trim() || roleLabel
 
   return (
     <aside
@@ -131,7 +132,7 @@ export function Sidebar() {
           </div>
           <div className="min-w-0 flex-1">
             <div className="truncate text-xs font-semibold">{user?.full_name || 'مستخدم'}</div>
-            <div className="text-[10px] text-white/50">{roleLabel}</div>
+            <div className="truncate text-[10px] text-white/50">{profileSubtitle}</div>
           </div>
         </div>
         <button

@@ -28,6 +28,7 @@ describe('role permissions', () => {
 
   it('allows employee work actions but blocks management and dangerous actions', () => {
     expect(can('employee', 'readClients')).toBe(true)
+    expect(can('employee', 'manageClients')).toBe(true)
     expect(can('employee', 'updateWorkflowSteps')).toBe(true)
     expect(can('employee', 'uploadWorkflowDocuments')).toBe(true)
     expect(can('employee', 'recordPayments')).toBe(true)

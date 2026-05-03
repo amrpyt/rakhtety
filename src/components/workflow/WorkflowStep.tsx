@@ -244,7 +244,7 @@ export function WorkflowStep({
         )}
 
         {workflowId && !id.startsWith('placeholder-') && isExpanded && status === 'in_progress' && (
-          <DocumentUploadPanel workflowId={workflowId} stepId={id} disabled={isLocked} />
+          <DocumentUploadPanel workflowId={workflowId} stepId={id} fees={fees} profit={profit} disabled={isLocked} />
         )}
       </div>
     </div>

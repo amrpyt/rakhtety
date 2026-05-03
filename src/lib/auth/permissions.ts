@@ -38,7 +38,7 @@ export const rolePermissions: PermissionMatrix = {
   manager: fullAccess,
   employee: {
     readClients: true,
-    manageClients: false,
+    manageClients: true,
     manageWorkflows: false,
     updateWorkflowSteps: true,
     uploadWorkflowDocuments: true,

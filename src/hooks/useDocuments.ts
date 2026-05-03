@@ -6,7 +6,13 @@ interface UseDocumentsReturn {
   loading: boolean
   error: string | null
   refresh: () => Promise<void>
-  uploadDocument: (input: { file: File; document_type: string; label: string }) => Promise<void>
+  uploadDocument: (input: {
+    file: File
+    document_type: string
+    label: string
+    government_fees?: number
+    office_profit?: number
+  }) => Promise<void>
   getDocumentDownloadUrl: (documentId: string) => Promise<string>
 }
 
@@ -33,7 +39,13 @@ export function useDocuments(workflowId?: string, stepId?: string): UseDocuments
   }, [stepId])
 
   const uploadDocument = useCallback(
-    async (input: { file: File; document_type: string; label: string }) => {
+    async (input: {
+      file: File
+      document_type: string
+      label: string
+      government_fees?: number
+      office_profit?: number
+    }) => {
       if (!workflowId || !stepId) return
 
       setLoading(true)
@@ -45,6 +57,8 @@ export function useDocuments(workflowId?: string, stepId?: string): UseDocuments
           document_type: input.document_type,
           label: input.label,
           file: input.file,
+          government_fees: input.government_fees,
+          office_profit: input.office_profit,
         })
         await refresh()
       } catch (err) {

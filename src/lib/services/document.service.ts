@@ -6,6 +6,8 @@ export interface UploadWorkflowDocumentInput {
   document_type: string
   label: string
   file: File
+  government_fees?: number
+  office_profit?: number
   uploaded_by?: string | null
 }
 
@@ -24,6 +26,8 @@ export const documentService = {
     formData.append('document_type', input.document_type)
     formData.append('label', input.label)
     formData.append('file', input.file)
+    if (input.government_fees !== undefined) formData.append('government_fees', String(input.government_fees))
+    if (input.office_profit !== undefined) formData.append('office_profit', String(input.office_profit))
 
     const response = await fetch('/api/workflow-documents/upload', {
       method: 'POST',

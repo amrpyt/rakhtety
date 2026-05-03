@@ -100,8 +100,14 @@ export const paymentSchema = z.object({
   notes: optionalText.nullish(),
 })
 
+const accountingAmount = z
+  .number({ message: 'المبلغ يجب أن يكون رقماً' })
+  .min(0, 'المبلغ لا يمكن أن يكون سالباً')
+
 export const documentUploadSchema = z.object({
   document_type: requiredText('نوع المستند مطلوب'),
+  government_fees: accountingAmount,
+  office_profit: accountingAmount,
   file: z
     .instanceof(File, { message: 'الملف مطلوب' })
     .refine((file) => file.size > 0, 'الملف مطلوب')

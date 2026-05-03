@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/Button'
-import { FormGroup, Label, Select } from '@/components/ui/Form'
+import { FormGroup, Input, Label, Select } from '@/components/ui/Form'
 import { useDocuments } from '@/hooks/useDocuments'
 import { documentService } from '@/lib/services/document.service'
 import { documentUploadSchema, type DocumentUploadFormData } from '@/lib/validation/schemas'
@@ -14,10 +14,12 @@ import type { WorkflowDocument } from '@/types/database.types'
 interface DocumentUploadPanelProps {
   workflowId: string
   stepId: string
+  fees?: number
+  profit?: number
   disabled?: boolean
 }
 
-export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: DocumentUploadPanelProps) {
+export function DocumentUploadPanel({ workflowId, stepId, fees = 0, profit = 0, disabled = false }: DocumentUploadPanelProps) {
   const { status, loading, error, uploadDocument, getDocumentDownloadUrl } = useDocuments(workflowId, stepId)
   const [openingDocumentId, setOpeningDocumentId] = useState<string | null>(null)
   const [previewDocument, setPreviewDocument] = useState<{
@@ -46,6 +48,8 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
     resolver: zodResolver(documentUploadSchema),
     defaultValues: {
       document_type: options[0]?.value || 'general_document',
+      government_fees: fees,
+      office_profit: profit,
     },
   })
 
@@ -56,9 +60,15 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
       file: data.file,
       document_type: data.document_type,
       label: documentLabel,
+      government_fees: data.government_fees,
+      office_profit: data.office_profit,
     })
 
-    reset({ document_type: options[0]?.value || 'general_document' })
+    reset({
+      document_type: options[0]?.value || 'general_document',
+      government_fees: data.government_fees,
+      office_profit: data.office_profit,
+    })
   }
 
   const handleOpenDocument = async (documentId: string) => {
@@ -164,7 +174,7 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
         </ul>
       ) : null}
 
-      <form className="grid grid-cols-1 gap-2 rounded-[var(--radius-lg)] bg-white/64 p-3 md:grid-cols-[1fr_1fr_auto]" onSubmit={handleSubmit(handleUpload)} noValidate>
+      <form className="grid grid-cols-1 gap-2 rounded-[var(--radius-lg)] bg-white/64 p-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto]" onSubmit={handleSubmit(handleUpload)} noValidate>
         <FormGroup>
           <Label htmlFor={`document-type-${stepId}`}>نوع المستند</Label>
           <Select
@@ -195,6 +205,34 @@ export function DocumentUploadPanel({ workflowId, stepId, disabled = false }: Do
           />
           <p className="mt-1 text-xs text-[var(--color-text-muted)]">المسموح: PDF و JPG و PNG حتى 10 ميجابايت.</p>
           {errors.file?.message && <p className="text-xs text-[var(--color-error)]">{errors.file.message}</p>}
+        </FormGroup>
+
+        <FormGroup>
+          <Label htmlFor={`document-government-fees-${stepId}`}>تكلفة الخطوة</Label>
+          <Input
+            id={`document-government-fees-${stepId}`}
+            type="number"
+            min="0"
+            step="0.01"
+            dir="ltr"
+            disabled={disabled || loading}
+            error={errors.government_fees?.message}
+            {...register('government_fees', { valueAsNumber: true })}
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <Label htmlFor={`document-office-profit-${stepId}`}>أتعاب المكتب</Label>
+          <Input
+            id={`document-office-profit-${stepId}`}
+            type="number"
+            min="0"
+            step="0.01"
+            dir="ltr"
+            disabled={disabled || loading}
+            error={errors.office_profit?.message}
+            {...register('office_profit', { valueAsNumber: true })}
+          />
         </FormGroup>
 
         <div className="flex items-end">

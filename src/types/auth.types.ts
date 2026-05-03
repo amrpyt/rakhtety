@@ -4,6 +4,7 @@ export interface AuthUser {
   role: import('./database.types').UserRole
   full_name: string
   phone?: string
+  position?: string | null
 }
 
 export interface AuthSession {

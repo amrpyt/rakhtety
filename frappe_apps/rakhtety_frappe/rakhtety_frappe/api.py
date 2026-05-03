@@ -36,6 +36,12 @@ def current_user():
         frappe.throw("Not logged in", frappe.PermissionError)
 
     full_name = frappe.db.get_value("User", user, "full_name") or ""
+    employee_name = frappe.db.get_value("Rakhtety Employee", {"user": user}, "name")
+    position = None
+    if employee_name:
+        employee_doc = frappe.get_doc("Rakhtety Employee", employee_name)
+        position = getattr(employee_doc, "position", None) or getattr(employee_doc, "role_label", None)
+
     roles = set(frappe.get_roles(user))
     if {"Administrator", "System Manager", "Rakhtety Admin"} & roles:
         role = "admin"
@@ -49,6 +55,7 @@ def current_user():
         "email": user,
         "full_name": full_name,
         "role": role,
+        "position": position,
     }
 
 
