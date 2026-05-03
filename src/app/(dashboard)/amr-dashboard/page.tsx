@@ -2,7 +2,20 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, Banknote, Database, FileText, GitBranch, RefreshCw, Users } from 'lucide-react'
+import {
+  AlertTriangle,
+  Banknote,
+  CheckCircle2,
+  Code2,
+  Database,
+  FileJson,
+  FileText,
+  GitBranch,
+  RefreshCw,
+  Server,
+  Settings2,
+  Users,
+} from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import type { AmrDashboardOverview } from '@/lib/amr-dashboard/overview'
@@ -151,6 +164,103 @@ export default function AmrDashboardPage() {
                 </div>
               )
             })}
+          </div>
+
+          <div className="mb-5 grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+            <section className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white shadow-sm">
+              <div className="border-b border-[var(--color-divider)] p-4">
+                <div className="flex items-center gap-2">
+                  <Code2 className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
+                  <h2 className="text-base font-black">تفاصيل السوفت وير</h2>
+                </div>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">الحاجات اللي بتقول التطبيق مبني بإيه وشغال إزاي.</p>
+              </div>
+              <div className="grid gap-3 p-4 sm:grid-cols-2">
+                {[
+                  ['App', overview.software.appName],
+                  ['Version', overview.software.version],
+                  ['Package manager', overview.software.packageManager],
+                  ['Next.js', overview.software.nextVersion],
+                  ['React', overview.software.reactVersion],
+                  ['NODE_ENV', overview.software.nodeEnv],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-[var(--radius-lg)] border border-[var(--color-border)] p-3">
+                    <p className="text-xs font-black text-[var(--color-text-muted)]">{label}</p>
+                    <p className="mt-1 break-words font-mono text-sm font-bold text-[var(--color-text)]">{value}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white shadow-sm">
+              <div className="border-b border-[var(--color-divider)] p-4">
+                <div className="flex items-center gap-2">
+                  <Server className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
+                  <h2 className="text-base font-black">صحة الباك إند</h2>
+                </div>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">فحوصات بسيطة: هل الداتا وصلت؟ هل الإعدادات موجودة؟</p>
+              </div>
+              <div className="grid gap-3 p-4 md:grid-cols-2">
+                {overview.software.healthChecks.map((check) => (
+                  <div key={check.label} className="rounded-[var(--radius-lg)] border border-[var(--color-border)] p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-black">{check.label}</p>
+                      <Badge variant={check.status === 'pass' ? 'success' : 'warning'}>
+                        {check.status === 'pass' ? 'PASS' : 'WARN'}
+                      </Badge>
+                    </div>
+                    <p className="mt-2 font-mono text-xs text-[var(--color-text-muted)]">{check.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <div className="mb-5 grid gap-5 xl:grid-cols-2">
+            <section className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white shadow-sm">
+              <div className="border-b border-[var(--color-divider)] p-4">
+                <div className="flex items-center gap-2">
+                  <FileJson className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
+                  <h2 className="text-base font-black">Frappe API methods</h2>
+                </div>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">دي أسماء الدوال اللي Next.js بيناديها في Frappe.</p>
+              </div>
+              <div className="divide-y divide-[var(--color-divider)]">
+                {overview.software.apiMethods.map((method) => (
+                  <div key={method.name} className="p-4">
+                    <p className="break-words font-mono text-sm font-black text-[var(--color-text)]">{method.name}</p>
+                    <p className="mt-1 text-xs text-[var(--color-text-muted)]">{method.purpose}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-white shadow-sm">
+              <div className="border-b border-[var(--color-divider)] p-4">
+                <div className="flex items-center gap-2">
+                  <Settings2 className="h-4 w-4 text-[var(--color-primary)]" aria-hidden="true" />
+                  <h2 className="text-base font-black">Environment</h2>
+                </div>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">مش بنعرض الأسرار نفسها، بس بنقول موجودة ولا لأ.</p>
+              </div>
+              <div className="divide-y divide-[var(--color-divider)]">
+                {overview.software.env.map((item) => (
+                  <div key={item.name} className="flex items-center justify-between gap-4 p-4">
+                    <div className="min-w-0">
+                      <p className="break-words font-mono text-sm font-black">{item.name}</p>
+                      <p className="mt-1 text-xs text-[var(--color-text-muted)]">{item.purpose}</p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2 text-xs font-black">
+                      <CheckCircle2
+                        className={`h-4 w-4 ${item.configured ? 'text-[var(--color-success)]' : 'text-[var(--color-warning)]'}`}
+                        aria-hidden="true"
+                      />
+                      {item.configured ? 'موجود' : 'ناقص'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
 
           <div className="mb-5 grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">

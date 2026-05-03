@@ -416,3 +416,8 @@ This file records useful facts learned during implementation sessions so the nex
   - `chcp 65001`
   - `PYTHONIOENCODING=utf-8`
   - Without that, `browser-use doctor` can fail while printing Unicode check marks.
+- The dashboard was extended with software-engineering details:
+  - package versions
+  - Frappe API method names
+  - backend health checks
+  - env variable presence without exposing secret values.

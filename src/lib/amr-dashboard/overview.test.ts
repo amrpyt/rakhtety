@@ -90,6 +90,9 @@ describe('buildAmrDashboardOverview', () => {
     })
 
     expect(overview.source.backend).toBe('Frappe')
+    expect(overview.software.nextVersion).toMatch(/next|[0-9]/i)
+    expect(overview.software.apiMethods.map((method) => method.name)).toContain('rakhtety_frappe.api.list_clients')
+    expect(overview.software.healthChecks.every((check) => check.status === 'pass')).toBe(true)
     expect(overview.totals).toMatchObject({
       clients: 1,
       workflows: 1,
