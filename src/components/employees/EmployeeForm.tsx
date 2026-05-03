@@ -47,6 +47,7 @@ export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: Employee
     defaultValues: {
       full_name: initialData?.profile?.full_name || '',
       email: '',
+      password: '',
       phone: initialData?.profile?.phone || '',
       position: initialData?.position || '',
       role: initialData?.profile?.role || 'employee',
@@ -70,7 +71,7 @@ export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: Employee
           const createData = formData as EmployeeCreateFormData
           await onSubmit({
             email: createData.email,
-            password: 'temp-password-123',
+            password: createData.password,
             full_name: createData.full_name,
             phone: createData.phone || undefined,
             role: createData.role,
@@ -117,6 +118,21 @@ export function EmployeeForm({ mode, initialData, onSubmit, onCancel }: Employee
             required
             dir="ltr"
             {...register('email' as keyof EmployeeFormData)}
+          />
+        </FormGroup>
+      )}
+
+      {mode === 'create' && (
+        <FormGroup>
+          <Label htmlFor="password">كلمة المرور</Label>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            error={'password' in errors ? errors.password?.message : undefined}
+            required
+            dir="ltr"
+            {...register('password' as keyof EmployeeFormData)}
           />
         </FormGroup>
       )}

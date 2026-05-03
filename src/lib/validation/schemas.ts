@@ -87,6 +87,7 @@ const employeeBaseSchema = z.object({
 
 export const employeeCreateSchema = employeeBaseSchema.extend({
   email: z.string().trim().min(1, 'البريد الإلكتروني مطلوب').email('البريد الإلكتروني غير صالح'),
+  password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
 })
 
 export const employeeUpdateSchema = employeeBaseSchema
