@@ -222,3 +222,43 @@ This file records useful facts learned during implementation sessions so the nex
   - Python can import `rakhtety_frappe`.
   - Imported version is `0.0.1`.
 - Local image size shown by Docker: `3.22GB`.
+
+### 2026-05-03 - Clean custom app install and tests
+
+- First clean-site install failed because `rakhtety_frappe` was installed with pip but missing from `sites/apps.txt`.
+- Fixed Docker image to append `rakhtety_frappe` to `sites/apps.txt`.
+- Second clean-site install failed because the append had no newline and created `erpnextrakhtety_frappe`.
+- Fixed Docker image to append with `printf "\nrakhtety_frappe\n"`.
+- Clean site install then passed:
+  - `frappe 16.17.0`
+  - `rakhtety_frappe 0.0.1`
+- Frappe tests ran inside clean temporary site `rakhtety-tests2.localhost`.
+- Test result: 5 integration tests passed.
+- Covered:
+  - DocType availability.
+  - Excavation dependency.
+  - Required document gate.
+  - Employee assigned-work filtering.
+  - API method workflow writes.
+
+### 2026-05-03 - Browser, backup, and restore proof for custom app
+
+- Started local persistent test site:
+  `rakhtety-live.localhost`.
+- Started local Frappe dev web server in Docker and exposed it on:
+  `http://localhost:8088`.
+- Restarted Next.js on:
+  `http://localhost:3010`.
+- Browser Use verified the custom app through Next.js:
+  - Read `Local Client`.
+  - Saw `Device License`.
+  - Saw dependency block before Device License completion.
+  - Uploaded required document marker.
+  - Completed all Device License steps.
+  - Started Excavation Permit after completion.
+  - Verified employee isolation between `Local Employee` and `Other Employee`.
+- Backup command passed:
+  `bench --site rakhtety-live.localhost backup --with-files`.
+- Restore into clean target `rakhtety-restore.localhost` passed.
+- Restored site could read `Local Client`, `Device License`, and `Completed` status.
+- Decision: custom app path is ready for server deployment testing, but not real production data migration yet.

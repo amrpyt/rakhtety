@@ -46,28 +46,28 @@
 
 - [x] 6.1 Create `apps.json` or equivalent app-source config for the custom image.
 - [x] 6.2 Build a custom/layered Frappe Docker image containing `rakhtety_frappe`.
-- [ ] 6.3 Start a clean Frappe test site from the custom image.
-- [ ] 6.4 Install `rakhtety_frappe` on the clean test site.
-- [ ] 6.5 Run migrate/build/restart and verify all Frappe services are healthy.
+- [x] 6.3 Start a clean Frappe test site from the custom image.
+- [x] 6.4 Install `rakhtety_frappe` on the clean test site.
+- [x] 6.5 Run migrate/build/restart and verify all Frappe services are healthy.
 
 ## 7. Browser Verification
 
-- [ ] 7.1 Use Browser Use to verify the Next.js frontend reads workflow from the custom app.
-- [ ] 7.2 Use Browser Use to verify step update through the custom app.
-- [ ] 7.3 Use Browser Use to verify required document upload through the custom app.
-- [ ] 7.4 Use Browser Use to verify Excavation Permit dependency through the custom app.
-- [ ] 7.5 Use Browser Use to verify employee access does not show unrelated work.
+- [x] 7.1 Use Browser Use to verify the Next.js frontend reads workflow from the custom app.
+- [x] 7.2 Use Browser Use to verify step update through the custom app.
+- [x] 7.3 Use Browser Use to verify required document upload through the custom app.
+- [x] 7.4 Use Browser Use to verify Excavation Permit dependency through the custom app.
+- [x] 7.5 Use Browser Use to verify employee access does not show unrelated work.
 
 ## 8. Backup, Restore, and Rollback
 
-- [ ] 8.1 Create database and file backup before migration/install.
-- [ ] 8.2 Restore backup into a clean target with `rakhtety_frappe` installed.
-- [ ] 8.3 Verify restored workflow data, files, and APIs.
+- [x] 8.1 Create database and file backup before migration/install.
+- [x] 8.2 Restore backup into a clean target with `rakhtety_frappe` installed.
+- [x] 8.3 Verify restored workflow data, files, and APIs.
 - [x] 8.4 Document rollback to previous image tag and pre-migration backup.
 - [x] 8.5 Document log commands for backend, frontend, workers, database, websocket, tunnel, and proxy.
 
 ## 9. Decision Gate
 
-- [ ] 9.1 Record whether custom-app deployment is ready for real data migration.
-- [ ] 9.2 List blockers before production migration.
-- [ ] 9.3 Update `learning.md` with the productionized Frappe app learnings.
+- [x] 9.1 Record whether custom-app deployment is ready for real data migration.
+- [x] 9.2 List blockers before production migration.
+- [x] 9.3 Update `learning.md` with the productionized Frappe app learnings.

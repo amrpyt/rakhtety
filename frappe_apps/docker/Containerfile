@@ -8,4 +8,5 @@ RUN chown -R frappe:frappe /home/frappe/frappe-bench/apps/rakhtety_frappe
 USER frappe
 
 RUN cd /home/frappe/frappe-bench \
-    && ./env/bin/pip install --no-cache-dir -e apps/rakhtety_frappe
+    && ./env/bin/pip install --no-cache-dir -e apps/rakhtety_frappe \
+    && grep -qxF rakhtety_frappe sites/apps.txt || printf "\nrakhtety_frappe\n" >> sites/apps.txt
