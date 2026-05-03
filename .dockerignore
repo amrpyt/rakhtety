@@ -1,0 +1,13 @@
+.git
+.next
+.open-next
+.vercel
+.wrangler
+node_modules
+coverage
+*.log
+.env
+.env.*
+!.env.example
+.dev.vars
+tsconfig.tsbuildinfo

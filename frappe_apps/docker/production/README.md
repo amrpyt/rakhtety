@@ -17,7 +17,7 @@ Rakhtety Frappe backend behind Traefik with HTTPS.
 cp .env.example .env
 # edit .env with real secrets and hostnames
 
-docker compose --env-file .env -f compose.prod.yml pull
+docker compose --env-file .env -f compose.prod.yml build
 docker compose --env-file .env -f compose.prod.yml up -d mariadb redis-cache redis-queue traefik
 docker compose --env-file .env -f compose.prod.yml run --rm configurator
 docker compose --env-file .env -f compose.prod.yml run --rm create-site

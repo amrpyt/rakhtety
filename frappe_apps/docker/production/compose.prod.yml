@@ -2,6 +2,9 @@ name: ${COMPOSE_PROJECT_NAME:-rakhtety}
 
 x-frappe-image: &frappe_image
   image: ${RAKHTETY_FRAPPE_IMAGE:?Set RAKHTETY_FRAPPE_IMAGE}
+  build:
+    context: ../../..
+    dockerfile: frappe_apps/docker/Containerfile
   restart: unless-stopped
   volumes:
     - sites:/home/frappe/frappe-bench/sites
@@ -180,6 +183,9 @@ services:
 
   next:
     image: ${RAKHTETY_NEXT_IMAGE:?Set RAKHTETY_NEXT_IMAGE}
+    build:
+      context: ../../..
+      dockerfile: Dockerfile.next
     restart: unless-stopped
     environment:
       FRAPPE_BASE_URL: https://${FRAPPE_HOSTNAME:?Set FRAPPE_HOSTNAME}
