@@ -35,12 +35,12 @@
 
 ## 5. Tests
 
-- [ ] 5.1 Add Frappe unit tests for clean app install and DocType availability.
-- [ ] 5.2 Add Frappe tests for Device License completion and Excavation Permit dependency.
-- [ ] 5.3 Add Frappe tests for required-document gate.
-- [ ] 5.4 Add Frappe tests for employee assigned-work visibility.
-- [ ] 5.5 Add Frappe tests for whitelisted API methods.
-- [ ] 5.6 Run Next.js `npm run typecheck` and `npm run lint`.
+- [x] 5.1 Add Frappe unit tests for clean app install and DocType availability.
+- [x] 5.2 Add Frappe tests for Device License completion and Excavation Permit dependency.
+- [x] 5.3 Add Frappe tests for required-document gate.
+- [x] 5.4 Add Frappe tests for employee assigned-work visibility.
+- [x] 5.5 Add Frappe tests for whitelisted API methods.
+- [x] 5.6 Run Next.js `npm run typecheck` and `npm run lint`.
 
 ## 6. Docker Deployment
 
