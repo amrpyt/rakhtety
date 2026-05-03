@@ -30,4 +30,8 @@ function maskSecret(value) {
   return '****' + s.slice(-4);
 }
 
-module.exports = { SECRET_CONFIG_KEYS, isSecretKey, maskSecret };
+function maskIfSecret(keyPath, value) {
+  return isSecretKey(keyPath) ? maskSecret(value) : value;
+}
+
+module.exports = { SECRET_CONFIG_KEYS, isSecretKey, maskSecret, maskIfSecret };
