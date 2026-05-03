@@ -1,2 +1,4 @@
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
 [features]
 codex_hooks = false
