@@ -7,7 +7,7 @@ import { databaseConfig } from '@/config/database.config'
 const PUBLIC_ROUTES = ['/login', '/signup']
 const PROTECTED_ROUTES = ['/dashboard', '/clients', '/workflows', '/employees', '/finance', '/settings']
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname.startsWith(route))
