@@ -45,8 +45,7 @@ export async function proxy(request: NextRequest) {
     })
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
 
-    const role = profile?.role || user.user_metadata?.role
-    if (!canAccessRoute(role, pathname)) {
+    if (!canAccessRoute(profile?.role, pathname)) {
       return applyCookies(NextResponse.redirect(new URL('/dashboard', request.url)))
     }
   }

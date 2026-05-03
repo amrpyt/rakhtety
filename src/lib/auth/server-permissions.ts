@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
 import { can, type PermissionAction } from '@/lib/auth/permissions'
-import type { Profile, UserRole } from '@/types/database.types'
+import type { Profile } from '@/types/database.types'
 
 export interface PermissionContext {
   user: User
@@ -28,8 +28,8 @@ export async function getPermissionContext(supabase: SupabaseClient): Promise<Pe
     return NextResponse.json({ error: profileError.message }, { status: 500 })
   }
 
-  const metadata = user.user_metadata as { role?: UserRole; full_name?: string } | undefined
-  const role = profile?.role || metadata?.role
+  const metadata = user.user_metadata as { full_name?: string } | undefined
+  const role = profile?.role
 
   if (!role) {
     return NextResponse.json({ error: 'ملف المستخدم غير موجود' }, { status: 403 })
