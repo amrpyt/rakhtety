@@ -4,6 +4,14 @@
 
 منصة SaaS/ERP لإدارة سير عمل تراخيص البناء وتصاريح الحفر للمكاتب الهندسية في مصر. النظام يتتبع ملفات العملاء عبر مسارين رئيسيين (رخصة الجهاز وتصريح الحفر)، يدير المدفوعات الحكومية (رسوم) والأتعاب (ربحية المكتب)، ويوفر تقارير احترافية للعميل. حالياً للاستخدام الداخلي، ثم تغليفه كمنتج SaaS للمكاتب الهندسية الأخرى.
 
+## Current State
+
+**v1.0 shipped on 2026-05-03.**
+
+The MVP now includes client CRM, login and roles, employee management, Device License and Excavation Permit workflows, dependency gates, finance tracking, document upload gates, dashboard KPIs, bottlenecks, workload tracking, Arabic client reports, and Cloudflare/OpenNext build proof under WSL/Linux.
+
+Next milestone should start from fresh requirements using `$gsd-new-milestone`.
+
 ## Core Value
 
 **الهدف الأساسي:** القضاء على العشوائية في إدارة التراخيص — تقليل الاعتماد على Excel، تقليل الأخطاء البشرية، توفير تكلفة العمالة، وتسريع إنجاز التراخيص.
@@ -79,6 +87,8 @@
 | Dashboard bottlenecks use a 7-day active-step rule | Managers need a simple operational signal without extra settings UI | Validated in Phase 05 |
 | Required document gate | Steps cannot be completed until required uploaded documents exist | Validated in Phase 04 |
 | Append-only financial ledger | Payments, refunds, and adjustments stay auditable as receipt-like events | Validated in Phase 03 |
+| Server API gates for admin mutations | Browser-side admin mutations skip request-bound permission checks | Validated in Phase 06.1 |
+| WSL/Linux for Cloudflare packaging | OpenNext documents Windows as not fully supported | Validated in Phase 06.1 |
 | Serverless-first | يفي بشرط "خادم بدون خادم" مع تكاليف بدء منخفضة | — Pending |
 | Firestore كـ database | Generous free tier, real-time sync, Arabic-friendly | — Pending |
 | Single-page app للـ demo | rakhtety-erp-demo.html يوضح الـ UI بالكامل | — Pending |
@@ -86,4 +96,4 @@
 
 ---
 
-*Last updated: 2026-04-29 after Phase 05*
+*Last updated: 2026-05-03 after v1.0 milestone*

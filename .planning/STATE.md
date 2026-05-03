@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: Ready to plan
-last_updated: "2026-05-03T12:28:37.685Z"
+milestone_name: audit blockers
+status: v1.0 milestone complete
+last_updated: "2026-05-03T13:05:18.112Z"
 progress:
   total_phases: 7
   completed_phases: 7
@@ -73,6 +73,23 @@ See: .planning/PROJECT.md
 | 2026-04-30 | Finish client detail redesign | Restyled workflow board, workflow steps, document upload panels, and finance cards without backend changes. |
 | 2026-04-30 | App shell and client detail redesign | Added premium Arabic operations-dashboard visual direction, redesigned sidebar, hero, guide, and intake document gallery. |
 | 2026-04-30 | Client intake document gallery | Added preview/download actions for basic client documents on the client detail page. |
+
+---
+
+## Deferred Items
+
+Items acknowledged and deferred at milestone close on 2026-05-03:
+
+| Category | Item | Status |
+|----------|------|--------|
+| debug | employee-client-workflow-scope | fixing |
+| quick_task | 260501-252-implement-target-role-based-admin-and-em | unknown |
+| quick_task | 260501-30f-simulate-full-office-e2e-flows-for-admin | unknown |
+| quick_task | 260501-4ty-rebuild-workflows-page-as-office-work-qu | unknown |
+| uat | Phase 02 / 02-UAT.md | testing - 6 pending scenarios |
+| uat | Phase 04 / 04-UAT.md | passed - 0 pending scenarios |
+| uat | Phase 05 / 05-UAT.md | partial - 0 pending scenarios |
+| uat | Phase 06 / 06-UAT.md | unknown - 0 pending scenarios |
 
 ---
 
