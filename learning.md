@@ -99,6 +99,21 @@ This file records useful facts learned during implementation sessions so the nex
 - If the old server at `156.67.25.212` must stay in front: configure that server as a reverse proxy to `57.131.19.110`, but this is more moving parts.
 - For private office-only access: Tailscale can expose the app privately without public DNS, but this is not ideal for normal customer access.
 
+### 2026-05-03 16:44 +03:00 - Cloudflare Quick Tunnel proof
+
+- User approved using free domains after asking about Dokploy-style generated domains.
+- Dokploy uses `traefik.me` generated domains, but those still require public traffic to reach server ports `80/443`.
+- Cloudflare Quick Tunnel was tested because it does not require inbound ports.
+- Started Docker container `rakhtety-cloudflared` on the server.
+- Tunnel target: `http://127.0.0.1:8080` on the server, which is the Frappe frontend.
+- Temporary HTTPS URL generated:
+  `https://era-earrings-finest-casio.trycloudflare.com`
+- External check returned HTTP 200 and found the Frappe login page.
+- External Frappe login API worked and returned:
+  `{"message":"Logged In","home_page":"desk","full_name":"Administrator"}`
+- Browser Use headed verification could not be completed in this step because the Browser Use runtime failed to start its local app-server with a missing-path error.
+- For production, use a named Cloudflare Tunnel connected to the user's Cloudflare account instead of temporary `trycloudflare.com`.
+
 ### Best-practice notes
 
 - Keep Traefik as the edge router and put Frappe/Next.js behind it.
