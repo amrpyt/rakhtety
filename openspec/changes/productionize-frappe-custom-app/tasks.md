@@ -1,8 +1,8 @@
 ## 1. App Scaffold
 
-- [ ] 1.1 Decide final app location: inside this repo or separate Git repo.
-- [ ] 1.2 Create `rakhtety_frappe` app scaffold with Frappe app metadata.
-- [ ] 1.3 Add `required_apps`, `modules.txt`, `patches.txt`, and app package structure.
+- [x] 1.1 Decide final app location: inside this repo or separate Git repo.
+- [x] 1.2 Create `rakhtety_frappe` app scaffold with Frappe app metadata.
+- [x] 1.3 Add `required_apps`, `modules.txt`, `patches.txt`, and app package structure.
 - [ ] 1.4 Verify the app can be discovered by bench and appears in the apps list.
 
 ## 2. Data Model

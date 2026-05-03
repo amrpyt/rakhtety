@@ -1,0 +1,4 @@
+[pre_model_sync]
+
+[post_model_sync]
+rakhtety_frappe.patches.v0_0_1.create_roles
