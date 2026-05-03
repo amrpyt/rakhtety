@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/Button'
 import { FormGroup, Input, Label, Select } from '@/components/ui/Form'
-import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
+import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/types/directory.types'
 import {
   employeeCreateSchema,
   employeeUpdateSchema,

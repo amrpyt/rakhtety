@@ -18,7 +18,7 @@
 ## 4. Cleanup
 
 - [x] 4.1 Remove unused Supabase SDK setup and environment validation.
-- [ ] 4.2 Remove dead Supabase-only files after the Frappe path is wired.
+- [x] 4.2 Remove dead Supabase-only files after the Frappe path is wired.
 - [x] 4.3 Update Docker and production templates so frontend builds no longer need Supabase secrets.
 
 ## 5. Verification

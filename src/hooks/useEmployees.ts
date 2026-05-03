@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
-import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
 import { directoryClient } from '@/lib/client-data/directory-client'
 import type { EmployeeWithProfile } from '@/types/database.types'
+import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/types/directory.types'
 
 interface UseEmployeesReturn {
   employees: EmployeeWithProfile[]

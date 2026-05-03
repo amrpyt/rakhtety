@@ -1,6 +1,5 @@
 import type { Client, EmployeeWithProfile } from '@/types/database.types'
-import type { CreateClientDto } from '@/lib/services/client.service'
-import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
+import type { CreateClientDto, CreateEmployeeDto, UpdateClientDto, UpdateEmployeeDto } from '@/types/directory.types'
 
 const MAX_DOCUMENT_FILE_SIZE = 10 * 1024 * 1024
 const ALLOWED_DOCUMENT_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png']
@@ -106,6 +105,27 @@ export const directoryClient = {
     )
 
     return payload.client
+  },
+
+  async updateClient(id: string, data: UpdateClientDto): Promise<Client> {
+    const payload = await readJson<{ client: Client }>(
+      await fetch(`/api/clients/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }),
+      'Failed to update client'
+    )
+    return payload.client
+  },
+
+  async deleteClient(id: string): Promise<void> {
+    await readJson<{ ok: true }>(
+      await fetch(`/api/clients/${id}`, {
+        method: 'DELETE',
+      }),
+      'Failed to delete client'
+    )
   },
 
   async listEmployees(): Promise<EmployeeWithProfile[]> {

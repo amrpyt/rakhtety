@@ -1,8 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
-import { clientService } from '@/lib/services/client.service'
-import type { CreateClientDto, UpdateClientDto } from '@/lib/services/client.service'
 import { directoryClient } from '@/lib/client-data/directory-client'
 import type { Client } from '@/types/database.types'
+import type { CreateClientDto, UpdateClientDto } from '@/types/directory.types'
 
 interface UseClientsReturn {
   clients: Client[]
@@ -82,13 +81,13 @@ export function useClients(): UseClientsReturn {
   )
 
   const updateClient = useCallback(async (id: string, data: UpdateClientDto) => {
-    const updated = await clientService.update(id, data)
+    const updated = await directoryClient.updateClient(id, data)
     setClients((prev) => prev.map((c) => (c.id === id ? updated : c)))
     return updated
   }, [])
 
   const deleteClient = useCallback(async (id: string) => {
-    await clientService.delete(id)
+    await directoryClient.deleteClient(id)
     setClients((prev) => prev.filter((c) => c.id !== id))
   }, [])
 

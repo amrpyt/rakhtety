@@ -121,6 +121,13 @@ export class FrappeAdapter {
     })
   }
 
+  updateStepStatus(stepId: string, status: string) {
+    return callFrappe<unknown>(this.sid, 'rakhtety_frappe.api.update_step_status', {
+      step: stepId,
+      status,
+    })
+  }
+
   workflowFinancialSummary(workflowId: string) {
     return callFrappe<WorkflowFinancialSummary>(this.sid, 'rakhtety_frappe.api.workflow_financial_summary', {
       workflow: workflowId,

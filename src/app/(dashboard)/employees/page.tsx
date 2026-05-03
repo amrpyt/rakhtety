@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { EmployeeForm } from '@/components/employees/EmployeeForm'
 import { EmployeeList } from '@/components/employees/EmployeeList'
 import type { EmployeeWithProfile } from '@/types/database.types'
-import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/lib/services/employee.service'
+import type { CreateEmployeeDto, UpdateEmployeeDto } from '@/types/directory.types'
 
 export default function EmployeesPage() {
   const { user } = useAuth()

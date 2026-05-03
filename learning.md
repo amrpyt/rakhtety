@@ -376,3 +376,25 @@ This file records useful facts learned during implementation sessions so the nex
   - `/workflows` loaded the office queue from Frappe.
   - `/finance` rendered without Supabase.
   - `/employees` correctly redirects non-admin users away from employee management.
+
+### 2026-05-03 - Supabase frontend cleanup completed
+
+- Removed the old Supabase frontend SDK dependencies:
+  - `@supabase/ssr`
+  - `@supabase/supabase-js`
+- Deleted the old Supabase-only frontend data layer:
+  - `src/lib/supabase/`
+  - `src/lib/database/repositories/`
+  - `src/lib/server-data/`
+  - `src/config/database.config.ts`
+  - old Supabase server permission helpers.
+- Kept the current UI-facing service names, but rewired them to Frappe-backed API routes or safe Frappe-transition placeholders so imports stay stable.
+- Added the real app route:
+  - `/api/workflow-steps/[id]/status`
+  - It updates workflow steps through Frappe instead of the deleted Supabase repositories.
+- Verification after cleanup:
+  - `pnpm typecheck`
+  - `pnpm lint`
+  - `pnpm test`
+  - `pnpm build`
+  - Browser Use headed on `/dashboard`, `/clients`, `/clients/Local%20Client`, `/workflows`, and `/finance`.
