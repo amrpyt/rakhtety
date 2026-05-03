@@ -2,7 +2,7 @@
 # GSD codex_hooks ownership: section
 
 [features]
-codex_hooks = true
+codex_hooks = false
 
 [agents.gsd-advisor-researcher]
 description = "Researches a single gray area decision and returns a structured comparison table with rationale. Spawned by discuss-phase advisor mode."
@@ -137,9 +137,3 @@ description = "Verifies phase goal achievement through goal-backward analysis. C
 config_file = "D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/agents/gsd-verifier.toml"
 
 
-# GSD Hooks
-[[hooks.SessionStart]]
-
-[[hooks.SessionStart.hooks]]
-type = "command"
-command = "\"C:/Program Files/nodejs/node.exe\" \"D:/Vibe Coding/02-Real PRojects with Clints/رخصتي/.codex/hooks/gsd-check-update.js\""
