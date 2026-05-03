@@ -166,13 +166,13 @@
 **Goal:** Close the v1.0 milestone audit blockers so the milestone can be archived with proof.
 **Requirements**: CRM-01, CRM-04, AUTH-01, AUTH-02, AUTH-03, AUTH-04, EMP-01, EMP-02, WF-01, WF-02, WF-03, WF-04, WF-05, RPT-01, RPT-02, RPT-03, RPT-04, RPT-05
 **Depends on:** Phase 6
-**Plans:** 4 plans
+**Plans:** 4/4 complete
 
 Plans:
-- [ ] 06.1-01 Atomic client intake
-- [ ] 06.1-02 Server-safe dashboard and admin APIs
-- [ ] 06.1-03 Verification backfill for Phases 1 and 2
-- [ ] 06.1-04 Milestone readiness proof
+- [x] 06.1-01 Atomic client intake
+- [x] 06.1-02 Server-safe dashboard and admin APIs
+- [x] 06.1-03 Verification backfill for Phases 1 and 2
+- [x] 06.1-04 Milestone readiness proof
 
 ---
 
@@ -191,4 +191,4 @@ Plans:
 ---
 
 *Roadmap created: 2026-04-27*
-*Last updated: 2026-05-03 - Phase 06.1 inserted to close v1.0 audit blockers*
+*Last updated: 2026-05-03 - Phase 06.1 verified complete*

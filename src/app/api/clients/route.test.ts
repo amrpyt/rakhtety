@@ -7,7 +7,7 @@ function createPdfFile(name: string) {
 }
 
 describe('clients API request parsing', () => {
-  it('keeps JSON intake document types when files upload separately', async () => {
+  it('does not trust JSON intake document names without files', async () => {
     const request = new Request('http://localhost/api/clients', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

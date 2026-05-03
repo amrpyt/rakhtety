@@ -7,10 +7,10 @@
 
 ### CRM-01: Client Database
 
-- [ ] **CRM-01**: User can add new client with: name, phone, city, district, neighborhood, parcel number
-- [ ] **CRM-02**: User can search clients by name, phone, or parcel number
-- [ ] **CRM-03**: User can view client profile with all associated workflow files
-- [ ] **CRM-04**: System validates 5 mandatory attachments before saving new client file:
+- [x] **CRM-01**: User can add new client with: name, phone, city, district, neighborhood, parcel number
+- [x] **CRM-02**: User can search clients by name, phone, or parcel number
+- [x] **CRM-03**: User can view client profile with all associated workflow files
+- [x] **CRM-04**: System validates 5 mandatory attachments before saving new client file:
   - محضر الاستلام (receipt minutes)
   - صورة البطاقة (ID copy)
   - توكيل (power of attorney)
@@ -19,21 +19,21 @@
 
 ### WF-01: Workflow Engine
 
-- [ ] **WF-01**: System tracks Device License workflow (5 steps):
+- [x] **WF-01**: System tracks Device License workflow (5 steps):
   - Step 1: بيان الصلاحية (Eligibility Statement)
   - Step 2: تقديم المجمعة العشرية للإسكان المميز (Submit Decade Collective for Distinguished Housing)
   - Step 3: تقديم الملف (File Submission)
   - Step 4: دفع إذن الرخصة وشراء عقد مخلفات (Pay License Fee & Purchase Waste Contract)
   - Step 5: استلام الرخصة (Receive License)
-- [ ] **WF-02**: System tracks Excavation Permit workflow (5 steps):
+- [x] **WF-02**: System tracks Excavation Permit workflow (5 steps):
   - Step 1: تقديم واستلام شهادة الإشراف (Submit & Receive Supervision Certificate)
   - Step 2: تقديم واستلام التأمينات (Submit & Receive Insurance)
   - Step 3: التقديم على العداد الإنشائي (Apply for Construction Meter)
   - Step 4: تقديم ودفع واستلام تصريح الحفر (Submit, Pay & Receive Excavation Permit)
   - Step 5: تصريح التعدين — الدفع والاستلام ومتابعة معاينة الجيش (Mining Permit)
-- [ ] **WF-03**: System enforces workflow dependency: Excavation Permit cannot start until Device License is COMPLETED
-- [ ] **WF-04**: Each workflow step shows: status (pending/in_progress/completed), assigned employee, completion date
-- [ ] **WF-05**: Each workflow step shows financial info: government fees (رسوم) and office profit (أتعاب)
+- [x] **WF-03**: System enforces workflow dependency: Excavation Permit cannot start until Device License is COMPLETED
+- [x] **WF-04**: Each workflow step shows: status (pending/in_progress/completed), assigned employee, completion date
+- [x] **WF-05**: Each workflow step shows financial info: government fees (رسوم) and office profit (أتعاب)
 
 ### FIN-01: Financial Tracking
 
@@ -60,23 +60,23 @@
 
 ### RPT-01: Client Reporting
 
-- [ ] **RPT-01**: System generates professional PDF report per client
-- [ ] **RPT-02**: Report shows completed steps with checkmark (✓)
-- [ ] **RPT-03**: Report shows pending steps
-- [ ] **RPT-04**: Report shows financial summary: total paid, outstanding debt, fees breakdown
-- [ ] **RPT-05**: Report is in Arabic with proper RTL formatting
+- [x] **RPT-01**: System generates professional PDF report per client
+- [x] **RPT-02**: Report shows completed steps with checkmark (✓)
+- [x] **RPT-03**: Report shows pending steps
+- [x] **RPT-04**: Report shows financial summary: total paid, outstanding debt, fees breakdown
+- [x] **RPT-05**: Report is in Arabic with proper RTL formatting
 
 ### AUTH-01: Authentication & Authorization
 
-- [ ] **AUTH-01**: Users log in with email/password
-- [ ] **AUTH-02**: System has role-based access: Admin (مدير), Employee (موظف), Manager (مدير)
-- [ ] **AUTH-03**: Employees can only see assigned workflows
-- [ ] **AUTH-04**: Admin can see all workflows and manage employees
+- [x] **AUTH-01**: Users log in with email/password
+- [x] **AUTH-02**: System has role-based access: Admin (مدير), Employee (موظف), Manager (مدير)
+- [x] **AUTH-03**: Employees can only see assigned workflows
+- [x] **AUTH-04**: Admin can see all workflows and manage employees
 
 ### EMP-01: Employee Management
 
-- [ ] **EMP-01**: Admin can add/edit/delete employee profiles
-- [ ] **EMP-02**: Each workflow step is assigned to a specific employee
+- [x] **EMP-01**: Admin can add/edit/delete employee profiles
+- [x] **EMP-02**: Each workflow step is assigned to a specific employee
 - [x] **EMP-03**: System tracks employee workload (cases assigned, cases completed)
 
 ## v2 Requirements
@@ -131,15 +131,15 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CRM-01 | Phase 1 | Pending |
-| CRM-02 | Phase 1 | Pending |
-| CRM-03 | Phase 1 | Pending |
-| CRM-04 | Phase 1 | Pending |
-| WF-01 | Phase 1 | Pending |
-| WF-02 | Phase 1 | Pending |
-| WF-03 | Phase 2 | Pending |
-| WF-04 | Phase 1 | Pending |
-| WF-05 | Phase 1 | Pending |
+| CRM-01 | Phase 1 | Complete |
+| CRM-02 | Phase 1 | Complete |
+| CRM-03 | Phase 1 | Complete |
+| CRM-04 | Phase 1 | Complete |
+| WF-01 | Phase 1 | Complete |
+| WF-02 | Phase 1 | Complete |
+| WF-03 | Phase 2 | Complete |
+| WF-04 | Phase 1 | Complete |
+| WF-05 | Phase 1 | Complete |
 | FIN-01 | Phase 3 | Complete |
 | FIN-02 | Phase 3 | Complete |
 | FIN-03 | Phase 3 | Complete |
@@ -154,17 +154,17 @@
 | DASH-03 | Phase 5 | Complete |
 | DASH-04 | Phase 5 | Complete |
 | DASH-05 | Phase 5 | Complete |
-| RPT-01 | Phase 2 | Pending |
-| RPT-02 | Phase 2 | Pending |
-| RPT-03 | Phase 2 | Pending |
-| RPT-04 | Phase 2 | Pending |
-| RPT-05 | Phase 2 | Pending |
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
-| EMP-01 | Phase 1 | Pending |
-| EMP-02 | Phase 1 | Pending |
+| RPT-01 | Phase 6 | Complete |
+| RPT-02 | Phase 6 | Complete |
+| RPT-03 | Phase 6 | Complete |
+| RPT-04 | Phase 6 | Complete |
+| RPT-05 | Phase 6 | Complete |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
+| EMP-01 | Phase 1 | Complete |
+| EMP-02 | Phase 1 | Complete |
 | EMP-03 | Phase 5 | Complete |
 
 **Coverage:**
@@ -174,4 +174,4 @@
 
 ---
 *Requirements defined: 2026-04-27*
-*Last updated: 2026-04-27 after initial definition*
+*Last updated: 2026-05-03 after v1.0 audit closure*

@@ -81,9 +81,7 @@ export async function POST(request: NextRequest) {
       parcel_number: body.parcel_number,
       intake_documents: intakeFiles.size > 0
         ? Array.from(intakeFiles.keys())
-        : Array.isArray(body.intake_documents)
-          ? body.intake_documents.filter((item): item is string => typeof item === 'string')
-          : [],
+        : [],
     }
 
     const parsed = clientCreateSchema.safeParse(input)
