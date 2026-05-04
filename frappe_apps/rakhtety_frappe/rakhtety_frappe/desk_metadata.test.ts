@@ -63,6 +63,25 @@ describe('Rakhtety Frappe Desk metadata', () => {
     expect(metadataPatch).toContain('get_valid_columns')
   })
 
+  it('formats finance event timestamps for people instead of showing raw ISO strings', () => {
+    const sectionsScript = readText(path.join('public', 'rakhtety', 'desk_sections.js'))
+
+    expect(sectionsScript).toContain('function formatDateTime(value)')
+    expect(sectionsScript).toContain('new Intl.DateTimeFormat("ar-EG"')
+    expect(sectionsScript).toContain('hour12: true')
+    expect(sectionsScript).toContain('cell(formatDateTime(event.created_at))')
+  })
+
+  it('bumps Rakhtety Desk shared script cache keys after the date-format change', () => {
+    const pages = readdirSync(pageRoot)
+      .filter((entry) => entry.startsWith('rakhtety_') && entry !== 'rakhtety_financial')
+      .map((entry) => path.join('rakhtety', 'page', entry, `${entry}.js`))
+
+    for (const pageScriptPath of pages) {
+      expect(readText(pageScriptPath)).toContain('desk_sections.js?v=date-format-20260504')
+    }
+  })
+
   it('does not keep broken Arabic encoding markers in Rakhtety Desk metadata source files', () => {
     const roots = [
       path.join(appRoot, 'patches', 'v0_0_1'),

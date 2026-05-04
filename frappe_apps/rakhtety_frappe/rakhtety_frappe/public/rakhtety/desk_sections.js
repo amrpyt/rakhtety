@@ -68,6 +68,19 @@
     })} EGP`;
   }
 
+  function formatDateTime(value) {
+    if (!value) return "";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+
+    return new Intl.DateTimeFormat("ar-EG", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      hour12: true,
+    }).format(date);
+  }
+
   function workflowLabel(value) {
     return workflowNames[value] || value || "فلو";
   }
@@ -468,7 +481,7 @@
       ${cell(money(event.amount))}
       ${cell(event.payment_method || "بدون طريقة دفع")}
       ${cell(event.reference_number || "بدون رقم مرجعي")}
-      ${cell(event.created_at || "")}
+      ${cell(formatDateTime(event.created_at))}
     </tr>`);
     root.find("[data-content]").html(`
       ${kpis([
