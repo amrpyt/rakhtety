@@ -425,3 +425,14 @@ This file records useful facts learned during implementation sessions so the nex
   - `/api/amr-dashboard/logs` reads recent Next frontend log files.
   - It also reads Docker logs from `rakhtety-live-backend`.
   - The UI refreshes every 3 seconds and separates frontend, backend, and error lines.
+
+### 2026-05-04 - Frappe Desk asset refresh
+
+- The local Frappe v16 Docker stack does not automatically serve edited files from the repo.
+- For shared Desk JavaScript changes, update both places inside the running containers:
+  - `/home/frappe/frappe-bench/apps/rakhtety_frappe/rakhtety_frappe/public/rakhtety/desk_sections.js`
+  - `/home/frappe/frappe-bench/sites/assets/rakhtety_frappe/rakhtety/desk_sections.js`
+- For Desk Page loader changes, also copy the matching page files under:
+  - `/home/frappe/frappe-bench/apps/rakhtety_frappe/rakhtety_frappe/rakhtety/page/*/*.js`
+- Browser Use on `/desk/rakhtety-finance` proved the fix only after copying into the running containers and reloading the page.
+- The exact symptom was finance event dates showing raw strings like `2026-05-04T16:43:00.201112`; the fix was formatting `created_at` with `Intl.DateTimeFormat("ar-EG", { dateStyle: "medium", timeStyle: "short", hour12: true })`.
