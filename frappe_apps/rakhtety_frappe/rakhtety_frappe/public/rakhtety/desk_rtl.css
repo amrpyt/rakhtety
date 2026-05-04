@@ -1,0 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap");
+
+:root {
+  --rakhtety-arabic-font: "Cairo", "Segoe UI", Tahoma, sans-serif;
+}
+
+html[lang="ar"],
+html[lang="ar"] body,
+body[data-lang="ar"],
+.desk-page .rakhtety-desk {
+  direction: rtl;
+  font-family: var(--rakhtety-arabic-font);
+}
+
+html[lang="ar"] .layout-main-section,
+html[lang="ar"] .form-layout,
+html[lang="ar"] .form-dashboard,
+html[lang="ar"] .list-row,
+html[lang="ar"] .page-head,
+html[lang="ar"] .standard-sidebar,
+body[data-lang="ar"] .layout-main-section,
+body[data-lang="ar"] .form-layout,
+body[data-lang="ar"] .form-dashboard,
+body[data-lang="ar"] .list-row,
+body[data-lang="ar"] .page-head,
+body[data-lang="ar"] .standard-sidebar {
+  text-align: right;
+}
+
+html[lang="ar"] .page-actions,
+body[data-lang="ar"] .page-actions {
+  direction: rtl;
+}
+
+html[lang="ar"] .frappe-control .control-label,
+html[lang="ar"] .grid-heading-row,
+body[data-lang="ar"] .frappe-control .control-label,
+body[data-lang="ar"] .grid-heading-row {
+  text-align: right;
+  font-family: var(--rakhtety-arabic-font);
+}
+
+html[lang="ar"] input,
+html[lang="ar"] textarea,
+html[lang="ar"] select,
+body[data-lang="ar"] input,
+body[data-lang="ar"] textarea,
+body[data-lang="ar"] select {
+  text-align: right;
+}
